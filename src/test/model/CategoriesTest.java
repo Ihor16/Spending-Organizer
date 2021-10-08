@@ -8,31 +8,37 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CategoriesTest {
 
-    Categories categories;
+    private Categories categories;
+    private String category1;
+    private String category2;
 
     @BeforeEach
     void setUp() {
         categories = new Categories();
+        category1 = "Travel";
+        category2 = "Family";
+        categories.addCategory(category1);
+        categories.addCategory(category2);
     }
 
     @Test
     void testConstructor() {
-        assertTrue(categories.isEmpty());
+        assertTrue(new Categories().isEmpty());
     }
 
     @Test
     void testAddCategory() {
-        categories.addCategory("Travel");
-        categories.addCategory("Family");
-        assertEquals(2, categories.getCategories().size());
+        assertEquals(2, categories.length());
     }
 
     @Test
     void testRemoveCategory() {
-        categories.addCategory("Travel");
-        categories.addCategory("Family");
-
-        categories.removeCategory("Travel");
+        categories.removeCategory(category1);
         assertEquals(1, categories.length());
+    }
+
+    @Test
+    void testContains() {
+        assertTrue(categories.contains(category2));
     }
 }

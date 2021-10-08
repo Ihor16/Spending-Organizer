@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 public class SpendingApp {
 
+    private static final String QUIT_COMMAND = "q";
     private SpendingList spendingList;
     private Categories categories;
     private Scanner input;
@@ -31,7 +32,7 @@ public class SpendingApp {
             displayMenu();
             command = input.next();
 
-            if (command.equals("q")) {
+            if (command.equals(QUIT_COMMAND)) {
                 System.out.println("\nHave a nice day!");
                 break;
             } else {
@@ -48,7 +49,7 @@ public class SpendingApp {
         System.out.println("c -> change existing entry");
         System.out.println("r -> remove entry");
         System.out.println("s -> sort entries");
-        System.out.println("q -> quit");
+        System.out.println(QUIT_COMMAND + " -> quit");
     }
 
     // MODIFIES: this
@@ -56,16 +57,17 @@ public class SpendingApp {
     private void processCommand(String command) {
         switch (command) {
             case "a":
-                askInformationAboutNewEntry();
+                addEntry();
                 break;
             case "r":
-                removeEntryById();
+                removeEntry();
                 break;
             case "s":
-                askAboutHowToSort();
+                sortEntries();
                 break;
             case "c":
-                askWhichEntryToChange();
+                changeEntry();
+                break;
             default:
                 enteredWrong("command");
                 break;
@@ -73,32 +75,59 @@ public class SpendingApp {
     }
 
     // MODIFIES: this
-    // EFFECTS: changes specific aspects of the entry
-    private void processChangingCommand(int id, String command) {
-        switch (command) {
-            case "ti":
-                changeTitle(id);
-                askWhatToChangeInEntry(id);
-                break;
-            case "am":
-                changeAmount(id);
-                askWhatToChangeInEntry(id);
-                break;
-            case "ca":
-                changeCategory(id);
-                askWhatToChangeInEntry(id);
-                break;
-            default:
-                enteredWrong("changing command");
-                askWhatToChangeInEntry(id);
-                break;
+    // EFFECTS: adds entry to the list if category is found in the set of categories
+    //          asks user to reenter category otherwise
+    private void addEntry() {
+        System.out.println("\nTitle: ");
+        String title = input.next();
+        System.out.println("\nAmount Spent: CAD ");
+        double amount = input.nextDouble();
+        printCategories();
+        System.out.println("\nCategory: ");
+        String category = input.next();
+
+        if (categories.contains(category)) {
+            spendingList.addEntry(new Entry(title, amount, category));
+        } else {
+            enteredWrong("category");
+            printCategories();
+            addEntry(title, amount);
         }
     }
 
     // MODIFIES: this
-    // EFFECTS: processes user's sorting commands
-    private void processSortingCommand(String command) {
-        switch (command) {
+    // EFFECTS: asks user to enter category
+    private void addEntry(String title, double amount) {
+        System.out.println("\nTitle: " + title);
+        System.out.println("Amount Spent: CAD " + amount);
+        System.out.println("Category: ");
+        String category = input.next();
+
+        if (categories.contains(category)) {
+            spendingList.addEntry(new Entry(title, amount, category));
+        } else {
+            enteredWrong("category");
+            printCategories();
+            addEntry(title, amount);
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: removes entry by its id if an entry with such id is found
+    private void removeEntry() {
+        int id = readEntryId();
+        if (!spendingList.removeById(id)) {
+            enteredWrong("entry ID");
+            printSpendingEntries();
+            removeEntry();
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: asks user how they want to sort the entries and sorts them
+    private void sortEntries() {
+        printSortCommands();
+        switch (input.next()) {
             case "am":
                 spendingList.sortByAmountSpent();
                 break;
@@ -111,37 +140,57 @@ public class SpendingApp {
             default:
                 enteredWrong("sorting command");
                 printSpendingEntries();
-                askAboutHowToSort();
+                sortEntries();
                 break;
         }
     }
 
     // MODIFIES: this
-    // EFFECTS: asks user to input id of the entry they want to change
-    private void askWhichEntryToChange() {
+    // EFFECTS: asks user to input id of the entry they want to change and specify the change
+    //          if id isn't found, asks them to reenter it
+    private void changeEntry() {
         int id = readEntryId();
         if (spendingList.isValidId(id)) {
-            askWhatToChangeInEntry(id);
+            printChangeCommands(id);
+            String command = input.next();
+            if (!command.equals(QUIT_COMMAND)) {
+                processChange(id, command);
+            }
         } else {
             enteredWrong("entry ID");
             printSpendingEntries();
-            askWhichEntryToChange();
+            changeEntry();
         }
     }
 
     // MODIFIES: this
-    // EFFECTS: asks user what they want to change in entry
-    private void askWhatToChangeInEntry(int id) {
-        System.out.println(spendingList.findById(id));
-        System.out.println("\nWhat do you want to change?");
-        System.out.println("ti -> Title");
-        System.out.println("am -> Amount");
-        System.out.println("ca -> Category");
-        System.out.println("q -> quit changing menu");
+    // EFFECTS: asks user to if they want to further change same entry
+    private void changeEntry(int id) {
+        printChangeCommands(id);
         String command = input.next();
-        if (!command.equals("q")) {
-            processChangingCommand(id, input.next());
+        if (!command.equals(QUIT_COMMAND)) {
+            processChange(id, command);
         }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: changes specific aspects of the entry
+    private void processChange(int id, String command) {
+        switch (command) {
+            case "ti":
+                changeTitle(id);
+                break;
+            case "am":
+                changeAmount(id);
+                break;
+            case "ca":
+                changeCategory(id);
+                break;
+            default:
+                enteredWrong("changing command");
+                break;
+        }
+        changeEntry(id);
     }
 
     // MODIFIES: this
@@ -171,70 +220,6 @@ public class SpendingApp {
             enteredWrong("category");
             printCategories();
             changeCategory(id);
-        }
-    }
-
-    // MODIFIES: this
-    // EFFECTS: asks user how they want to sort the entries
-    private void askAboutHowToSort() {
-        System.out.println("\nHow do you want to sort them?");
-        System.out.println("am -> By amount spent (in descending order)");
-        System.out.println("ca -> By category (in alphabetic order)");
-        System.out.println("da -> By date (from newer to older)");
-        String command = input.next();
-        processSortingCommand(command);
-    }
-
-    // MODIFIES: this
-    // EFFECTS: removes entry by its id if an entry with such id is found
-    private void removeEntryById() {
-        int id = readEntryId();
-        if (!spendingList.removeById(id)) {
-            enteredWrong("entry ID");
-            printSpendingEntries();
-            removeEntryById();
-        }
-    }
-
-    // EFFECTS: returns user input id
-    private int readEntryId() {
-        System.out.println("\nEntry entry ID: ");
-        return input.nextInt();
-    }
-
-    // MODIFIES: this
-    // EFFECTS: user adds a new entry
-    private void askInformationAboutNewEntry() {
-        System.out.println("\nTitle: ");
-        String title = input.next();
-        System.out.println("\nAmount Spent: CAD ");
-        double amount = input.nextDouble();
-        printCategories();
-        System.out.println("\nCategory: ");
-        String category = input.next();
-        addEntry(title, amount, category);
-    }
-
-    // MODIFIES: this
-    // EFFECTS: user provides only category of the new entry
-    private void askInformationAboutNewEntry(String title, double amount) {
-        System.out.println("\nTitle: " + title);
-        System.out.println("Amount Spent: CAD " + amount);
-        System.out.println("Category: ");
-        String category = input.next();
-        addEntry(title, amount, category);
-    }
-
-    // MODIFIES: this
-    // EFFECTS: if category is found in the set of categories, adds entry to the list
-    //          asks user to reenter category otherwise
-    private void addEntry(String title, double amount, String category) {
-        if (categories.contains(category)) {
-            spendingList.addEntry(new Entry(title, amount, category));
-        } else {
-            enteredWrong("category");
-            printCategories();
-            askInformationAboutNewEntry(title, amount);
         }
     }
 
@@ -271,6 +256,30 @@ public class SpendingApp {
     // EFFECTS: inits the input scanner
     private void initScanner() {
         input = new Scanner(System.in);
+    }
+
+    // EFFECTS: returns user input id
+    private int readEntryId() {
+        System.out.println("\nEntry entry ID: ");
+        return input.nextInt();
+    }
+
+    // EFFECTS: prints types of sorting user can perform on entries
+    private void printSortCommands() {
+        System.out.println("\nHow do you want to sort entries?");
+        System.out.println("am -> By amount spent (in descending order)");
+        System.out.println("ca -> By category (in alphabetic order)");
+        System.out.println("da -> By date (from newer to older)");
+    }
+
+    // EFFECTS: prints types of changes user can perform on entries
+    private void printChangeCommands(int id) {
+        System.out.println(spendingList.findById(id));
+        System.out.println("\nWhat do you want to change?");
+        System.out.println("ti -> Title");
+        System.out.println("am -> Amount");
+        System.out.println("ca -> Category");
+        System.out.println(QUIT_COMMAND + " -> quit changing menu");
     }
 
     // EFFECTS: prints a message about what user entered wrong

@@ -33,7 +33,7 @@ class SpendingListTest {
 
     @Test
     void testAddEntry() {
-        assertEquals(2, spendingList.getSpendingList().size());
+        assertEquals(2, spendingList.length());
         assertEquals(entryGroceries, spendingList.getSpendingList().get(0));
     }
 
@@ -135,8 +135,15 @@ class SpendingListTest {
     }
 
     @Test
+    void testFindByIdNoSuchEntry() {
+        Entry foundEntry = spendingList.findById(entryGroceries.getId());
+        assertEquals(entryGroceries, foundEntry);
+        assertThrows(IllegalArgumentException.class, () -> spendingList.findById(-1));
+    }
+
+    @Test
     void testIsValidId() {
         assertTrue(spendingList.isValidId(entrySelfCare.getId()));
-        assertFalse(spendingList.isValidId(45));
+        assertFalse(spendingList.isValidId(-1));
     }
 }
