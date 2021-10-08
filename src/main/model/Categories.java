@@ -38,4 +38,10 @@ public class Categories {
     public boolean isEmpty() {
         return categories.isEmpty();
     }
+
+    // EFFECTS: returns true if entered category is found in the set of categories,
+    //          false otherwise
+    public boolean contains(String category) {
+        return categories.contains(category);
+    }
 }

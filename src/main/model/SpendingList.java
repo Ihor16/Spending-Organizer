@@ -3,6 +3,7 @@ package model;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class SpendingList {
@@ -20,11 +21,34 @@ public class SpendingList {
         spendingList.addFirst(entry);
     }
 
-    // REQUIRES: entry is in the list
     // MODIFIES: this
-    // EFFECTS: removes entry from spending list
-    public void removeEntry(Entry entry) {
-        spendingList.remove(entry);
+    // EFFECTS: removes entry by its id from spending list and returns true,
+    //          false otherwise
+    public boolean removeById(int id) {
+        return spendingList.stream()
+                .filter(e -> e.getId() == id)
+                .findAny()
+                .map(spendingList::remove)
+                .orElse(false);
+    }
+
+    // EFFECTS: if entry with provided id exists, returns this entry
+    //          throws IllegalArgumentException otherwise
+    public Entry findById(int id) {
+        return spendingList.stream()
+                .filter(e -> e.getId() == id)
+                .findAny()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
+    // EFFECTS: returns true if entry with provided id exists
+    //          returns false otherwise
+    public boolean isValidId(int id) {
+        return spendingList.stream()
+                .filter(e -> e.getId() == id)
+                .findAny()
+                .map(spendingList::contains)
+                .orElse(false);
     }
 
     public List<Entry> getSpendingList() {

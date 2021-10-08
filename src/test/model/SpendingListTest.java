@@ -39,7 +39,8 @@ class SpendingListTest {
 
     @Test
     void testRemoveEntry() {
-        spendingList.removeEntry(entryGroceries);
+        assertTrue(spendingList.removeById(entryGroceries.getId()));
+        assertFalse(spendingList.removeById(45));
         assertEquals(1, spendingList.length());
     }
 
@@ -125,5 +126,17 @@ class SpendingListTest {
         expectedList.add(entrySelfCare);
 
         assertEquals(expectedList, spendingList.getSpendingList());
+    }
+
+    @Test
+    void testFindById() {
+        Entry foundEntry = spendingList.findById(entryGroceries.getId());
+        assertEquals(entryGroceries, foundEntry);
+    }
+
+    @Test
+    void testIsValidId() {
+        assertTrue(spendingList.isValidId(entrySelfCare.getId()));
+        assertFalse(spendingList.isValidId(45));
     }
 }

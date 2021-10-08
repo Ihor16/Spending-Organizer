@@ -23,7 +23,7 @@ public class Entry {
         timeAdded = LocalDateTime.now();
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
