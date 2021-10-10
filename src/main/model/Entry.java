@@ -5,11 +5,11 @@ import java.util.StringJoiner;
 
 public class Entry {
     private static int nextEntryID = 1;
-    private final int id;
+    private int id;
     private String title;
     private double amount;
     private String category;
-    private final LocalDateTime timeAdded;
+    private LocalDateTime timeAdded;
 
     // REQUIRES: the provided category is available in the Categories List, and
     //           amount > 0
