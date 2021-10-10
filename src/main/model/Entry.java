@@ -11,7 +11,8 @@ public class Entry {
     private String category;
     private LocalDateTime timeAdded;
 
-    // REQUIRES: the provided category is available in the Categories List
+    // REQUIRES: the provided category is available in the Categories List, and
+    //           amount > 0
     // EFFECTS: creates a new entry with parameters specified,
     //          a random id, and timeAdded set to now
     public Entry(String title, double amount, String category) {
@@ -47,6 +48,7 @@ public class Entry {
         this.title = title;
     }
 
+    // REQUIRES: amount is > 0
     public void setAmount(double amount) {
         this.amount = amount;
     }

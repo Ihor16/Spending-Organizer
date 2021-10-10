@@ -44,4 +44,10 @@ public class Categories {
     public boolean contains(String category) {
         return categories.contains(category);
     }
+
+    @Override
+    // EFFECTS: returns string of categories separated by commas
+    public String toString() {
+        return String.join(", ", categories);
+    }
 }

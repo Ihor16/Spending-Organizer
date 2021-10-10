@@ -78,12 +78,12 @@ public class SpendingApp {
     // EFFECTS: adds entry to the list if category is found in the set of categories
     //          asks user to reenter category otherwise
     private void addEntry() {
-        System.out.println("\nTitle: ");
+        System.out.println("\nAdd Title: ");
         String title = input.next();
-        System.out.println("\nAmount Spent: CAD ");
+        System.out.println("\nAdd Amount Spent: CAD ");
         double amount = input.nextDouble();
         printCategories();
-        System.out.println("\nCategory: ");
+        System.out.println("\nAdd Category: ");
         String category = input.next();
 
         if (categories.contains(category)) {
@@ -212,13 +212,13 @@ public class SpendingApp {
     // MODIFIES: this
     // EFFECTS: changes entry's category
     private void changeCategory(int id) {
+        printCategories();
         System.out.println("\nNew category: ");
         String category = input.next();
         if (categories.contains(category)) {
             spendingList.findById(id).setCategory(category);
         } else {
             enteredWrong("category");
-            printCategories();
             changeCategory(id);
         }
     }
@@ -226,7 +226,7 @@ public class SpendingApp {
     // EFFECTS: displays available categories
     private void printCategories() {
         System.out.println("\nSelect from one of these categories:");
-        System.out.println(String.join(", ", categories.getCategories()));
+        System.out.println(categories);
     }
 
     // EFFECTS: prints current entries
@@ -260,7 +260,7 @@ public class SpendingApp {
 
     // EFFECTS: returns user input id
     private int readEntryId() {
-        System.out.println("\nEntry entry ID: ");
+        System.out.println("\nEnter entry ID: ");
         return input.nextInt();
     }
 
