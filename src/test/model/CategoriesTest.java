@@ -52,4 +52,14 @@ class CategoriesTest {
     void testGetCategories() {
         assertEquals(new HashSet<>(Arrays.asList(category1, category2)), categories.getCategories());
     }
+
+    @Test
+    void testToString() {
+        assertEquals(String.join(", ", category1, category2), categories.toString());
+    }
+
+    @Test
+    void testToStringEmpty() {
+        assertEquals("", new Categories().toString());
+    }
 }

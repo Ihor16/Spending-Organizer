@@ -38,4 +38,13 @@ class EntryTest {
         testEntry.setCategory("Clothes");
         assertEquals("Clothes", testEntry.getCategory());
     }
+
+    @Test
+    void testToString() {
+        String expected = "Entry[id=" + testEntry.getId() + ", " +
+                "title='" + testEntry.getTitle() + "', " +
+                "amount=" + testEntry.getAmount() + ", " +
+                "category='" + testEntry.getCategory() + "']";
+        assertEquals(expected, testEntry.toString());
+    }
 }
