@@ -21,11 +21,11 @@ And I'd love to spice up my implementations by using Java Streams.
 
 ## User Stories
 
-1. As a user, I want to be able to add new spending entry
+1. As a user, I want to be able to add new spending entries
 
-For example, spending entry is a class *SpendingEntry* and spending list is a class *SpendingList*. 
-When user adds a new spending entry in the app, we want to create a new instance of the *SpendingEntry* class
-and add it to the *SpendingList* class (class that stores multiple *SpendingEntries*).
+For example, spending entry is a class *Entry* and spending list is a class *SpendingList*. 
+When user adds a new spending entry in the app, we want to create a new instance of the *Entry* class
+and add it to the *SpendingList* class (class that stores multiple *Entries*).
 
 2. As a user, I want to be able to remove an existing entry
 3. As a user, I want to be able to view all entries added
@@ -33,7 +33,7 @@ and add it to the *SpendingList* class (class that stores multiple *SpendingEntr
    1. Amount spent in descending order
    2. Category in alphabetic order
    3. Date in descending order (from new to old)
-5. As a user, I want to be able to edit entries, e.g., change:
+5. As a user, I want to be able to edit my current entries, e.g., change:
    1. Title
    2. Amount spent
    3. Category

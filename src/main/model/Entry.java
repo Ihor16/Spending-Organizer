@@ -3,6 +3,7 @@ package model;
 import java.time.LocalDateTime;
 import java.util.StringJoiner;
 
+// Represents an entity user uses to store their spending
 public class Entry {
     private static int nextEntryID = 1;
     private int id;
@@ -49,11 +50,13 @@ public class Entry {
     }
 
     // REQUIRES: amount is > 0
+    // setter
     public void setAmount(double amount) {
         this.amount = amount;
     }
 
     // REQUIRES: the provided category is available in the Categories set
+    // setter
     public void setCategory(String category) {
         this.category = category;
     }

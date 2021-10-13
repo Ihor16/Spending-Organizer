@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// Represents the list of spending entries
 public class SpendingList {
 
     private LinkedList<Entry> spendingList;
@@ -31,16 +32,16 @@ public class SpendingList {
                 .orElse(false);
     }
 
-    // EFFECTS: if entry with provided id exists, returns this entry
+    // EFFECTS: if entry with provided id exists, returns this entry,
     //          throws IllegalArgumentException otherwise
-    public Entry findById(int id) {
+    public Entry findById(int id) throws IllegalArgumentException {
         return spendingList.stream()
                 .filter(e -> e.getId() == id)
                 .findAny()
                 .orElseThrow(IllegalArgumentException::new);
     }
 
-    // EFFECTS: returns true if entry with provided id exists
+    // EFFECTS: returns true if entry with provided id exists,
     //          returns false otherwise
     public boolean isValidId(int id) {
         return spendingList.stream()

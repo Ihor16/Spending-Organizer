@@ -11,17 +11,17 @@ import static org.junit.jupiter.api.Assertions.*;
 class SpendingListTest {
 
     private SpendingList spendingList;
-    private Entry entrySelfCare;
+    private Entry entryHaircut;
     private Entry entryGroceries;
 
     @BeforeEach
     void setUp() {
         spendingList = new SpendingList();
 
-        entrySelfCare = new Entry("Got haircut", 31.45, "Self-care");
+        entryHaircut = new Entry("Got haircut", 31.45, "Self-care");
         entryGroceries = new Entry("Went to SaveOnFoods", 100.76, "Groceries");
 
-        spendingList.addEntry(entrySelfCare);
+        spendingList.addEntry(entryHaircut);
         spendingList.addEntry(entryGroceries);
     }
 
@@ -33,14 +33,16 @@ class SpendingListTest {
 
     @Test
     void testAddEntry() {
-        assertEquals(2, spendingList.length());
-        assertEquals(entryGroceries, spendingList.getSpendingList().get(0));
+        Entry entryTravel = new Entry("Montreal", 599, "Travel");
+        spendingList.addEntry(entryTravel);
+        assertEquals(3, spendingList.length());
+        assertEquals(entryTravel, spendingList.getSpendingList().get(0));
     }
 
     @Test
     void testRemoveEntry() {
         assertTrue(spendingList.removeById(entryGroceries.getId()));
-        assertFalse(spendingList.removeById(45));
+        assertFalse(spendingList.removeById(-1));
         assertEquals(1, spendingList.length());
     }
 
@@ -74,7 +76,7 @@ class SpendingListTest {
         List<Entry> expectedList = new LinkedList<>();
         expectedList.add(entryTravel);
         expectedList.add(entryGroceries);
-        expectedList.add(entrySelfCare);
+        expectedList.add(entryHaircut);
 
         assertEquals(expectedList, spendingList.getSpendingList());
     }
@@ -82,7 +84,7 @@ class SpendingListTest {
     @Test
     void testSortByAmountSpentSameAmount() {
         Entry entryTravel = new Entry("Victoria", 545.89, "Travel");
-        Entry entryGroceries2 = new Entry("Went to NoFrills", 100.76, "Travel");
+        Entry entryGroceries2 = new Entry("Went to NoFrills", entryGroceries.getAmount(), "Travel");
         spendingList.addEntry(entryTravel);
         spendingList.addEntry(entryGroceries2);
         spendingList.sortByAmountSpent();
@@ -91,7 +93,7 @@ class SpendingListTest {
         expectedList.add(entryTravel);
         expectedList.add(entryGroceries2);
         expectedList.add(entryGroceries);
-        expectedList.add(entrySelfCare);
+        expectedList.add(entryHaircut);
 
         assertEquals(expectedList, spendingList.getSpendingList());
     }
@@ -109,21 +111,21 @@ class SpendingListTest {
 
         List<Entry> expectedList = new LinkedList<>();
         expectedList.add(entryGroceries);
-        expectedList.add(entrySelfCare);
+        expectedList.add(entryHaircut);
 
         assertEquals(expectedList, spendingList.getSpendingList());
     }
 
     @Test
     void testSortByCategorySameCategory() {
-        Entry entryGroceries2 = new Entry("Weekly groceries", 78.8, "Groceries");
+        Entry entryGroceries2 = new Entry("Weekly groceries", 78.8, entryGroceries.getCategory());
         spendingList.addEntry(entryGroceries2);
         spendingList.sortByCategory();
 
         List<Entry> expectedList = new LinkedList<>();
         expectedList.add(entryGroceries2);
         expectedList.add(entryGroceries);
-        expectedList.add(entrySelfCare);
+        expectedList.add(entryHaircut);
 
         assertEquals(expectedList, spendingList.getSpendingList());
     }
@@ -136,14 +138,12 @@ class SpendingListTest {
 
     @Test
     void testFindByIdNoSuchEntry() {
-        Entry foundEntry = spendingList.findById(entryGroceries.getId());
-        assertEquals(entryGroceries, foundEntry);
         assertThrows(IllegalArgumentException.class, () -> spendingList.findById(-1));
     }
 
     @Test
     void testIsValidId() {
-        assertTrue(spendingList.isValidId(entrySelfCare.getId()));
+        assertTrue(spendingList.isValidId(entryHaircut.getId()));
         assertFalse(spendingList.isValidId(-1));
     }
 }

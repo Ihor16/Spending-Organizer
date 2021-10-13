@@ -3,6 +3,7 @@ package model;
 import java.util.HashSet;
 import java.util.Set;
 
+// Represents list of Categories, user can use only these Categories while working with entries
 public class Categories {
 
     private Set<String> categories;
@@ -18,14 +19,11 @@ public class Categories {
         categories.add(category);
     }
 
+    // REQUIRES: category is present in the categories set
     // MODIFIES: this
     // EFFECTS: removes category from the categories set
     public void removeCategory(String category) {
         categories.remove(category);
-    }
-
-    public Set<String> getCategories() {
-        return categories;
     }
 
     // EFFECTS: returns the length of categories set
@@ -43,6 +41,10 @@ public class Categories {
     //          false otherwise
     public boolean contains(String category) {
         return categories.contains(category);
+    }
+
+    public Set<String> getCategories() {
+        return categories;
     }
 
     @Override

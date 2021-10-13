@@ -3,6 +3,10 @@ package model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -28,7 +32,9 @@ class CategoriesTest {
 
     @Test
     void testAddCategory() {
-        assertEquals(2, categories.length());
+        String category3 = "Self-care";
+        categories.addCategory(category3);
+        assertEquals(3, categories.length());
     }
 
     @Test
@@ -40,5 +46,10 @@ class CategoriesTest {
     @Test
     void testContains() {
         assertTrue(categories.contains(category2));
+    }
+
+    @Test
+    void testGetCategories() {
+        assertEquals(new HashSet<>(Arrays.asList(category1, category2)), categories.getCategories());
     }
 }

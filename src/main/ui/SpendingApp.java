@@ -14,6 +14,7 @@ public class SpendingApp {
     private Categories categories;
     private Scanner input;
 
+    // EFFECTS: inits categories, entries, scanner, and runs the app
     public SpendingApp() {
         initCategories();
         initEntries();
