@@ -37,3 +37,6 @@ and add it to the *SpendingList* class (class that stores multiple *Entries*).
    1. Title
    2. Amount spent
    3. Category
+6. As a user, I want to be able to save my financial list 
+(before exiting the app, I want to program to ask me if I want to save my list)
+7. As a user, I want to be able to open my saved financial list and continue working on it

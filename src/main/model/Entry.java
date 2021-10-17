@@ -1,5 +1,9 @@
 package model;
 
+import model.exceptions.NegativeAmountException;
+import model.exceptions.NotFoundCategoryException;
+import model.exceptions.NameException;
+
 import java.time.LocalDateTime;
 import java.util.StringJoiner;
 
@@ -12,17 +16,38 @@ public class Entry {
     private String category;
     private LocalDateTime timeAdded;
 
-    // REQUIRES: the provided category is available in the Categories List, and
-    //           amount > 0
+    public Entry() {
+        this.id = nextEntryID++;
+        this.timeAdded = LocalDateTime.now();
+    }
+
+    // REQUIRES: the provided category is available in the Categories List
     // EFFECTS: creates a new entry with parameters specified,
-    //          a random id, and timeAdded set to now
-    public Entry(String title, double amount, String category) {
+    //          a random id, and timeAdded set to now,
+    //          throws WrongTitleException if title is empty
+    //          throws NegativeAmountException if amount > 0
+    //          throws NotFoundCategoryException if category isn't found in categories set
+    //          throws WrongCategoryNameException if given category is empty
+    public Entry(String title, double amount, String category) throws NameException,
+            NegativeAmountException, NotFoundCategoryException {
+        if (title.replaceAll("\\s+", "").isEmpty()) {
+            throw new NameException("title");
+        }
+        if (amount <= 0) {
+            throw new NegativeAmountException();
+        }
+        if (!Categories.contains(category)) {
+            throw new NotFoundCategoryException();
+        }
+        if (category.replaceAll("\\s+", "").isEmpty()) {
+            throw new NameException("category");
+        }
         // This idea of static nextId is taken from TellerApp
         this.id = nextEntryID++;
         this.title = title;
         this.amount = amount;
         this.category = category;
-        timeAdded = LocalDateTime.now();
+        this.timeAdded = LocalDateTime.now();
     }
 
     public int getId() {
@@ -45,19 +70,34 @@ public class Entry {
         return timeAdded;
     }
 
-    public void setTitle(String title) {
+    // EFFECTS: sets the title of the entry,
+    //          throws WrongTitleException, if provided title is empty
+    public void setTitle(String title) throws NameException {
+        if (title.replaceAll("\\s+", "").isEmpty()) {
+            throw new NameException("title");
+        }
         this.title = title;
     }
 
-    // REQUIRES: amount is > 0
-    // setter
-    public void setAmount(double amount) {
+    // EFFECTS: sets entry amount,
+    //          throws NegativeAmountException, if amount is <= 0
+    public void setAmount(double amount) throws NegativeAmountException {
+        if (amount <= 0) {
+            throw new NegativeAmountException();
+        }
         this.amount = amount;
     }
 
-    // REQUIRES: the provided category is available in the Categories set
-    // setter
-    public void setCategory(String category) {
+    // EFFECTS: sets the category of entry,
+    //          throws NotFoundCategoryException if category isn't found in categories set
+    //          throws WrongCategoryNameException if given category is empty
+    public void setCategory(String category) throws NotFoundCategoryException, NameException {
+        if (category.isEmpty()) {
+            throw new NameException("category");
+        }
+        if (!Categories.contains(category)) {
+            throw new NotFoundCategoryException();
+        }
         this.category = category;
     }
 

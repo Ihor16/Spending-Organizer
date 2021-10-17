@@ -3,6 +3,7 @@ package ui;
 import model.Categories;
 import model.Entry;
 import model.SpendingList;
+import model.exceptions.*;
 
 import java.util.Arrays;
 import java.util.Scanner;
@@ -11,16 +12,18 @@ public class SpendingApp {
 
     private static final String QUIT_COMMAND = "q";
     private SpendingList spendingList;
-    private Categories categories;
     private Scanner input;
 
     // EFFECTS: inits categories, entries, scanner, and runs the app
     public SpendingApp() {
-        initCategories();
-        initEntries();
-        initScanner();
-
-        runApp();
+        try {
+            initCategories();
+            initEntries();
+            initScanner();
+            runApp();
+        } catch (EntryFieldException e) {
+            System.out.println("Couldn't initialize the required app components");
+        }
     }
 
     // This method was designed based on the TellerApp UI class
@@ -76,40 +79,28 @@ public class SpendingApp {
     }
 
     // MODIFIES: this
-    // EFFECTS: adds entry to the list if category is found in the set of categories
+    // EFFECTS: adds entry to the list if category is found in the set of categories and amount > 0
     //          asks user to reenter category otherwise
     private void addEntry() {
-        System.out.println("\nAdd Title: ");
-        String title = input.next();
-        System.out.println("\nAdd Amount Spent: CAD ");
-        double amount = input.nextDouble();
-        printCategories();
-        System.out.println("\nAdd Category: ");
-        String category = input.next();
+        try {
+            Entry entry = new Entry();
+            System.out.println("\nAdd Title: ");
+            String title = input.next();
+            entry.setTitle(title);
 
-        if (categories.contains(category)) {
-            spendingList.addEntry(new Entry(title, amount, category));
-        } else {
-            enteredWrong("category");
+            System.out.println("\nAdd Amount Spent: CAD ");
+            double amount = input.nextDouble();
+            entry.setAmount(amount);
+
+            System.out.println("\nAdd Category: ");
             printCategories();
-            addEntry(title, amount);
-        }
-    }
+            String category = input.next();
+            entry.setCategory(category);
 
-    // MODIFIES: this
-    // EFFECTS: asks user to enter category
-    private void addEntry(String title, double amount) {
-        System.out.println("\nTitle: " + title);
-        System.out.println("Amount Spent: CAD " + amount);
-        System.out.println("Category: ");
-        String category = input.next();
-
-        if (categories.contains(category)) {
-            spendingList.addEntry(new Entry(title, amount, category));
-        } else {
-            enteredWrong("category");
-            printCategories();
-            addEntry(title, amount);
+            spendingList.addEntry(entry);
+        } catch (NameException | NegativeAmountException | NotFoundCategoryException e) {
+            System.out.println("Error: " + e.getMessage());
+            addEntry();
         }
     }
 
@@ -117,9 +108,10 @@ public class SpendingApp {
     // EFFECTS: removes entry by its id if an entry with such id is found
     private void removeEntry() {
         int id = readEntryId();
-        if (!spendingList.removeById(id)) {
-            enteredWrong("entry ID");
-            printSpendingEntries();
+        try {
+            spendingList.removeById(id);
+        } catch (WrongIdException e) {
+            System.out.println("Error: " + e.getMessage());
             removeEntry();
         }
     }
@@ -151,83 +143,96 @@ public class SpendingApp {
     //          if id isn't found, asks them to reenter it
     private void changeEntry() {
         int id = readEntryId();
-        if (spendingList.isValidId(id)) {
+        try {
             printChangeCommands(id);
             String command = input.next();
             if (!command.equals(QUIT_COMMAND)) {
-                processChange(id, command);
+                processChange(spendingList.findById(id), command);
             }
-        } else {
-            enteredWrong("entry ID");
+        } catch (WrongIdException e) {
+            System.out.println("Error: " + e.getMessage());
             printSpendingEntries();
             changeEntry();
         }
     }
 
     // MODIFIES: this
-    // EFFECTS: asks user to if they want to further change same entry
-    private void changeEntry(int id) {
-        printChangeCommands(id);
-        String command = input.next();
-        if (!command.equals(QUIT_COMMAND)) {
-            processChange(id, command);
+    // EFFECTS: asks user to input id of the entry they want to change and specify the change
+    //          if id isn't found, asks them to reenter it
+    private void changeEntry(Entry entry) {
+        try {
+            printChangeCommands(entry.getId());
+            String command = input.next();
+            if (!command.equals(QUIT_COMMAND)) {
+                processChange(entry, command);
+            }
+        } catch (WrongIdException e) {
+            System.out.println("Error: " + e.getMessage());
+            printSpendingEntries();
+            changeEntry();
         }
     }
-
     // MODIFIES: this
     // EFFECTS: changes specific aspects of the entry
-    private void processChange(int id, String command) {
+    private void processChange(Entry entry, String command) {
         switch (command) {
             case "ti":
-                changeTitle(id);
+                changeTitle(entry);
                 break;
             case "am":
-                changeAmount(id);
+                changeAmount(entry);
                 break;
             case "ca":
-                changeCategory(id);
+                changeCategory(entry);
                 break;
             default:
                 enteredWrong("changing command");
                 break;
         }
-        changeEntry(id);
+        changeEntry(entry);
     }
 
     // MODIFIES: this
     // EFFECTS: changes entry's title
-    private void changeTitle(int id) {
+    private void changeTitle(Entry entry) {
         System.out.println("\nNew title:");
         String title = input.next();
-        spendingList.findById(id).setTitle(title);
+        try {
+            entry.setTitle(title);
+        } catch (NameException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
     // MODIFIES: this
     // EFFECTS: changes entry's amount
-    private void changeAmount(int id) {
+    private void changeAmount(Entry entry) {
         System.out.println("\nNew amount: CAD");
         double amount = input.nextDouble();
-        spendingList.findById(id).setAmount(amount);
+        try {
+            entry.setAmount(amount);
+        } catch (NegativeAmountException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
     // MODIFIES: this
     // EFFECTS: changes entry's category
-    private void changeCategory(int id) {
+    private void changeCategory(Entry entry) {
         printCategories();
         System.out.println("\nNew category: ");
         String category = input.next();
-        if (categories.contains(category)) {
-            spendingList.findById(id).setCategory(category);
-        } else {
-            enteredWrong("category");
-            changeCategory(id);
+        try {
+            entry.setCategory(category);
+        } catch (NotFoundCategoryException | NameException e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
     // EFFECTS: displays available categories
     private void printCategories() {
         System.out.println("\nSelect from one of these categories:");
-        System.out.println(categories);
+        System.out.println(String.join(", ", Categories.getCategories()));
     }
 
     // EFFECTS: prints current entries
@@ -238,15 +243,16 @@ public class SpendingApp {
 
     // MODIFIES: this
     // EFFECTS: inits categories
-    private void initCategories() {
-        categories = new Categories();
-        Arrays.asList("Groceries", "Clothing", "Travel")
-                .forEach(categories::addCategory);
+    private void initCategories() throws NameException {
+        for (String s : Arrays.asList("Groceries", "Clothing", "Travel")) {
+            Categories.addCategory(s);
+        }
     }
 
     // MODIFIES: this
     // EFFECTS: inits entries
-    private void initEntries() {
+    private void initEntries() throws NegativeAmountException,
+            NameException, NotFoundCategoryException {
         spendingList = new SpendingList();
         spendingList.addEntry(new Entry("Went to Montreal", 507.68, "Travel"));
         spendingList.addEntry(new Entry("Bought jeans", 68.98, "Clothing"));
@@ -256,7 +262,7 @@ public class SpendingApp {
     // MODIFIES: this
     // EFFECTS: inits the input scanner
     private void initScanner() {
-        input = new Scanner(System.in);
+        input = new Scanner(System.in).useDelimiter("\n");
     }
 
     // EFFECTS: returns user input id
@@ -273,10 +279,10 @@ public class SpendingApp {
         System.out.println("da -> By date (from newer to older)");
     }
 
-    // EFFECTS: prints types of changes user can perform on entries
-    private void printChangeCommands(int id) {
+    // EFFECTS: prints entry with given id and shows changes user can perform on that entry
+    //          throws WrongIdException if entry with such id doesn't exist
+    private void printChangeCommands(int id) throws WrongIdException {
         System.out.println(spendingList.findById(id));
-        System.out.println("\nWhat do you want to change?");
         System.out.println("ti -> Title");
         System.out.println("am -> Amount");
         System.out.println("ca -> Category");
