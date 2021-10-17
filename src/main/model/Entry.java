@@ -1,7 +1,7 @@
 package model;
 
 import model.exceptions.NegativeAmountException;
-import model.exceptions.NotFoundCategoryException;
+import model.exceptions.NonExistentCategoryException;
 import model.exceptions.NameException;
 
 import java.time.LocalDateTime;
@@ -10,43 +10,41 @@ import java.util.StringJoiner;
 // Represents an entity user uses to store their spending
 public class Entry {
     private static int nextEntryID = 1;
-    private int id;
+    private final int id;
     private String title;
     private double amount;
     private String category;
-    private LocalDateTime timeAdded;
+    private final LocalDateTime timeAdded;
 
     public Entry() {
         this.id = nextEntryID++;
         this.timeAdded = LocalDateTime.now();
     }
 
-    // REQUIRES: the provided category is available in the Categories List
-    // EFFECTS: creates a new entry with parameters specified,
-    //          a random id, and timeAdded set to now,
-    //          throws WrongTitleException if title is empty
-    //          throws NegativeAmountException if amount > 0
-    //          throws NotFoundCategoryException if category isn't found in categories set
-    //          throws WrongCategoryNameException if given category is empty
+    // EFFECTS: creates a new entry with parameters specified (trimmed title and category),
+    //          incremented id, and timeAdded set to now,
+    //          throws NameException if title or category is blank
+    //          throws NegativeAmountException if amount <= 0
+    //          throws NonExistentCategoryException if category isn't found in categories set
     public Entry(String title, double amount, String category) throws NameException,
-            NegativeAmountException, NotFoundCategoryException {
-        if (title.replaceAll("\\s+", "").isEmpty()) {
+            NegativeAmountException, NonExistentCategoryException {
+        if (isBlank(title)) {
             throw new NameException("title");
         }
         if (amount <= 0) {
             throw new NegativeAmountException();
         }
-        if (!Categories.contains(category)) {
-            throw new NotFoundCategoryException();
-        }
-        if (category.replaceAll("\\s+", "").isEmpty()) {
+        if (isBlank(category)) {
             throw new NameException("category");
+        }
+        if (!Categories.contains(category)) {
+            throw new NonExistentCategoryException();
         }
         // This idea of static nextId is taken from TellerApp
         this.id = nextEntryID++;
-        this.title = title;
+        this.title = title.trim();
         this.amount = amount;
-        this.category = category;
+        this.category = category.trim();
         this.timeAdded = LocalDateTime.now();
     }
 
@@ -70,13 +68,13 @@ public class Entry {
         return timeAdded;
     }
 
-    // EFFECTS: sets the title of the entry,
-    //          throws WrongTitleException, if provided title is empty
+    // EFFECTS: trims title sets it to the entry,
+    //          throws NameException if provided title is blank
     public void setTitle(String title) throws NameException {
-        if (title.replaceAll("\\s+", "").isEmpty()) {
+        if (isBlank(title)) {
             throw new NameException("title");
         }
-        this.title = title;
+        this.title = title.trim();
     }
 
     // EFFECTS: sets entry amount,
@@ -88,15 +86,16 @@ public class Entry {
         this.amount = amount;
     }
 
-    // EFFECTS: sets the category of entry,
-    //          throws NotFoundCategoryException if category isn't found in categories set
-    //          throws WrongCategoryNameException if given category is empty
-    public void setCategory(String category) throws NotFoundCategoryException, NameException {
-        if (category.isEmpty()) {
+    // EFFECTS: trims category and assigns it to the entry,
+    //          throws NameException if given category is blank
+    //          throws NonExistentCategoryException if category isn't found in categories set
+    public void setCategory(String category) throws NonExistentCategoryException, NameException {
+        category = category.trim();
+        if (isBlank(category)) {
             throw new NameException("category");
         }
         if (!Categories.contains(category)) {
-            throw new NotFoundCategoryException();
+            throw new NonExistentCategoryException();
         }
         this.category = category;
     }
@@ -110,5 +109,13 @@ public class Entry {
                 .add("amount=" + amount)
                 .add("category='" + category + "'")
                 .toString();
+    }
+
+    // EFFECTS: returns true if provided string is blank
+    //          false otherwise
+    private boolean isBlank(String str) {
+        // implementation of removing whitespaces is taken from
+        // https://stackoverflow.com/questions/5455794/removing-whitespace-from-strings-in-java
+        return str.replaceAll("[\\s]+", "").isEmpty();
     }
 }

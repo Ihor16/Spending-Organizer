@@ -98,7 +98,7 @@ public class SpendingApp {
             entry.setCategory(category);
 
             spendingList.addEntry(entry);
-        } catch (NameException | NegativeAmountException | NotFoundCategoryException e) {
+        } catch (NameException | NegativeAmountException | NonExistentCategoryException e) {
             System.out.println("Error: " + e.getMessage());
             addEntry();
         }
@@ -110,7 +110,7 @@ public class SpendingApp {
         int id = readEntryId();
         try {
             spendingList.removeById(id);
-        } catch (WrongIdException e) {
+        } catch (NonExistentIdException e) {
             System.out.println("Error: " + e.getMessage());
             removeEntry();
         }
@@ -149,7 +149,7 @@ public class SpendingApp {
             if (!command.equals(QUIT_COMMAND)) {
                 processChange(spendingList.findById(id), command);
             }
-        } catch (WrongIdException e) {
+        } catch (NonExistentIdException e) {
             System.out.println("Error: " + e.getMessage());
             printSpendingEntries();
             changeEntry();
@@ -166,12 +166,13 @@ public class SpendingApp {
             if (!command.equals(QUIT_COMMAND)) {
                 processChange(entry, command);
             }
-        } catch (WrongIdException e) {
+        } catch (NonExistentIdException e) {
             System.out.println("Error: " + e.getMessage());
             printSpendingEntries();
             changeEntry();
         }
     }
+
     // MODIFIES: this
     // EFFECTS: changes specific aspects of the entry
     private void processChange(Entry entry, String command) {
@@ -224,7 +225,7 @@ public class SpendingApp {
         String category = input.next();
         try {
             entry.setCategory(category);
-        } catch (NotFoundCategoryException | NameException e) {
+        } catch (NonExistentCategoryException | NameException e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
@@ -252,7 +253,7 @@ public class SpendingApp {
     // MODIFIES: this
     // EFFECTS: inits entries
     private void initEntries() throws NegativeAmountException,
-            NameException, NotFoundCategoryException {
+            NameException, NonExistentCategoryException {
         spendingList = new SpendingList();
         spendingList.addEntry(new Entry("Went to Montreal", 507.68, "Travel"));
         spendingList.addEntry(new Entry("Bought jeans", 68.98, "Clothing"));
@@ -281,7 +282,7 @@ public class SpendingApp {
 
     // EFFECTS: prints entry with given id and shows changes user can perform on that entry
     //          throws WrongIdException if entry with such id doesn't exist
-    private void printChangeCommands(int id) throws WrongIdException {
+    private void printChangeCommands(int id) throws NonExistentIdException {
         System.out.println(spendingList.findById(id));
         System.out.println("ti -> Title");
         System.out.println("am -> Amount");

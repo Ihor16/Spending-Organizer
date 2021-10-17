@@ -1,6 +1,6 @@
 package model;
 
-import model.exceptions.WrongIdException;
+import model.exceptions.NonExistentIdException;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -26,21 +26,21 @@ public class SpendingList {
     // MODIFIES: this
     // EFFECTS: removes entry by its id from spending list,
     //          throws WrongIdException if entry with such id isn't found
-    public boolean removeById(int id) throws WrongIdException {
+    public boolean removeById(int id) throws NonExistentIdException {
         return spendingList.stream()
                 .filter(e -> e.getId() == id)
                 .findAny()
                 .map(spendingList::remove)
-                .orElseThrow(() -> new WrongIdException(id));
+                .orElseThrow(() -> new NonExistentIdException(id));
     }
 
     // EFFECTS: if entry with provided id exists, returns this entry,
     //          throws WrongIdException if entry with such id isn't found
-    public Entry findById(int id) throws WrongIdException {
+    public Entry findById(int id) throws NonExistentIdException {
         return spendingList.stream()
                 .filter(e -> e.getId() == id)
                 .findAny()
-                .orElseThrow(() -> new WrongIdException(id));
+                .orElseThrow(() -> new NonExistentIdException(id));
     }
 
 //    // EFFECTS: returns true if entry with provided id exists,
