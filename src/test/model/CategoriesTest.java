@@ -9,7 +9,9 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -77,6 +79,14 @@ class CategoriesTest {
         assertThrows(NonExistentCategoryException.class,
                 () -> categories.removeCategory(String.valueOf(new Random().nextDouble())));
         assertEquals(oldLength, categories.size());
+    }
+
+    @Test
+    void testGetCategories() {
+        Set<String> expectedSet = new HashSet<>();
+        expectedSet.add(GROCERIES_CATEGORY);
+        expectedSet.add(TRAVEL_CATEGORY);
+        assertEquals(expectedSet, categories.getCategories());
     }
 
     @Test
