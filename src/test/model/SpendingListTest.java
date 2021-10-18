@@ -1,7 +1,8 @@
 package model;
 
-import model.exceptions.*;
-import org.junit.jupiter.api.BeforeAll;
+import model.exceptions.NameException;
+import model.exceptions.NegativeAmountException;
+import model.exceptions.NonExistentIdException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,45 +14,28 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SpendingListTest {
 
-    private final static String GROCERIES_CATEGORY = "Groceries";
-    private final static String CLOTHES_CATEGORY = "Clothes";
-    private final static String SELF_CARE_CATEGORY = "Self-care";
-    private final static String TRAVEL_CATEGORY = "Travel";
+    private final String GROCERIES_CATEGORY = "Groceries";
+    private final String TRAVEL_CATEGORY = "Travel";
     private SpendingList spendingList;
-    private Entry entryHaircut;
+    private Entry entryTravel;
     private Entry entryGroceries;
-
-    @BeforeAll
-    static void beforeAll() {
-        try {
-            Categories.addCategory(GROCERIES_CATEGORY);
-            Categories.addCategory(CLOTHES_CATEGORY);
-            Categories.addCategory(SELF_CARE_CATEGORY);
-            Categories.addCategory(TRAVEL_CATEGORY);
-        } catch (NameException e) {
-            fail("Category names are actually acceptable");
-            e.printStackTrace();
-        }
-    }
 
     @BeforeEach
     void setUp() {
         spendingList = new SpendingList();
         try {
-            entryHaircut = new Entry("Got haircut", 31.45, SELF_CARE_CATEGORY);
-            entryGroceries = new Entry("Went to SaveOnFoods", 100.76, GROCERIES_CATEGORY);
-        } catch (NameException | NegativeAmountException | NonExistentCategoryException e) {
+            initEntries();
+        } catch (NegativeAmountException | NameException e) {
             fail("All entries are actually initialised correctly");
             e.printStackTrace();
         }
-        spendingList.addEntry(entryHaircut);
+        spendingList.addEntry(entryTravel);
         spendingList.addEntry(entryGroceries);
     }
 
     @Test
     void testConstructor() {
-        SpendingList newList = new SpendingList();
-        assertTrue(newList.isEmpty());
+        assertTrue(new SpendingList().isEmpty());
     }
 
     @Test
@@ -60,7 +44,7 @@ class SpendingListTest {
         try {
             entryTravel = new Entry("Montreal", 599, TRAVEL_CATEGORY);
             spendingList.addEntry(entryTravel);
-        } catch (NameException | NegativeAmountException | NonExistentCategoryException e) {
+        } catch (NameException | NegativeAmountException e) {
             fail("Entry is actually initialised correctly");
             e.printStackTrace();
         }
@@ -73,7 +57,7 @@ class SpendingListTest {
         try {
             assertTrue(spendingList.removeById(entryGroceries.getId()));
         } catch (NonExistentIdException e) {
-            fail("Id actually exists");
+            fail("Element with id " + entryGroceries.getId() + " actually exists");
             e.printStackTrace();
         }
         assertEquals(1, spendingList.length());
@@ -107,14 +91,17 @@ class SpendingListTest {
             newEntry = new Entry();
             newEntry.setTitle("Jeans");
             newEntry.setAmount(560);
-            newEntry.setCategory(CLOTHES_CATEGORY);
+            newEntry.setCategory("Clothes");
             spendingList.addEntry(newEntry);
-        } catch (NameException | NegativeAmountException | NonExistentCategoryException e) {
+        } catch (NameException | NegativeAmountException e) {
             fail("Entry is actually initialised correctly");
             e.printStackTrace();
         }
 
-        List<Entry> expectedList = new LinkedList<>(Arrays.asList(newEntry, entryGroceries, entryHaircut));
+        List<Entry> expectedList = new LinkedList<>();
+        expectedList.add(newEntry);
+        expectedList.add(entryGroceries);
+        expectedList.add(entryTravel);
 
         spendingList.sortByDate();
         assertEquals(expectedList, spendingList.getSpendingList());
@@ -129,16 +116,19 @@ class SpendingListTest {
 
     @Test
     void testSortByAmountSpent() {
-        Entry entryTravel = null;
+        Entry entryExpensiveTravel = null;
         try {
-            entryTravel = new Entry("Went to Victoria", 500, TRAVEL_CATEGORY);
-            spendingList.addEntry(entryTravel);
-        } catch (NameException | NegativeAmountException | NonExistentCategoryException e) {
+            entryExpensiveTravel = new Entry("Victoria", entryTravel.getAmount() + 200, TRAVEL_CATEGORY);
+            spendingList.addEntry(entryExpensiveTravel);
+        } catch (NameException | NegativeAmountException e) {
             fail("Entry is actually initialised correctly");
             e.printStackTrace();
         }
 
-        List<Entry> expectedList = new LinkedList<>(Arrays.asList(entryTravel, entryGroceries, entryHaircut));
+        List<Entry> expectedList = new LinkedList<>();
+        expectedList.add(entryExpensiveTravel);
+        expectedList.add(entryTravel);
+        expectedList.add(entryGroceries);
 
         spendingList.sortByAmountSpent();
         assertEquals(expectedList, spendingList.getSpendingList());
@@ -146,14 +136,11 @@ class SpendingListTest {
 
     @Test
     void testSortByAmountSpentSameAmount() {
-        Entry entryTravel = null;
         Entry entryGroceries2 = null;
         try {
-            entryTravel = new Entry("Victoria", 545.89, TRAVEL_CATEGORY);
             entryGroceries2 = new Entry("Went to NoFrills", entryGroceries.getAmount(), GROCERIES_CATEGORY);
-            spendingList.addEntry(entryTravel);
             spendingList.addEntry(entryGroceries2);
-        } catch (NameException | NegativeAmountException | NonExistentCategoryException e) {
+        } catch (NameException | NegativeAmountException e) {
             fail("Entry is actually initialised correctly");
             e.printStackTrace();
         }
@@ -164,7 +151,6 @@ class SpendingListTest {
         expectedList.add(entryTravel);
         expectedList.add(entryGroceries2);
         expectedList.add(entryGroceries);
-        expectedList.add(entryHaircut);
 
         assertEquals(expectedList, spendingList.getSpendingList());
     }
@@ -182,7 +168,7 @@ class SpendingListTest {
 
         List<Entry> expectedList = new LinkedList<>();
         expectedList.add(entryGroceries);
-        expectedList.add(entryHaircut);
+        expectedList.add(entryTravel);
 
         assertEquals(expectedList, spendingList.getSpendingList());
     }
@@ -193,7 +179,7 @@ class SpendingListTest {
         try {
             entryGroceries2 = new Entry("Weekly groceries", 78.8, GROCERIES_CATEGORY);
             spendingList.addEntry(entryGroceries2);
-        } catch (NameException | NegativeAmountException | NonExistentCategoryException e) {
+        } catch (NameException | NegativeAmountException e) {
             fail("Entry is actually initialised correctly");
             e.printStackTrace();
         }
@@ -202,7 +188,7 @@ class SpendingListTest {
         List<Entry> expectedList = new LinkedList<>();
         expectedList.add(entryGroceries2);
         expectedList.add(entryGroceries);
-        expectedList.add(entryHaircut);
+        expectedList.add(entryTravel);
 
         assertEquals(expectedList, spendingList.getSpendingList());
     }
@@ -213,7 +199,7 @@ class SpendingListTest {
         try {
             foundEntry = spendingList.findById(entryGroceries.getId());
         } catch (NonExistentIdException e) {
-            fail("Id is actually correct");
+            fail("Element with id " + entryGroceries.getId() + " actually exists");
             e.printStackTrace();
         }
         assertEquals(entryGroceries, foundEntry);
@@ -222,5 +208,10 @@ class SpendingListTest {
     @Test
     void testFindByIdThrowNonExistentIdException() {
         assertThrows(NonExistentIdException.class, () -> spendingList.findById(-1));
+    }
+
+    private void initEntries() throws NegativeAmountException, NameException {
+        entryTravel = new Entry("Went to Toronto", 401.34, TRAVEL_CATEGORY);
+        entryGroceries = new Entry("Went to SaveOnFoods", 100.76, GROCERIES_CATEGORY);
     }
 }

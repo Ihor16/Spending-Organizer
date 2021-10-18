@@ -1,9 +1,7 @@
 package model;
 
-import model.exceptions.NegativeAmountException;
-import model.exceptions.NonExistentCategoryException;
 import model.exceptions.NameException;
-import org.junit.jupiter.api.BeforeAll;
+import model.exceptions.NegativeAmountException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,69 +11,42 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class EntryTest {
 
-    private final static String GROCERIES_CATEGORY = "Groceries";
-    private final static String CLOTHES_CATEGORY = "Clothes";
-    private final String ENTRY_TITLE = "Went to NoFrills";
-    private final double ENTRY_AMOUNT = 80.76;
+    private final String CATEGORY = "Groceries";
+    private final String TITLE = "Went to NoFrills";
+    private final double AMOUNT = 80.76;
     private Entry testEntry;
-
-    @BeforeAll
-    static void beforeAll() {
-        try {
-            Categories.addCategory(GROCERIES_CATEGORY);
-            Categories.addCategory(CLOTHES_CATEGORY);
-        } catch (NameException e) {
-            fail("Names of categories are actually acceptable");
-            e.printStackTrace();
-        }
-    }
 
     @BeforeEach
     void setUp() {
         try {
-            testEntry = new Entry(ENTRY_TITLE, ENTRY_AMOUNT, GROCERIES_CATEGORY);
+            testEntry = new Entry(TITLE, AMOUNT, CATEGORY);
         } catch (NameException e) {
-            fail("Title and category names are actually acceptable");
+            fail("Title name is actually acceptable");
             e.printStackTrace();
         } catch (NegativeAmountException e) {
-            fail(ENTRY_AMOUNT + " amount is actually acceptable");
-            e.printStackTrace();
-        } catch (NonExistentCategoryException e) {
-            fail("'" + GROCERIES_CATEGORY  + "' category actually exists");
+            fail(AMOUNT + " amount is actually acceptable");
             e.printStackTrace();
         }
     }
 
     @Test
     void testConstructor() {
-        assertEquals(ENTRY_TITLE, testEntry.getTitle());
-        assertEquals(ENTRY_AMOUNT, testEntry.getAmount());
-        assertEquals(GROCERIES_CATEGORY, testEntry.getCategory());
+        assertEquals(TITLE, testEntry.getTitle());
+        assertEquals(AMOUNT, testEntry.getAmount());
+        assertEquals(CATEGORY, testEntry.getCategory());
     }
 
     @ParameterizedTest
     @ValueSource(doubles = {0, -45, -34.9})
     void testConstructorThrowNegativeAmountException(double amount) {
         assertThrows(NegativeAmountException.class,
-                () -> new Entry("Went to SaveOn", amount, "Groceries"));
+                () -> new Entry("Went to SaveOn", amount, CATEGORY));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"", "    "})
     void testConstructorThrowNameExceptionForTitle(String title) {
-        assertThrows(NameException.class, () -> new Entry(title, 30, "Groceries"));
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"", "    "})
-    void testConstructorThrowNameExceptionForCategory(String category) {
-        assertThrows(NameException.class, () -> new Entry("Title", 30, category));
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"My Category"})
-    void testConstructorThrowNonExistentCategoryException(String category) {
-        assertThrows(NonExistentCategoryException.class, () -> new Entry("Title", 30, category));
+        assertThrows(NameException.class, () -> new Entry(title, 30, CATEGORY));
     }
 
     @ParameterizedTest
@@ -118,34 +89,11 @@ class EntryTest {
         assertEquals(oldAmount, testEntry.getAmount());
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {GROCERIES_CATEGORY, CLOTHES_CATEGORY + "      "})
-    void testSetCategory(String category) {
-        try {
-            testEntry.setCategory(category);
-        } catch (NonExistentCategoryException e) {
-            fail("'" + category + "' category actually exists");
-            e.printStackTrace();
-        } catch (NameException e) {
-            fail("'" + category + "' name is acceptable");
-            e.printStackTrace();
-        }
-        assertEquals(category.trim(), testEntry.getCategory());
-    }
-
     @Test
-    void testSetCategoryThrowNonExistentCategoryException() {
-        String oldCategory = testEntry.getCategory();
-        assertThrows(NonExistentCategoryException.class, () -> testEntry.setCategory("My category"));
-        assertEquals(oldCategory, testEntry.getCategory());
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"", "    "})
-    void testSetCategoryThrowNameException(String category) {
-        String oldCategory = testEntry.getCategory();
-        assertThrows(NameException.class, () -> testEntry.setCategory(category));
-        assertEquals(oldCategory, testEntry.getCategory());
+    void testSetCategory() {
+        String category = "Travel";
+        testEntry.setCategory(category);
+        assertEquals(category, testEntry.getCategory());
     }
 
     @Test

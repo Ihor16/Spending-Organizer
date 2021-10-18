@@ -9,109 +9,86 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CategoriesTest {
 
-    private final String TRAVEL_CATEGORY = "Travel";
+    private Categories categories;
+    private final String TRAVEL_CATEGORY = "Travel in Canada";
     private final String GROCERIES_CATEGORY = "Groceries";
 
     @BeforeEach
     void setUp() {
-        removeAllCategories();
-        addCategories();
+        categories = new Categories();
+        try {
+            initCategories();
+        } catch (NameException e) {
+            fail("These categories are actually acceptable");
+            e.printStackTrace();
+        }
     }
 
     @Test
     void testConstructor() {
-        removeAllCategories();
-        assertTrue(Categories.isEmpty());
+        assertTrue(new Categories().isEmpty());
     }
 
     @Test
     void testAddCategory() {
-        removeAllCategories();
-        assert (Categories.length() == 0);
+        int oldSize = categories.size();
+        String selfCareCategory = "Self-care";
         try {
-            Categories.addCategory(TRAVEL_CATEGORY);
-            Categories.addCategory("  " + GROCERIES_CATEGORY + "     ");
+            categories.addCategory(selfCareCategory);
         } catch (NameException e) {
-            fail("Name is actually acceptable");
+            fail("'" + selfCareCategory + "'category is actually a valid");
             e.printStackTrace();
         }
-        assertTrue(Categories.contains(GROCERIES_CATEGORY));
-        assertEquals(2, Categories.length());
+
+        assertTrue(categories.contains(selfCareCategory));
+        assertEquals(++oldSize, categories.size());
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"", "   "})
     void testAddCategoryThrowNameException(String category) {
-        int oldLength = Categories.length();
-        assertThrows(NameException.class, () -> Categories.addCategory(category));
-        assertEquals(oldLength, Categories.length());
+        int oldLength = categories.size();
+        assertThrows(NameException.class, () -> categories.addCategory(category));
+        assertEquals(oldLength, categories.size());
     }
 
     @Test
     void testRemoveCategory() {
-        int oldLength = Categories.length();
+        int oldLength = categories.size();
         try {
-            Categories.removeCategory(GROCERIES_CATEGORY);
+            categories.removeCategory(GROCERIES_CATEGORY);
         } catch (NonExistentCategoryException e) {
             fail("'" + GROCERIES_CATEGORY + "' category actually exists in the set");
             e.printStackTrace();
         }
-        assertEquals(--oldLength, Categories.length());
+        assertEquals(--oldLength, categories.size());
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"My Category"})
-    void testRemoveCategoryThrowNonExistentCategoryException(String category) {
-        int oldLength = Categories.length();
-        assertThrows(NonExistentCategoryException.class, () -> Categories.removeCategory(category));
-        assertEquals(oldLength, Categories.length());
+    @Test
+    void testRemoveCategoryThrowNonExistentCategoryException() {
+        int oldLength = categories.size();
+        assertThrows(NonExistentCategoryException.class,
+                () -> categories.removeCategory(String.valueOf(new Random().nextDouble())));
+        assertEquals(oldLength, categories.size());
     }
 
     @Test
     void testContains() {
-        assertTrue(Categories.contains(TRAVEL_CATEGORY));
-        assertTrue(Categories.contains(GROCERIES_CATEGORY));
-        assertFalse(Categories.contains("My category"));
+        assertTrue(categories.contains(TRAVEL_CATEGORY));
+        assertTrue(categories.contains(GROCERIES_CATEGORY));
+        assertFalse(categories.contains(String.valueOf(new Random().nextDouble())));
     }
 
-    @Test
-    void testGetCategories() {
-        assertEquals(new HashSet<>(Arrays.asList(TRAVEL_CATEGORY, GROCERIES_CATEGORY)), Categories.getCategories());
-    }
-
-    @Test
-    void testGetCategoriesAsString() {
-        assertEquals(TRAVEL_CATEGORY + ", " + GROCERIES_CATEGORY,
-                Categories.getCategoriesAsString());
-    }
-
-    @Test
-    void testGetCategoriesAsStringEmptyCategorySet() {
-        removeAllCategories();
-        assertEquals("", Categories.getCategoriesAsString());
-    }
-
-    // EFFECTS: populates Categories set with categories
-    private void addCategories() {
-        try {
-            Categories.addCategory(TRAVEL_CATEGORY);
-            Categories.addCategory(GROCERIES_CATEGORY);
-        } catch (NameException e) {
-            fail("Name is actually acceptable");
-            e.printStackTrace();
-        }
-    }
-
-    // EFFECTS: removes all categories from the Categories set
-    private void removeAllCategories() {
-        Categories.getCategories().clear();
+    // EFFECTS: populates categories set with categories
+    private void initCategories() throws NameException {
+        categories.addCategory(GROCERIES_CATEGORY);
+        categories.addCategory(TRAVEL_CATEGORY);
     }
 }

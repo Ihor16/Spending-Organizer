@@ -7,7 +7,7 @@ import model.exceptions.NameException;
 import java.time.LocalDateTime;
 import java.util.StringJoiner;
 
-// Represents an entity user uses to store their spending
+// Represents a financial entry where user stores their spending
 public class Entry {
     private static int nextEntryID = 1;
     private final int id;
@@ -16,35 +16,30 @@ public class Entry {
     private String category;
     private final LocalDateTime timeAdded;
 
+    // EFFECTS: creates a new entry with incremented id, and timeAdded set to now
     public Entry() {
         this.id = nextEntryID++;
         this.timeAdded = LocalDateTime.now();
     }
 
-    // EFFECTS: creates a new entry with parameters specified (trimmed title and category),
+    // EFFECTS: creates a new entry with parameters specified (trimmed title),
     //          incremented id, and timeAdded set to now,
-    //          throws NameException if title or category is blank
+    //          throws NameException if title is blank
     //          throws NegativeAmountException if amount <= 0
-    //          throws NonExistentCategoryException if category isn't found in categories set
+    // INVARIANT: category is always acceptable
     public Entry(String title, double amount, String category) throws NameException,
-            NegativeAmountException, NonExistentCategoryException {
+            NegativeAmountException {
         if (isBlank(title)) {
             throw new NameException("title");
         }
         if (amount <= 0) {
             throw new NegativeAmountException();
         }
-        if (isBlank(category)) {
-            throw new NameException("category");
-        }
-        if (!Categories.contains(category)) {
-            throw new NonExistentCategoryException();
-        }
         // This idea of static nextId is taken from TellerApp
         this.id = nextEntryID++;
         this.title = title.trim();
         this.amount = amount;
-        this.category = category.trim();
+        this.category = category;
         this.timeAdded = LocalDateTime.now();
     }
 
@@ -68,7 +63,8 @@ public class Entry {
         return timeAdded;
     }
 
-    // EFFECTS: trims title sets it to the entry,
+    // MODIFIES: this
+    // EFFECTS: trims title and sets it to the entry,
     //          throws NameException if provided title is blank
     public void setTitle(String title) throws NameException {
         if (isBlank(title)) {
@@ -77,8 +73,9 @@ public class Entry {
         this.title = title.trim();
     }
 
+    // MODIFIES: this
     // EFFECTS: sets entry amount,
-    //          throws NegativeAmountException, if amount is <= 0
+    //          throws NegativeAmountException if amount is <= 0
     public void setAmount(double amount) throws NegativeAmountException {
         if (amount <= 0) {
             throw new NegativeAmountException();
@@ -86,17 +83,10 @@ public class Entry {
         this.amount = amount;
     }
 
-    // EFFECTS: trims category and assigns it to the entry,
-    //          throws NameException if given category is blank
-    //          throws NonExistentCategoryException if category isn't found in categories set
-    public void setCategory(String category) throws NonExistentCategoryException, NameException {
-        category = category.trim();
-        if (isBlank(category)) {
-            throw new NameException("category");
-        }
-        if (!Categories.contains(category)) {
-            throw new NonExistentCategoryException();
-        }
+    // MODIFIES: this
+    // EFFECTS: assigns category to the entry
+    // INVARIANT: category is always acceptable
+    public void setCategory(String category) {
         this.category = category;
     }
 
@@ -111,7 +101,7 @@ public class Entry {
                 .toString();
     }
 
-    // EFFECTS: returns true if provided string is blank
+    // EFFECTS: returns true if provided string is blank,
     //          false otherwise
     private boolean isBlank(String str) {
         // implementation of removing whitespaces is taken from

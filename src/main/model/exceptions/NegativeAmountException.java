@@ -3,6 +3,6 @@ package model.exceptions;
 public class NegativeAmountException extends EntryFieldException {
 
     public NegativeAmountException() {
-        super("Amount cannot be <= 0");
+        super("Amount must be > 0");
     }
 }
