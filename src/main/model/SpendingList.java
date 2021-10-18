@@ -1,8 +1,9 @@
 package model;
 
+import model.exceptions.NonExistentIdException;
+
 import java.util.Comparator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 // Represents the list of spending entries
@@ -16,42 +17,32 @@ public class SpendingList {
     }
 
     // MODIFIES: this
-    // EFFECTS: adds a new entry to the front of spending list
+    // EFFECTS: adds a new entry to the front of the spending list
     public void addEntry(Entry entry) {
         spendingList.addFirst(entry);
     }
 
     // MODIFIES: this
-    // EFFECTS: removes entry by its id from spending list and returns true,
-    //          false otherwise
-    public boolean removeById(int id) {
+    // EFFECTS: removes entry by its id from spending list and returns true if the entry is removed,
+    //          throws NonExistentIdException if entry with such id isn't found
+    public boolean removeById(int id) throws NonExistentIdException {
         return spendingList.stream()
                 .filter(e -> e.getId() == id)
                 .findAny()
                 .map(spendingList::remove)
-                .orElse(false);
+                .orElseThrow(() -> new NonExistentIdException(id));
     }
 
     // EFFECTS: if entry with provided id exists, returns this entry,
-    //          throws IllegalArgumentException otherwise
-    public Entry findById(int id) throws IllegalArgumentException {
+    //          throws NonExistentIdException if entry with such id isn't found
+    public Entry findById(int id) throws NonExistentIdException {
         return spendingList.stream()
                 .filter(e -> e.getId() == id)
                 .findAny()
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new NonExistentIdException(id));
     }
 
-    // EFFECTS: returns true if entry with provided id exists,
-    //          returns false otherwise
-    public boolean isValidId(int id) {
-        return spendingList.stream()
-                .filter(e -> e.getId() == id)
-                .findAny()
-                .map(spendingList::contains)
-                .orElse(false);
-    }
-
-    public List<Entry> getSpendingList() {
+    public LinkedList<Entry> getSpendingList() {
         return spendingList;
     }
 
@@ -67,19 +58,19 @@ public class SpendingList {
     }
 
     // MODIFIES: this
-    // effects: sorts spending list by amount spent in descending order
+    // EFFECTS: sorts spending list by amount spent in descending order (from most expensive to least expensive)
     public void sortByAmountSpent() {
         sort(Comparator.comparing(Entry::getAmount).reversed());
     }
 
     // MODIFIES: this
-    // effects: sorts spending list by date added in descending order (from newer to older)
+    // EFFECTS: sorts spending list by date added in descending order (from newer to older)
     public void sortByDate() {
         sort(Comparator.comparing(Entry::getTimeAdded).reversed());
     }
 
     // MODIFIES: this
-    // effects: sorts spending list by category title in alphabetical order
+    // EFFECTS: sorts spending list by category title in alphabetical order
     public void sortByCategory() {
         sort(Comparator.comparing(Entry::getCategory));
     }

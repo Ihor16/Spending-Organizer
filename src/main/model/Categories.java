@@ -1,33 +1,45 @@
 package model;
 
+import model.exceptions.NameException;
+import model.exceptions.NonExistentCategoryException;
+
 import java.util.HashSet;
 import java.util.Set;
 
 // Represents list of Categories, user can use only these Categories while working with entries
 public class Categories {
 
-    private Set<String> categories;
+    private final Set<String> categories;
 
-    // EFFECTS: creates empty categories set
     public Categories() {
         categories = new HashSet<>();
     }
 
     // MODIFIES: this
-    // EFFECTS: adds a new category to the categories set
-    public void addCategory(String category) {
-        categories.add(category);
+    // EFFECTS: trims the given category and adds it to the categories set,
+    //          throws NameException if provided category is a blank String
+    public void addCategory(String category) throws NameException {
+        if (isBlank(category)) {
+            throw new NameException("category");
+        }
+        categories.add(category.trim());
     }
 
-    // REQUIRES: category is present in the categories set
     // MODIFIES: this
-    // EFFECTS: removes category from the categories set
-    public void removeCategory(String category) {
-        categories.remove(category);
+    // EFFECTS: removes category from the categories set and returns true,
+    //          throws NonExistentCategoryException if category isn't present in the categories set
+    public void removeCategory(String category) throws NonExistentCategoryException {
+        if (!categories.remove(category)) {
+            throw new NonExistentCategoryException(category);
+        }
     }
 
-    // EFFECTS: returns the length of categories set
-    public int length() {
+    public Set<String> getCategories() {
+        return categories;
+    }
+
+    // EFFECTS: returns the size of categories set
+    public int size() {
         return categories.size();
     }
 
@@ -43,13 +55,10 @@ public class Categories {
         return categories.contains(category);
     }
 
-    public Set<String> getCategories() {
-        return categories;
-    }
-
-    @Override
-    // EFFECTS: returns string of categories separated by commas
-    public String toString() {
-        return String.join(", ", categories);
+    // EFFECTS: returns true if the given string is blank
+    private boolean isBlank(String category) {
+        // implementation of removing whitespaces is taken from
+        // https://stackoverflow.com/questions/5455794/removing-whitespace-from-strings-in-java
+        return category.replaceAll("[\\s]+", "").isEmpty();
     }
 }

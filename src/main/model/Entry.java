@@ -1,28 +1,46 @@
 package model;
 
+import model.exceptions.NegativeAmountException;
+import model.exceptions.NonExistentCategoryException;
+import model.exceptions.NameException;
+
 import java.time.LocalDateTime;
 import java.util.StringJoiner;
 
-// Represents an entity user uses to store their spending
+// Represents a financial entry where user stores their spending
 public class Entry {
     private static int nextEntryID = 1;
-    private int id;
+    private final int id;
     private String title;
     private double amount;
     private String category;
-    private LocalDateTime timeAdded;
+    private final LocalDateTime timeAdded;
 
-    // REQUIRES: the provided category is available in the Categories List, and
-    //           amount > 0
-    // EFFECTS: creates a new entry with parameters specified,
-    //          a random id, and timeAdded set to now
-    public Entry(String title, double amount, String category) {
+    // EFFECTS: creates a new entry with incremented id, and timeAdded set to now
+    public Entry() {
+        this.id = nextEntryID++;
+        this.timeAdded = LocalDateTime.now();
+    }
+
+    // EFFECTS: creates a new entry with parameters specified (trimmed title),
+    //          incremented id, and timeAdded set to now,
+    //          throws NameException if title is blank
+    //          throws NegativeAmountException if amount <= 0
+    // INVARIANT: category is always acceptable
+    public Entry(String title, double amount, String category) throws NameException,
+            NegativeAmountException {
+        if (isBlank(title)) {
+            throw new NameException("title");
+        }
+        if (amount <= 0) {
+            throw new NegativeAmountException();
+        }
         // This idea of static nextId is taken from TellerApp
         this.id = nextEntryID++;
-        this.title = title;
+        this.title = title.trim();
         this.amount = amount;
         this.category = category;
-        timeAdded = LocalDateTime.now();
+        this.timeAdded = LocalDateTime.now();
     }
 
     public int getId() {
@@ -45,18 +63,29 @@ public class Entry {
         return timeAdded;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    // MODIFIES: this
+    // EFFECTS: trims title and sets it to the entry,
+    //          throws NameException if provided title is blank
+    public void setTitle(String title) throws NameException {
+        if (isBlank(title)) {
+            throw new NameException("title");
+        }
+        this.title = title.trim();
     }
 
-    // REQUIRES: amount is > 0
-    // setter
-    public void setAmount(double amount) {
+    // MODIFIES: this
+    // EFFECTS: sets entry amount,
+    //          throws NegativeAmountException if amount is <= 0
+    public void setAmount(double amount) throws NegativeAmountException {
+        if (amount <= 0) {
+            throw new NegativeAmountException();
+        }
         this.amount = amount;
     }
 
-    // REQUIRES: the provided category is available in the Categories set
-    // setter
+    // MODIFIES: this
+    // EFFECTS: assigns category to the entry
+    // INVARIANT: category is always acceptable
     public void setCategory(String category) {
         this.category = category;
     }
@@ -70,5 +99,13 @@ public class Entry {
                 .add("amount=" + amount)
                 .add("category='" + category + "'")
                 .toString();
+    }
+
+    // EFFECTS: returns true if provided string is blank,
+    //          false otherwise
+    private boolean isBlank(String str) {
+        // implementation of removing whitespaces is taken from
+        // https://stackoverflow.com/questions/5455794/removing-whitespace-from-strings-in-java
+        return str.replaceAll("[\\s]+", "").isEmpty();
     }
 }

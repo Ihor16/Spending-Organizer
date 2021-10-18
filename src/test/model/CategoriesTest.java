@@ -1,28 +1,36 @@
 package model;
 
+import model.exceptions.NameException;
+import model.exceptions.NonExistentCategoryException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CategoriesTest {
 
     private Categories categories;
-    private String category1;
-    private String category2;
+    private final String TRAVEL_CATEGORY = "Travel in Canada";
+    private final String GROCERIES_CATEGORY = "Groceries";
 
     @BeforeEach
     void setUp() {
         categories = new Categories();
-        category1 = "Travel";
-        category2 = "Family";
-        categories.addCategory(category1);
-        categories.addCategory(category2);
+        try {
+            initCategories();
+        } catch (NameException e) {
+            fail("These categories are actually acceptable");
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -32,34 +40,65 @@ class CategoriesTest {
 
     @Test
     void testAddCategory() {
-        String category3 = "Self-care";
-        categories.addCategory(category3);
-        assertEquals(3, categories.length());
+        int oldSize = categories.size();
+        String selfCareCategory = "Self-care";
+        try {
+            categories.addCategory(selfCareCategory);
+        } catch (NameException e) {
+            fail("'" + selfCareCategory + "'category is actually a valid");
+            e.printStackTrace();
+        }
+
+        assertTrue(categories.contains(selfCareCategory));
+        assertEquals(++oldSize, categories.size());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "   "})
+    void testAddCategoryThrowNameException(String category) {
+        int oldLength = categories.size();
+        assertThrows(NameException.class, () -> categories.addCategory(category));
+        assertEquals(oldLength, categories.size());
     }
 
     @Test
     void testRemoveCategory() {
-        categories.removeCategory(category1);
-        assertEquals(1, categories.length());
+        int oldLength = categories.size();
+        try {
+            categories.removeCategory(GROCERIES_CATEGORY);
+        } catch (NonExistentCategoryException e) {
+            fail("'" + GROCERIES_CATEGORY + "' category actually exists in the set");
+            e.printStackTrace();
+        }
+        assertEquals(--oldLength, categories.size());
     }
 
     @Test
-    void testContains() {
-        assertTrue(categories.contains(category2));
+    void testRemoveCategoryThrowNonExistentCategoryException() {
+        int oldLength = categories.size();
+        assertThrows(NonExistentCategoryException.class,
+                () -> categories.removeCategory(String.valueOf(new Random().nextDouble())));
+        assertEquals(oldLength, categories.size());
     }
 
     @Test
     void testGetCategories() {
-        assertEquals(new HashSet<>(Arrays.asList(category1, category2)), categories.getCategories());
+        Set<String> expectedSet = new HashSet<>();
+        expectedSet.add(GROCERIES_CATEGORY);
+        expectedSet.add(TRAVEL_CATEGORY);
+        assertEquals(expectedSet, categories.getCategories());
     }
 
     @Test
-    void testToString() {
-        assertEquals(String.join(", ", category1, category2), categories.toString());
+    void testContains() {
+        assertTrue(categories.contains(TRAVEL_CATEGORY));
+        assertTrue(categories.contains(GROCERIES_CATEGORY));
+        assertFalse(categories.contains(String.valueOf(new Random().nextDouble())));
     }
 
-    @Test
-    void testToStringEmpty() {
-        assertEquals("", new Categories().toString());
+    // EFFECTS: populates categories set with categories
+    private void initCategories() throws NameException {
+        categories.addCategory(GROCERIES_CATEGORY);
+        categories.addCategory(TRAVEL_CATEGORY);
     }
 }
