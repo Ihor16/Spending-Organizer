@@ -25,14 +25,12 @@ public class SpendingList {
     // EFFECTS: removes provided entry from spending list and returns true if the entry is removed,
     // INVARIANT: provided entry exists in the list
     public boolean remove(Entry entry) {
-        assert (spendingList.contains(entry));
         return spendingList.remove(entry);
     }
 
     // EFFECTS: from the spending list returns entry at the given index
     // INVARIANT: there is an Entry at the given index
     public Entry getEntry(int index) {
-        assert !(index > spendingList.size() - 1 || Objects.isNull(spendingList.get(index)));
         return spendingList.get(index);
     }
 
