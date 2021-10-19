@@ -1,0 +1,20 @@
+{
+  "spending list": [
+    {
+      "amount": 0,
+      "timeAdded": "2021-10-18T22:39:05.119",
+      "title": "Went to SaveOnFoods",
+      "category": "Groceries"
+    },
+    {
+      "amount": -100,
+      "timeAdded": "2021-10-18T22:39:05.103",
+      "title": "Went to Toronto",
+      "category": "Travel"
+    }
+  ],
+  "categories": [
+    "Category 1",
+    "Category 2"
+  ]
+}

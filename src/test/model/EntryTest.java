@@ -7,6 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.time.LocalDateTime;
+import java.time.Month;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class EntryTest {
@@ -94,6 +97,13 @@ class EntryTest {
         String category = "Travel";
         testEntry.setCategory(category);
         assertEquals(category, testEntry.getCategory());
+    }
+
+    @Test
+    void testSetTimeAdded() {
+        LocalDateTime time = LocalDateTime.of(2020, Month.DECEMBER, 4, 15, 4);
+        testEntry.setTimeAdded(time.toString());
+        assertEquals(time, testEntry.getTimeAdded());
     }
 
     @Test

@@ -2,16 +2,20 @@ package model;
 
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
+import org.json.JSONObject;
+import persistence.WritableObject;
 
 import java.time.LocalDateTime;
+import java.time.temporal.Temporal;
+import java.util.Objects;
 import java.util.StringJoiner;
 
 // Represents a financial entry where user stores their spending
-public class Entry {
+public class Entry implements WritableObject {
     private String title;
     private double amount;
     private String category;
-    private final LocalDateTime timeAdded;
+    private LocalDateTime timeAdded;
 
     // EFFECTS: creates a new entry with incremented id, and timeAdded set to now
     public Entry() {
@@ -81,6 +85,13 @@ public class Entry {
         this.category = category;
     }
 
+    // MODIFIES: this
+    // EFFECTS: sets the time when this was created
+    // INVARIANT: this setter is used only when serialising Entry from a file
+    public void setTimeAdded(String timeStamp) {
+        this.timeAdded = LocalDateTime.parse(timeStamp);
+    }
+
     @Override
     // EFFECTS: returns a string representation of Entry
     public String toString() {
@@ -97,5 +108,50 @@ public class Entry {
         // implementation of removing whitespaces is taken from
         // https://stackoverflow.com/questions/5455794/removing-whitespace-from-strings-in-java
         return str.replaceAll("[\\s]+", "").isEmpty();
+    }
+
+    @Override
+    // Implementation is based on the Thingy class from JsonSerializationDemo
+    public JSONObject toJsonObject() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("title", title);
+        jsonObject.put("amount", amount);
+        jsonObject.put("category", category);
+        jsonObject.put("timeAdded", timeAdded);
+        return jsonObject;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Entry entry = (Entry) o;
+        if (Double.compare(entry.amount, amount) != 0) {
+            return false;
+        }
+        if (!Objects.equals(title, entry.title)) {
+            return false;
+        }
+        if (!Objects.equals(category, entry.category)) {
+            return false;
+        }
+        return Objects.equals(timeAdded, entry.timeAdded);
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = title != null ? title.hashCode() : 0;
+        temp = Double.doubleToLongBits(amount);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (category != null ? category.hashCode() : 0);
+        result = 31 * result + (timeAdded != null ? timeAdded.hashCode() : 0);
+        return result;
     }
 }

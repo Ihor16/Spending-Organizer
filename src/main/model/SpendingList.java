@@ -1,12 +1,15 @@
 package model;
 
+import org.json.JSONArray;
+import persistence.WritableArray;
+
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 // Represents the list of spending entries
-public class SpendingList {
+public class SpendingList implements WritableArray {
 
     private LinkedList<Entry> spendingList;
 
@@ -73,5 +76,31 @@ public class SpendingList {
         spendingList = spendingList.stream()
                 .sorted(comparator)
                 .collect(Collectors.toCollection(LinkedList::new));
+    }
+
+    @Override
+    public JSONArray toJsonArray() {
+        JSONArray jsonArray = new JSONArray();
+        for (Entry entry : spendingList) {
+            jsonArray.put(entry.toJsonObject());
+        }
+        return jsonArray;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        SpendingList that = (SpendingList) o;
+        return Objects.equals(spendingList, that.spendingList);
+    }
+
+    @Override
+    public int hashCode() {
+        return spendingList != null ? spendingList.hashCode() : 0;
     }
 }

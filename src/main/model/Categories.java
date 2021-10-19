@@ -2,12 +2,15 @@ package model;
 
 import model.exceptions.NameException;
 import model.exceptions.NonExistentCategoryException;
+import org.json.JSONArray;
+import persistence.WritableArray;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 // Represents list of Categories, user can use only these Categories while working with entries
-public class Categories {
+public class Categories implements WritableArray {
 
     private final Set<String> categories;
 
@@ -55,10 +58,37 @@ public class Categories {
         return categories.contains(category);
     }
 
+
+    @Override
+    public JSONArray toJsonArray() {
+        JSONArray jsonArray = new JSONArray();
+        for (String category : categories) {
+            jsonArray.put(category);
+        }
+        return jsonArray;
+    }
+
     // EFFECTS: returns true if the given string is blank
     private boolean isBlank(String category) {
         // implementation of removing whitespaces is taken from
         // https://stackoverflow.com/questions/5455794/removing-whitespace-from-strings-in-java
         return category.replaceAll("[\\s]+", "").isEmpty();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Categories that = (Categories) o;
+        return Objects.equals(categories, that.categories);
+    }
+
+    @Override
+    public int hashCode() {
+        return categories.hashCode();
     }
 }
