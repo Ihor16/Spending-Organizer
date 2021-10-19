@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Formatter;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,7 +35,7 @@ class JsonWriterTest {
             jsonWriter.open();
             jsonWriter.write(new SpendingList(), new Categories());
         } catch (FileNotFoundException e) {
-            fail("File is should be found");
+            fail("File should be found");
         }
 
         try {
@@ -69,7 +70,7 @@ class JsonWriterTest {
             jsonWriter.open();
             jsonWriter.write(spendingList, new Categories());
         } catch (FileNotFoundException e) {
-            fail("File is should be found");
+            fail("File should be found");
         }
 
         try {
@@ -105,7 +106,7 @@ class JsonWriterTest {
             jsonWriter.open();
             jsonWriter.write(new SpendingList(), categories);
         } catch (FileNotFoundException e) {
-            fail("File is should be found");
+            fail("File should be found");
         }
 
         try {
@@ -142,7 +143,7 @@ class JsonWriterTest {
             jsonWriter.open();
             jsonWriter.write(spendingList, categories);
         } catch (FileNotFoundException e) {
-            fail("File is should be found");
+            fail("File should be found");
         }
 
         try {
@@ -167,20 +168,20 @@ class JsonWriterTest {
 
     private void initCategories() throws NameException {
         categories = new Categories();
-        categories.addCategory("Category 1");
-        categories.addCategory("Category 2");
+        categories.addCategory("Travel");
+        categories.addCategory("Groceries");
     }
 
     private void initSpendingList() throws NegativeAmountException, NameException {
         spendingList = new SpendingList();
         spendingList.addEntry(new Entry("Went to Toronto",
-                new Random().nextDouble() * 1000, "Travel"));
+                400.42, "Travel"));
         try {
             Thread.sleep(10);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         spendingList.addEntry(new Entry("Went to SaveOnFoods",
-                new Random().nextDouble() * 100, "Groceries"));
+                56.93, "Groceries"));
     }
 }

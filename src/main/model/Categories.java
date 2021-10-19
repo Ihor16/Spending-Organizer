@@ -3,14 +3,14 @@ package model;
 import model.exceptions.NameException;
 import model.exceptions.NonExistentCategoryException;
 import org.json.JSONArray;
-import persistence.WritableArray;
+import persistence.WritesAsArray;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
 // Represents list of Categories, user can use only these Categories while working with entries
-public class Categories implements WritableArray {
+public class Categories implements WritesAsArray {
 
     private final Set<String> categories;
 

@@ -1,7 +1,7 @@
 package model;
 
 import org.json.JSONArray;
-import persistence.WritableArray;
+import persistence.WritesAsArray;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 // Represents the list of spending entries
-public class SpendingList implements WritableArray {
+public class SpendingList implements WritesAsArray {
 
     private LinkedList<Entry> spendingList;
 

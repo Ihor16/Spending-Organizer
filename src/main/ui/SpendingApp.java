@@ -6,7 +6,11 @@ import model.SpendingList;
 import model.exceptions.EntryFieldException;
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
+import persistence.JsonReader;
+import persistence.JsonWriter;
 
+import java.io.FileNotFoundException;
+import java.nio.file.InvalidPathException;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
@@ -40,6 +44,7 @@ public class SpendingApp {
             displayMenu();
             command = input.next();
             if (command.equals(QUIT_COMMAND)) {
+                askAboutSaving();
                 System.out.println("\nHave a nice day!");
                 break;
             } else {
@@ -56,7 +61,26 @@ public class SpendingApp {
         System.out.println("c -> change existing entry");
         System.out.println("r -> remove entry");
         System.out.println("s -> sort entries");
+        System.out.println("l -> load spending list from file");
+        System.out.println("p -> save your changes");
         System.out.println(QUIT_COMMAND + " -> quit");
+    }
+
+    // EFFECTS: asks user if they want to save their file
+    private void askAboutSaving() {
+        System.out.println("Do you want to save your changes? [Y/N]");
+        String answer = input.next();
+        switch (answer) {
+            case "Y":
+                saveToFile();
+                break;
+            case "N":
+                System.out.println("Your file wasn't saved");
+                break;
+            default:
+                enteredWrong("saving command");
+                askAboutSaving();
+        }
     }
 
     // MODIFIES: this
@@ -75,9 +99,49 @@ public class SpendingApp {
             case "c":
                 changeEntry();
                 break;
+            case "l":
+                loadFromFile();
+                break;
+            case "p":
+                saveToFile();
+                break;
             default:
                 enteredWrong("command");
                 break;
+        }
+    }
+
+    // MODIFIES: spendingList and categories
+    // EFFECTS: asks user about saving and loads spending list from file
+    private void loadFromFile() {
+        System.out.println("Enter file name, e.g, [filename]");
+        String fileName = input.next();
+        JsonReader reader = new JsonReader("./data/" + fileName + ".json");
+        try {
+            reader.openFile();
+            SpendingList fileSpendingList = reader.readSpendingList();
+            Categories fileCategories = reader.readCategories();
+            spendingList = fileSpendingList;
+            categories = fileCategories;
+        } catch (NameException | NegativeAmountException e) {
+            System.out.println("The file you're trying to open is corrupted...");
+        } catch (InvalidPathException e) {
+            System.out.println("Your path contains invalid characters...");
+        } catch (Exception e) {
+            System.out.println("There's an error loading your file...");
+        }
+    }
+
+    // EFFECTS: asks user where to save file and saves it
+    private void saveToFile() {
+        System.out.println("Enter filename where you want to save, e.g., [filename]");
+        String fileName = input.next();
+        try (JsonWriter writer = new JsonWriter("./data/" + fileName + ".json")) {
+            writer.open();
+            writer.write(spendingList, categories);
+            System.out.println("Your file was saved to " + fileName + ".json");
+        } catch (FileNotFoundException e) {
+            enteredWrong("filename format");
         }
     }
 
@@ -301,13 +365,23 @@ public class SpendingApp {
     }
 
     // MODIFIES: this
-    // EFFECTS: inits entries
+    // EFFECTS: inits entries with slight delay between each one
     //          throws NameException if title is blank
     //          throws NegativeAmountException if amount <= 0
     private void initEntries() throws NegativeAmountException, NameException {
         spendingList = new SpendingList();
         spendingList.addEntry(new Entry("Went to Montreal", 507.68, "Travel"));
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         spendingList.addEntry(new Entry("Bought jeans", 68.98, "Clothing"));
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         spendingList.addEntry(new Entry("Went to NoFrills", 70.67, "Groceries"));
     }
 

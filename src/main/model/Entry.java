@@ -3,15 +3,14 @@ package model;
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
 import org.json.JSONObject;
-import persistence.WritableObject;
+import persistence.WritesAsObject;
 
 import java.time.LocalDateTime;
-import java.time.temporal.Temporal;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 // Represents a financial entry where user stores their spending
-public class Entry implements WritableObject {
+public class Entry implements WritesAsObject {
     private String title;
     private double amount;
     private String category;
@@ -87,7 +86,7 @@ public class Entry implements WritableObject {
 
     // MODIFIES: this
     // EFFECTS: sets the time when this was created
-    // INVARIANT: this setter is used only when serialising Entry from a file
+    // INVARIANT: this setter is used only when creating Entry from a file
     public void setTimeAdded(String timeStamp) {
         this.timeAdded = LocalDateTime.parse(timeStamp);
     }
