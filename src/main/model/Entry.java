@@ -1,16 +1,14 @@
 package model;
 
-import model.exceptions.NegativeAmountException;
-import model.exceptions.NonExistentCategoryException;
 import model.exceptions.NameException;
+import model.exceptions.NegativeAmountException;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.StringJoiner;
 
 // Represents a financial entry where user stores their spending
 public class Entry {
-    private static int nextEntryID = 1;
-    private final int id;
     private String title;
     private double amount;
     private String category;
@@ -18,7 +16,6 @@ public class Entry {
 
     // EFFECTS: creates a new entry with incremented id, and timeAdded set to now
     public Entry() {
-        this.id = nextEntryID++;
         this.timeAdded = LocalDateTime.now();
     }
 
@@ -35,16 +32,11 @@ public class Entry {
         if (amount <= 0) {
             throw new NegativeAmountException();
         }
-        // This idea of static nextId is taken from TellerApp
-        this.id = nextEntryID++;
+
         this.title = title.trim();
         this.amount = amount;
         this.category = category;
         this.timeAdded = LocalDateTime.now();
-    }
-
-    public int getId() {
-        return id;
     }
 
     public String getTitle() {
@@ -94,7 +86,6 @@ public class Entry {
     // EFFECTS: returns a string representation of Entry
     public String toString() {
         return new StringJoiner(", ", Entry.class.getSimpleName() + "[", "]")
-                .add("id=" + id)
                 .add("title='" + title + "'")
                 .add("amount=" + amount)
                 .add("category='" + category + "'")

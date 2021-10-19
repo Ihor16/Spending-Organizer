@@ -2,11 +2,9 @@ package model;
 
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
-import model.exceptions.NonExistentIdException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,8 +23,10 @@ class SpendingListTest {
         spendingList = new SpendingList();
         try {
             initEntries();
-        } catch (NegativeAmountException | NameException e) {
-            fail("All entries are actually initialised correctly");
+        } catch (NegativeAmountException e) {
+            fail("Amount is actually acceptable");
+        } catch (NameException e) {
+            fail("Name is actually acceptable");
             e.printStackTrace();
         }
         spendingList.addEntry(entryTravel);
@@ -44,8 +44,10 @@ class SpendingListTest {
         try {
             entryTravel = new Entry("Montreal", 599, TRAVEL_CATEGORY);
             spendingList.addEntry(entryTravel);
-        } catch (NameException | NegativeAmountException e) {
-            fail("Entry is actually initialised correctly");
+        } catch (NegativeAmountException e) {
+            fail("Amount is actually acceptable");
+        } catch (NameException e) {
+            fail("Name is actually acceptable");
             e.printStackTrace();
         }
         assertEquals(3, spendingList.length());
@@ -54,20 +56,13 @@ class SpendingListTest {
 
     @Test
     void testRemoveEntry() {
-        try {
-            assertTrue(spendingList.removeById(entryGroceries.getId()));
-        } catch (NonExistentIdException e) {
-            fail("Element with id " + entryGroceries.getId() + " actually exists");
-            e.printStackTrace();
-        }
+        assertTrue(spendingList.remove(entryGroceries));
         assertEquals(1, spendingList.length());
     }
 
     @Test
-    void testRemoveEntryThrowNonExistentIdException() {
-        int oldLength = spendingList.length();
-        assertThrows(NonExistentIdException.class, () -> spendingList.removeById(-1));
-        assertEquals(oldLength, spendingList.length());
+    void testGetEntry() {
+        assertEquals(spendingList.getSpendingList().getFirst(), spendingList.getEntry(0));
     }
 
     @Test
@@ -93,8 +88,10 @@ class SpendingListTest {
             newEntry.setAmount(560);
             newEntry.setCategory("Clothes");
             spendingList.addEntry(newEntry);
-        } catch (NameException | NegativeAmountException e) {
-            fail("Entry is actually initialised correctly");
+        } catch (NegativeAmountException e) {
+            fail("Amount is actually acceptable");
+        } catch (NameException e) {
+            fail("Name is actually acceptable");
             e.printStackTrace();
         }
 
@@ -120,8 +117,10 @@ class SpendingListTest {
         try {
             entryExpensiveTravel = new Entry("Victoria", entryTravel.getAmount() + 200, TRAVEL_CATEGORY);
             spendingList.addEntry(entryExpensiveTravel);
-        } catch (NameException | NegativeAmountException e) {
-            fail("Entry is actually initialised correctly");
+        } catch (NegativeAmountException e) {
+            fail("Amount is actually acceptable");
+        } catch (NameException e) {
+            fail("Name is actually acceptable");
             e.printStackTrace();
         }
 
@@ -140,8 +139,10 @@ class SpendingListTest {
         try {
             entryGroceries2 = new Entry("Went to NoFrills", entryGroceries.getAmount(), GROCERIES_CATEGORY);
             spendingList.addEntry(entryGroceries2);
-        } catch (NameException | NegativeAmountException e) {
-            fail("Entry is actually initialised correctly");
+        } catch (NegativeAmountException e) {
+            fail("Amount is actually acceptable");
+        } catch (NameException e) {
+            fail("Name is actually acceptable");
             e.printStackTrace();
         }
 
@@ -179,8 +180,10 @@ class SpendingListTest {
         try {
             entryGroceries2 = new Entry("Weekly groceries", 78.8, GROCERIES_CATEGORY);
             spendingList.addEntry(entryGroceries2);
-        } catch (NameException | NegativeAmountException e) {
-            fail("Entry is actually initialised correctly");
+        } catch (NegativeAmountException e) {
+            fail("Amount is actually acceptable");
+        } catch (NameException e) {
+            fail("Name is actually acceptable");
             e.printStackTrace();
         }
         spendingList.sortByCategory();
@@ -191,23 +194,6 @@ class SpendingListTest {
         expectedList.add(entryTravel);
 
         assertEquals(expectedList, spendingList.getSpendingList());
-    }
-
-    @Test
-    void testFindById() {
-        Entry foundEntry = null;
-        try {
-            foundEntry = spendingList.findById(entryGroceries.getId());
-        } catch (NonExistentIdException e) {
-            fail("Element with id " + entryGroceries.getId() + " actually exists");
-            e.printStackTrace();
-        }
-        assertEquals(entryGroceries, foundEntry);
-    }
-
-    @Test
-    void testFindByIdThrowNonExistentIdException() {
-        assertThrows(NonExistentIdException.class, () -> spendingList.findById(-1));
     }
 
     private void initEntries() throws NegativeAmountException, NameException {
