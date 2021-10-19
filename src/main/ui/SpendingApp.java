@@ -6,7 +6,6 @@ import model.SpendingList;
 import model.exceptions.EntryFieldException;
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
-import model.exceptions.NonExistentIdException;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -149,16 +148,13 @@ public class SpendingApp {
     }
 
     // MODIFIES: this
+    // effects: asks used to choose entry and removes it
     // EFFECTS: removes entry by its id if an entry with such id is found,
     //          asks user to enter id again otherwise
     private void removeEntry() {
-        try {
-            int id = readEntryId();
-            spendingList.removeById(id);
-        } catch (NonExistentIdException e) {
-            System.out.println("Error: " + e.getMessage());
-            removeEntry();
-        }
+        int index = readEntryIndex();
+        Entry chosenEntry = spendingList.getEntry(index);
+        spendingList.remove(chosenEntry);
     }
 
     // MODIFIES: this
@@ -188,19 +184,13 @@ public class SpendingApp {
     // EFFECTS: asks user to input id of the entry they want to change and specify the change,
     //          asks them to reenter id, if entered id isn't found
     private void changeEntry() {
-        int id = readEntryId();
-        try {
-            Entry foundEntry = spendingList.findById(id);
-            System.out.println(foundEntry);
-            printChangeCommands();
-            String command = input.next();
-            if (!command.equals(QUIT_COMMAND)) {
-                processChange(foundEntry, command);
-            }
-        } catch (NonExistentIdException e) {
-            System.out.println("Error: " + e.getMessage());
-            printSpendingEntries();
-            changeEntry();
+        int index = readEntryIndex();
+        Entry foundEntry = spendingList.getEntry(index);
+        System.out.println(foundEntry);
+        printChangeCommands();
+        String command = input.next();
+        if (!command.equals(QUIT_COMMAND)) {
+            processChange(foundEntry, command);
         }
     }
 
@@ -293,7 +283,11 @@ public class SpendingApp {
     // EFFECTS: prints current entries
     private void printSpendingEntries() {
         System.out.println("\nHere's your list of entries: ");
-        spendingList.getSpendingList().forEach(System.out::println);
+        int index = 1;
+        for (Entry entry : spendingList.getSpendingList()) {
+            System.out.println(index + ": " + entry);
+            index++;
+        }
     }
 
     // MODIFIES: this
@@ -323,16 +317,24 @@ public class SpendingApp {
         input = new Scanner(System.in).useDelimiter("\n");
     }
 
-    // EFFECTS: returns user input id,
-    //          asks user to reenter id if they entered a wrong formatted number
-    private int readEntryId() {
-        System.out.println("\nEnter entry ID: ");
+    // EFFECTS: returns index of an entry that user chose,
+    //          asks user to reenter index if they entered a wrong-formatted number
+    //          or there's no entry with such index
+    private int readEntryIndex() {
+        System.out.println("\nEnter entry Index: ");
         try {
-            return Integer.parseInt(input.next());
+            int index = Integer.parseInt(input.next());
+            --index;
+            spendingList.getEntry(index);
+            return index;
         } catch (NumberFormatException e) {
             enteredWrong("number format");
             printSpendingEntries();
-            return readEntryId();
+            return readEntryIndex();
+        } catch (IndexOutOfBoundsException e) {
+            enteredWrong("entry index");
+            printSpendingEntries();
+            return readEntryIndex();
         }
     }
 
@@ -345,7 +347,6 @@ public class SpendingApp {
     }
 
     // EFFECTS: prints entry with given id and shows changes user can perform on that entry
-    //          throws WrongIdException if entry with such id doesn't exist
     private void printChangeCommands() {
         System.out.println("ti -> Title");
         System.out.println("am -> Amount");

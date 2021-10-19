@@ -98,7 +98,7 @@ class EntryTest {
 
     @Test
     void testToString() {
-        String expected = "Entry[id=" + testEntry.getId() + ", " +
+        String expected = "Entry[" +
                 "title='" + testEntry.getTitle() + "', " +
                 "amount=" + testEntry.getAmount() + ", " +
                 "category='" + testEntry.getCategory() + "']";
