@@ -4,7 +4,6 @@ import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
 
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.StringJoiner;
 
 // Represents a financial entry where user stores their spending
