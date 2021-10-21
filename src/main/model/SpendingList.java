@@ -3,9 +3,7 @@ package model;
 import org.json.JSONArray;
 import persistence.WritesAsArray;
 
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 // Represents the list of spending entries
@@ -102,5 +100,12 @@ public class SpendingList implements WritesAsArray {
     @Override
     public int hashCode() {
         return spendingList != null ? spendingList.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", SpendingList.class.getSimpleName() + "[", "]")
+                .add("spendingList=" + spendingList)
+                .toString();
     }
 }

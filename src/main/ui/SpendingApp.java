@@ -111,8 +111,9 @@ public class SpendingApp {
         }
     }
 
-    // MODIFIES: spendingList and categories
-    // EFFECTS: asks user about saving and loads spending list from file
+    // MODIFIES: this
+    // EFFECTS: asks user to enter a filename they want to load from,
+    //          and loads app state from that file
     private void loadFromFile() {
         System.out.println("Enter file name, e.g, [filename]");
         String fileName = input.next();
@@ -132,7 +133,7 @@ public class SpendingApp {
         }
     }
 
-    // EFFECTS: asks user where to save file and saves it
+    // EFFECTS: asks user where to save file and saves app's state to it
     private void saveToFile() {
         System.out.println("Enter filename where you want to save, e.g., [filename]");
         String fileName = input.next();
@@ -365,7 +366,7 @@ public class SpendingApp {
     }
 
     // MODIFIES: this
-    // EFFECTS: inits entries with slight delay between each one
+    // EFFECTS: inits entries with slight delay between each one,
     //          throws NameException if title is blank
     //          throws NegativeAmountException if amount <= 0
     private void initEntries() throws NegativeAmountException, NameException {

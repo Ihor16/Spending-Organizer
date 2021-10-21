@@ -84,11 +84,19 @@ public class Entry implements WritesAsObject {
         this.category = category;
     }
 
+    // REQUIREMENT: is used only when creating Entry from a file
     // MODIFIES: this
     // EFFECTS: sets the time when this was created
-    // INVARIANT: this setter is used only when creating Entry from a file
     public void setTimeAdded(String timeStamp) {
         this.timeAdded = LocalDateTime.parse(timeStamp);
+    }
+
+    // EFFECTS: returns true if provided string is blank,
+    //          false otherwise
+    private boolean isBlank(String str) {
+        // implementation of removing whitespaces is taken from
+        // https://stackoverflow.com/questions/5455794/removing-whitespace-from-strings-in-java
+        return str.replaceAll("[\\s]+", "").isEmpty();
     }
 
     @Override
@@ -99,14 +107,6 @@ public class Entry implements WritesAsObject {
                 .add("amount=" + amount)
                 .add("category='" + category + "'")
                 .toString();
-    }
-
-    // EFFECTS: returns true if provided string is blank,
-    //          false otherwise
-    private boolean isBlank(String str) {
-        // implementation of removing whitespaces is taken from
-        // https://stackoverflow.com/questions/5455794/removing-whitespace-from-strings-in-java
-        return str.replaceAll("[\\s]+", "").isEmpty();
     }
 
     @Override

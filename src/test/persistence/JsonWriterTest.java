@@ -11,8 +11,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Formatter;
-import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -60,11 +58,7 @@ class JsonWriterTest {
 
     @Test
     void testWriteEmptyCategory() {
-        try {
-            initSpendingList();
-        } catch (NegativeAmountException | NameException e) {
-            fail("Spending list is initialised correctly");
-        }
+        initSpendingList();
         String path = "./data/testWriteEmptyCategory.json";
         try (JsonWriter jsonWriter = new JsonWriter(path)) {
             jsonWriter.open();
@@ -95,12 +89,7 @@ class JsonWriterTest {
 
     @Test
     void testWriteEmptySpendingList() {
-        try {
-            initCategories();
-        } catch (NameException e) {
-            fail("Categories are actually valid");
-            e.printStackTrace();
-        }
+        initCategories();
         String path = "./data/testWriteEmptySpendingList.json";
         try (JsonWriter jsonWriter = new JsonWriter(path)) {
             jsonWriter.open();
@@ -131,13 +120,8 @@ class JsonWriterTest {
 
     @Test
     void testWriteRegularFile() {
-        try {
-            initSpendingList();
-            initCategories();
-        } catch (NegativeAmountException | NameException e) {
-            fail("Spending list and categories are actually initialised correctly");
-            e.printStackTrace();
-        }
+        initSpendingList();
+        initCategories();
         String path = "./data/testWriteRegularFile.json";
         try (JsonWriter jsonWriter = new JsonWriter(path)) {
             jsonWriter.open();
@@ -166,22 +150,67 @@ class JsonWriterTest {
         }
     }
 
-    private void initCategories() throws NameException {
-        categories = new Categories();
-        categories.addCategory("Travel");
-        categories.addCategory("Groceries");
+    @Test
+    void testReaderAddNewEntryAndRetreave() {
+        initCategories();
+        initSpendingList();
+        try {
+            Entry entry = new Entry("Theatre", 40, "Rest");
+            spendingList.addEntry(entry);
+        } catch (NameException | NegativeAmountException e) {
+            fail("Entry is actually valid");
+        }
+        String path = "./data/testReaderAddNewEntryAndRetreave.json";
+        try(JsonWriter writer = new JsonWriter(path)) {
+            writer.open();
+            writer.write(spendingList, categories);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            JsonReader reader = new JsonReader(path);
+            reader.openFile();
+            assertEquals(spendingList, reader.readSpendingList());
+            assertEquals(categories, reader.readCategories());
+        } catch (NegativeAmountException e) {
+            fail("Spending list in the file is actually valid");
+            e.printStackTrace();
+        } catch (NameException e) {
+            fail("Spending list and categories names in the file are actually valid");
+        } catch (IOException e) {
+            fail("Should open the file");
+            e.printStackTrace();
+        }
     }
 
-    private void initSpendingList() throws NegativeAmountException, NameException {
-        spendingList = new SpendingList();
-        spendingList.addEntry(new Entry("Went to Toronto",
-                400.42, "Travel"));
+    // MODIFIES: this
+    // EFFECTS: initialises categories
+    private void initCategories() {
+        categories = new Categories();
         try {
+            categories.addCategory("Travel");
+            categories.addCategory("Groceries");
+        } catch (NameException e) {
+            fail("Categories are actually valid");
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: initialises spending list
+    private void initSpendingList() {
+        spendingList = new SpendingList();
+        try {
+            spendingList.addEntry(new Entry("Went to Toronto",
+                    400.42, "Travel"));
             Thread.sleep(10);
+            spendingList.addEntry(new Entry("Went to SaveOnFoods",
+                    56.93, "Groceries"));
+            Thread.sleep(10);
+        } catch (NameException | NegativeAmountException e) {
+            fail("Spending list is initialised correctly");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        spendingList.addEntry(new Entry("Went to SaveOnFoods",
-                56.93, "Groceries"));
     }
 }
