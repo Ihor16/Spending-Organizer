@@ -24,7 +24,7 @@ class EntryTest {
         try {
             testEntry = new Entry(TITLE, AMOUNT, CATEGORY);
         } catch (NameException e) {
-            fail("Title name is actually acceptable");
+            fail("Title and category are actually acceptable");
             e.printStackTrace();
         } catch (NegativeAmountException e) {
             fail(AMOUNT + " amount is actually acceptable");
@@ -50,6 +50,12 @@ class EntryTest {
     @ValueSource(strings = {"", "    "})
     void testConstructorThrowNameExceptionForTitle(String title) {
         assertThrows(NameException.class, () -> new Entry(title, 30, CATEGORY));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "    "})
+    void testConstructorThrowNameExceptionForCategory(String category) {
+        assertThrows(NameException.class, () -> new Entry("Title", 30, category));
     }
 
     @ParameterizedTest
@@ -92,11 +98,24 @@ class EntryTest {
         assertEquals(oldAmount, testEntry.getAmount());
     }
 
-    @Test
-    void testSetCategory() {
-        String category = "Travel";
-        testEntry.setCategory(category);
-        assertEquals(category, testEntry.getCategory());
+    @ParameterizedTest
+    @ValueSource(strings = {"Category", "     Category      "})
+    void testSetCategory(String category) {
+        try {
+            testEntry.setCategory(category);
+        } catch (NameException e) {
+            fail("'" + category + "' category is actually acceptable");
+            e.printStackTrace();
+        }
+        assertEquals(category.trim(), testEntry.getCategory());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "    "})
+    void testSetCategoryThrowNameException(String category) {
+        String previousCategory = testEntry.getCategory();
+        assertThrows(NameException.class, () -> testEntry.setCategory(category));
+        assertEquals(previousCategory, testEntry.getCategory());
     }
 
     @Test

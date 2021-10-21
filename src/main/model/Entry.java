@@ -3,14 +3,14 @@ package model;
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
 import org.json.JSONObject;
-import persistence.WritesAsObject;
+import persistence.Writable;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 // Represents a financial entry where user stores their spending
-public class Entry implements WritesAsObject {
+public class Entry implements Writable {
     private String title;
     private double amount;
     private String category;
@@ -21,11 +21,10 @@ public class Entry implements WritesAsObject {
         this.timeAdded = LocalDateTime.now();
     }
 
-    // EFFECTS: creates a new entry with parameters specified (trimmed title),
-    //          incremented id, and timeAdded set to now,
-    //          throws NameException if title is blank
+    // EFFECTS: creates a new entry with amount, trimmed title, and trimmed category,
+    //          timeAdded set to now,
+    //          throws NameException if title or category is blank
     //          throws NegativeAmountException if amount <= 0
-    // INVARIANT: category is always acceptable
     public Entry(String title, double amount, String category) throws NameException,
             NegativeAmountException {
         if (isBlank(title)) {
@@ -34,11 +33,51 @@ public class Entry implements WritesAsObject {
         if (amount <= 0) {
             throw new NegativeAmountException();
         }
+        if (isBlank(category)) {
+            throw new NameException("category");
+        }
 
         this.title = title.trim();
         this.amount = amount;
         this.category = category;
         this.timeAdded = LocalDateTime.now();
+    }
+
+    // MODIFIES: this
+    // EFFECTS: trims title and assigns it to the entry,
+    //          throws NameException if provided title is blank
+    public void setTitle(String title) throws NameException {
+        if (isBlank(title)) {
+            throw new NameException("title");
+        }
+        this.title = title.trim();
+    }
+
+    // MODIFIES: this
+    // EFFECTS: trims category and assigns it to the entry
+    //          throws NameException if provided category is blank
+    public void setCategory(String category) throws NameException {
+        if (isBlank(category)) {
+            throw new NameException("category");
+        }
+        this.category = category.trim();
+    }
+
+    // MODIFIES: this
+    // EFFECTS: sets entry amount,
+    //          throws NegativeAmountException if amount is <= 0
+    public void setAmount(double amount) throws NegativeAmountException {
+        if (amount <= 0) {
+            throw new NegativeAmountException();
+        }
+        this.amount = amount;
+    }
+
+    // REQUIREMENT: is used only when reading Entry from a file
+    // MODIFIES: this
+    // EFFECTS: sets the time when this was created
+    public void setTimeAdded(String timeStamp) {
+        this.timeAdded = LocalDateTime.parse(timeStamp);
     }
 
     public String getTitle() {
@@ -55,40 +94,6 @@ public class Entry implements WritesAsObject {
 
     public LocalDateTime getTimeAdded() {
         return timeAdded;
-    }
-
-    // MODIFIES: this
-    // EFFECTS: trims title and sets it to the entry,
-    //          throws NameException if provided title is blank
-    public void setTitle(String title) throws NameException {
-        if (isBlank(title)) {
-            throw new NameException("title");
-        }
-        this.title = title.trim();
-    }
-
-    // MODIFIES: this
-    // EFFECTS: sets entry amount,
-    //          throws NegativeAmountException if amount is <= 0
-    public void setAmount(double amount) throws NegativeAmountException {
-        if (amount <= 0) {
-            throw new NegativeAmountException();
-        }
-        this.amount = amount;
-    }
-
-    // MODIFIES: this
-    // EFFECTS: assigns category to the entry
-    // INVARIANT: category is always acceptable
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    // REQUIREMENT: is used only when creating Entry from a file
-    // MODIFIES: this
-    // EFFECTS: sets the time when this was created
-    public void setTimeAdded(String timeStamp) {
-        this.timeAdded = LocalDateTime.parse(timeStamp);
     }
 
     // EFFECTS: returns true if provided string is blank,
