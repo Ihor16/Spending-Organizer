@@ -7,6 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.time.LocalDateTime;
+import java.time.Month;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class EntryTest {
@@ -21,7 +24,7 @@ class EntryTest {
         try {
             testEntry = new Entry(TITLE, AMOUNT, CATEGORY);
         } catch (NameException e) {
-            fail("Title name is actually acceptable");
+            fail("Title and category are actually acceptable");
             e.printStackTrace();
         } catch (NegativeAmountException e) {
             fail(AMOUNT + " amount is actually acceptable");
@@ -47,6 +50,12 @@ class EntryTest {
     @ValueSource(strings = {"", "    "})
     void testConstructorThrowNameExceptionForTitle(String title) {
         assertThrows(NameException.class, () -> new Entry(title, 30, CATEGORY));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "    "})
+    void testConstructorThrowNameExceptionForCategory(String category) {
+        assertThrows(NameException.class, () -> new Entry("Title", 30, category));
     }
 
     @ParameterizedTest
@@ -89,11 +98,31 @@ class EntryTest {
         assertEquals(oldAmount, testEntry.getAmount());
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"Category", "     Category      "})
+    void testSetCategory(String category) {
+        try {
+            testEntry.setCategory(category);
+        } catch (NameException e) {
+            fail("'" + category + "' category is actually acceptable");
+            e.printStackTrace();
+        }
+        assertEquals(category.trim(), testEntry.getCategory());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "    "})
+    void testSetCategoryThrowNameException(String category) {
+        String previousCategory = testEntry.getCategory();
+        assertThrows(NameException.class, () -> testEntry.setCategory(category));
+        assertEquals(previousCategory, testEntry.getCategory());
+    }
+
     @Test
-    void testSetCategory() {
-        String category = "Travel";
-        testEntry.setCategory(category);
-        assertEquals(category, testEntry.getCategory());
+    void testSetTimeAdded() {
+        LocalDateTime time = LocalDateTime.of(2020, Month.DECEMBER, 4, 15, 4);
+        testEntry.setTimeAdded(time.toString());
+        assertEquals(time, testEntry.getTimeAdded());
     }
 
     @Test

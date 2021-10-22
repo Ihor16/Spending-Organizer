@@ -1,0 +1,20 @@
+{
+  "records": [
+    {
+      "amount": 100.76,
+      "timeAdded": "2021-10-21T17:22:32.151",
+      "title": "Went to SaveOnFoods",
+      "category": ""
+    },
+    {
+      "amount": 401.34,
+      "timeAdded": "2021-10-21T17:22:32.125",
+      "title": "Went to Toronto",
+      "category": "   "
+    }
+  ],
+  "categories": [
+    "Category 1",
+    "Category 2"
+  ]
+}

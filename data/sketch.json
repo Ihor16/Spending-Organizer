@@ -1,0 +1,27 @@
+{
+  "spending list": [
+    {
+      "amount": 70.67,
+      "timeAdded": "2021-10-19T00:39:09.235",
+      "title": "Went to NoFrills",
+      "category": "Groceries"
+    },
+    {
+      "amount": 90.09,
+      "timeAdded": "2021-10-19T00:39:09.219",
+      "title": "Bought jeans",
+      "category": "Clothing"
+    },
+    {
+      "amount": 506.68,
+      "timeAdded": "2020-10-19T00:39:09.151",
+      "title": "Went to Montreal",
+      "category": "Travel"
+    }
+  ],
+  "categories": [
+    "Travel",
+    "Groceries",
+    "Clothing"
+  ]
+}

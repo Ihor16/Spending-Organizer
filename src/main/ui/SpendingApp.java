@@ -1,27 +1,28 @@
 package ui;
 
-import model.Categories;
 import model.Entry;
 import model.SpendingList;
 import model.exceptions.EntryFieldException;
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
+import persistence.JsonReader;
+import persistence.JsonWriter;
 
-import java.util.Arrays;
+import java.io.FileNotFoundException;
+import java.nio.file.InvalidPathException;
 import java.util.Objects;
 import java.util.Scanner;
 
+// Class for UI console user interactions
 public class SpendingApp {
 
     private static final String QUIT_COMMAND = "q";
-    private Categories categories;
     private SpendingList spendingList;
     private Scanner input;
 
     // EFFECTS: inits categories, entries, scanner, and runs the app
     public SpendingApp() {
         try {
-            initCategories();
             initEntries();
             initScanner();
             runApp();
@@ -40,6 +41,7 @@ public class SpendingApp {
             displayMenu();
             command = input.next();
             if (command.equals(QUIT_COMMAND)) {
+                askAboutSaving();
                 System.out.println("\nHave a nice day!");
                 break;
             } else {
@@ -54,9 +56,28 @@ public class SpendingApp {
         System.out.println("\nSelect one of these commands:");
         System.out.println("a -> add new entry");
         System.out.println("c -> change existing entry");
-        System.out.println("r -> remove entry");
+        System.out.println("r -> removeEntry entry");
         System.out.println("s -> sort entries");
+        System.out.println("l -> load spending list from file");
+        System.out.println("p -> save your changes");
         System.out.println(QUIT_COMMAND + " -> quit");
+    }
+
+    // EFFECTS: asks user if they want to save their file
+    private void askAboutSaving() {
+        System.out.println("Do you want to save your changes? [Y/N]");
+        String answer = input.next();
+        switch (answer) {
+            case "Y":
+                saveToFile();
+                break;
+            case "N":
+                System.out.println("Your file wasn't saved");
+                break;
+            default:
+                enteredWrong("saving command");
+                askAboutSaving();
+        }
     }
 
     // MODIFIES: this
@@ -75,9 +96,46 @@ public class SpendingApp {
             case "c":
                 changeEntry();
                 break;
+            case "l":
+                loadFromFile();
+                break;
+            case "p":
+                saveToFile();
+                break;
             default:
                 enteredWrong("command");
                 break;
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: asks user to enter a filename they want to load from,
+    //          and loads app state from that file
+    private void loadFromFile() {
+        System.out.println("Enter file name, e.g, [filename]");
+        String fileName = input.next();
+        JsonReader reader = new JsonReader("./data/" + fileName + ".json");
+        try {
+            spendingList = reader.read();
+        } catch (NameException | NegativeAmountException e) {
+            System.out.println("The file you're trying to open is corrupted...");
+        } catch (InvalidPathException e) {
+            enteredWrong("file path");
+        } catch (Exception e) {
+            System.out.println("There's an error loading your file...");
+        }
+    }
+
+    // EFFECTS: asks user where to save file and saves app's state to it
+    private void saveToFile() {
+        System.out.println("Enter filename where you want to save your spending list, e.g., [filename]");
+        String fileName = input.next();
+        try (JsonWriter writer = new JsonWriter("./data/" + fileName + ".json")) {
+            writer.open();
+            writer.write(spendingList);
+            System.out.println("Your file was saved to " + fileName + ".json");
+        } catch (FileNotFoundException e) {
+            enteredWrong("filename format");
         }
     }
 
@@ -100,16 +158,17 @@ public class SpendingApp {
 
     // MODIFIES: entry
     // EFFECTS: asks user to enter category of financial entry and returns the entered category,
-    //          asks user to enter again if they enter not acceptable category
+    //          asks user to enter again if they enter a blank string
     private String addCategory(Entry entry) {
         System.out.println("\nAdd Category: ");
         printCategories();
         String category = input.next();
-        // This check won't happen in GUI because user will use drop-down list to select category
-        if (categories.contains(category)) {
+        try {
             entry.setCategory(category);
-            return category;
-        } else {
+            spendingList.addCategory(category);
+            return entry.getCategory();
+        } catch (NameException e) {
+            enteredWrong("string format");
             return addCategory(entry);
         }
     }
@@ -154,7 +213,7 @@ public class SpendingApp {
     private void removeEntry() {
         int index = readEntryIndex();
         Entry chosenEntry = spendingList.getEntry(index);
-        spendingList.remove(chosenEntry);
+        spendingList.removeEntry(chosenEntry);
     }
 
     // MODIFIES: this
@@ -261,23 +320,24 @@ public class SpendingApp {
 
     // MODIFIES: entry
     // EFFECTS: changes entry's category
-    //          asks user to reenter category if their input is unacceptable
+    //          asks user to reenter category if they enter a blank string
     private void changeCategory(Entry entry) {
         printCategories();
-        System.out.println("\nNew category: ");
+        System.out.println("\nChanged category: ");
         String category = input.next();
-        if (categories.contains(category)) {
+        try {
             entry.setCategory(category);
-        } else {
-            enteredWrong("category");
+            spendingList.addCategory(category);
+        } catch (NameException e) {
+            enteredWrong("string format");
             changeCategory(entry);
         }
     }
 
     // EFFECTS: displays available categories
     private void printCategories() {
-        System.out.println("\nSelect from one of these categories:");
-        System.out.println(String.join(", ", categories.getCategories()));
+        System.out.println("\nSelect from one of these categories or add a new one:");
+        System.out.println(String.join(", ", spendingList.getCategories()));
     }
 
     // EFFECTS: prints current entries
@@ -291,24 +351,20 @@ public class SpendingApp {
     }
 
     // MODIFIES: this
-    // EFFECTS: inits categories
-    //          throws NameException if we try to add a blank category
-    private void initCategories() throws NameException {
-        categories = new Categories();
-        for (String s : Arrays.asList("Groceries", "Clothing", "Travel")) {
-            categories.addCategory(s);
-        }
-    }
-
-    // MODIFIES: this
-    // EFFECTS: inits entries
+    // EFFECTS: inits entries with slight delay between each one,
     //          throws NameException if title is blank
     //          throws NegativeAmountException if amount <= 0
     private void initEntries() throws NegativeAmountException, NameException {
         spendingList = new SpendingList();
-        spendingList.addEntry(new Entry("Went to Montreal", 507.68, "Travel"));
-        spendingList.addEntry(new Entry("Bought jeans", 68.98, "Clothing"));
-        spendingList.addEntry(new Entry("Went to NoFrills", 70.67, "Groceries"));
+        try {
+            spendingList.addEntry(new Entry("Went to Montreal", 507.68, "Travel"));
+            Thread.sleep(10);
+            spendingList.addEntry(new Entry("Bought jeans", 68.98, "Clothing"));
+            Thread.sleep(10);
+            spendingList.addEntry(new Entry("Went to NoFrills", 70.67, "Groceries"));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     // MODIFIES: this
