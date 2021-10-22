@@ -1,6 +1,6 @@
 package persistence;
 
-import model.Entry;
+import model.Record;
 import model.SpendingList;
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
@@ -20,8 +20,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class JsonWriterTest {
 
     private SpendingList spToWrite;
-    private Entry entryTravel;
-    private Entry entryGroceries;
+    private Record recordTravel;
+    private Record recordGroceries;
 
     @BeforeEach
     void setUp() {
@@ -60,7 +60,7 @@ class JsonWriterTest {
 
     @Test
     void testWriteEmptySpendingList() {
-        Stream.of(entryGroceries, entryTravel).forEach(spToWrite::removeEntry);
+        Stream.of(recordGroceries, recordTravel).forEach(spToWrite::removeRecord);
         String path = "./data/testWriteEmptySpendingList.json";
 
         try (JsonWriter writer = new JsonWriter(path)){
@@ -83,8 +83,8 @@ class JsonWriterTest {
 
     @Test
     void testWriteEmptyCategories() {
-        Stream.of(entryGroceries, entryTravel)
-                .map(Entry::getCategory)
+        Stream.of(recordGroceries, recordTravel)
+                .map(Record::getCategory)
                 .forEach(spToWrite::removeCategory);
 
         String path = "./data/testWriteEmptyCategory.json";
@@ -131,9 +131,9 @@ class JsonWriterTest {
     // EFFECTS: inits test entries
     private void initEntries() {
         try {
-            entryTravel = new Entry("Went to Toronto", 401.34, "Travel");
+            recordTravel = new Record("Went to Toronto", 401.34, "Travel");
             Thread.sleep(10);
-            entryGroceries = new Entry("Went to SaveOnFoods", 100.76, "Groceries");
+            recordGroceries = new Record("Went to SaveOnFoods", 100.76, "Groceries");
             Thread.sleep(10);
         } catch (NameException | NegativeAmountException | InterruptedException e) {
             e.printStackTrace();
@@ -143,9 +143,9 @@ class JsonWriterTest {
     private void initSpendingList() {
         spToWrite = new SpendingList();
         try {
-            spToWrite.addEntry(entryTravel);
+            spToWrite.addRecord(recordTravel);
             Thread.sleep(10);
-            spToWrite.addEntry(entryGroceries);
+            spToWrite.addRecord(recordGroceries);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -8,10 +8,10 @@ import persistence.Writable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-// Represents the list of spending entries
+// Represents the list of spending records
 public class SpendingList implements Writable {
 
-    private LinkedList<Entry> spendingList;
+    private LinkedList<Record> spendingList;
     private SortedSet<String> categories;
 
     // EFFECTS: creates empty spending list and empty categories set
@@ -21,13 +21,13 @@ public class SpendingList implements Writable {
     }
 
     // MODIFIES: this
-    // EFFECTS: adds a new entry to the front of the spending list,
-    //          adds this entry's category to the categories set
-    // INVARIANT: entry is valid
-    public void addEntry(Entry entry) {
-        spendingList.addFirst(entry);
+    // EFFECTS: adds a new record to the front of the spending list,
+    //          adds this record's category to the categories set
+    // INVARIANT: record is valid
+    public void addRecord(Record record) {
+        spendingList.addFirst(record);
         // since categories is a set, it won't contain duplicates
-        categories.add(entry.getCategory());
+        categories.add(record.getCategory());
     }
 
     // MODIFIES: this
@@ -40,11 +40,11 @@ public class SpendingList implements Writable {
         categories.add(category.trim());
     }
 
-    // REQUIRES: entry exists in the list
+    // REQUIRES: record exists in the list
     // MODIFIES: this
-    // EFFECTS: removes entry from spending list and returns true if the entry is removed
-    public boolean removeEntry(Entry entry) {
-        return spendingList.remove(entry);
+    // EFFECTS: removes record from spending list and returns true if the record is removed
+    public boolean removeRecord(Record record) {
+        return spendingList.remove(record);
     }
 
     // REQUIRES: category exists in the list
@@ -54,9 +54,9 @@ public class SpendingList implements Writable {
         return categories.remove(category);
     }
 
-    // EFFECTS: returns entry from the spending list at the given index,
+    // EFFECTS: returns record from the spending list at the given index,
     //          throws IndexOutOfBoundsException if index is out of the range
-    public Entry getEntry(int index) throws IndexOutOfBoundsException {
+    public Record getRecord(int index) throws IndexOutOfBoundsException {
         return spendingList.get(index);
     }
 
@@ -64,7 +64,7 @@ public class SpendingList implements Writable {
         return categories;
     }
 
-    public List<Entry> getSpendingList() {
+    public List<Record> getSpendingList() {
         return spendingList;
     }
 
@@ -87,24 +87,24 @@ public class SpendingList implements Writable {
     // MODIFIES: this
     // EFFECTS: sorts spending list by amount spent in descending order (from most expensive to least expensive)
     public void sortByAmountSpent() {
-        sort(Comparator.comparing(Entry::getAmount).reversed());
+        sort(Comparator.comparing(Record::getAmount).reversed());
     }
 
     // MODIFIES: this
     // EFFECTS: sorts spending list by date added (from newer to older)
     public void sortByDate() {
-        sort(Comparator.comparing(Entry::getTimeAdded).reversed());
+        sort(Comparator.comparing(Record::getTimeAdded).reversed());
     }
 
     // MODIFIES: this
     // EFFECTS: sorts spending list by category in alphabetical order
     public void sortByCategory() {
-        sort(Comparator.comparing(Entry::getCategory));
+        sort(Comparator.comparing(Record::getCategory));
     }
 
     // MODIFIES: this
     // EFFECTS: sorts spending list according to comparator
-    private void sort(Comparator<Entry> comparator) {
+    private void sort(Comparator<Record> comparator) {
         spendingList = spendingList.stream()
                 .sorted(comparator)
                 .collect(Collectors.toCollection(LinkedList::new));
@@ -114,15 +114,15 @@ public class SpendingList implements Writable {
     public JSONObject toJsonObject() {
         JSONObject json = new JSONObject();
         json.put("categories", categoriesToJsonArray());
-        json.put("records", entriesToJsonArray());
+        json.put("records", recordsToJsonArray());
         return json;
     }
 
-    // EFFECTS: returns entries from this list as Json Array
-    private JSONArray entriesToJsonArray() {
+    // EFFECTS: returns records from this list as Json Array
+    private JSONArray recordsToJsonArray() {
         JSONArray jsonArray = new JSONArray();
-        for (Entry entry : spendingList) {
-            jsonArray.put(entry.toJsonObject());
+        for (Record record : spendingList) {
+            jsonArray.put(record.toJsonObject());
         }
         return jsonArray;
     }

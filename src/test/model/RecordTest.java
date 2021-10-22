@@ -12,17 +12,17 @@ import java.time.Month;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class EntryTest {
+class RecordTest {
 
     private final String CATEGORY = "Groceries";
     private final String TITLE = "Went to NoFrills";
     private final double AMOUNT = 80.76;
-    private Entry testEntry;
+    private Record testRecord;
 
     @BeforeEach
     void setUp() {
         try {
-            testEntry = new Entry(TITLE, AMOUNT, CATEGORY);
+            testRecord = new Record(TITLE, AMOUNT, CATEGORY);
         } catch (NameException e) {
             fail("Title and category are actually acceptable");
             e.printStackTrace();
@@ -34,103 +34,103 @@ class EntryTest {
 
     @Test
     void testConstructor() {
-        assertEquals(TITLE, testEntry.getTitle());
-        assertEquals(AMOUNT, testEntry.getAmount());
-        assertEquals(CATEGORY, testEntry.getCategory());
+        assertEquals(TITLE, testRecord.getTitle());
+        assertEquals(AMOUNT, testRecord.getAmount());
+        assertEquals(CATEGORY, testRecord.getCategory());
     }
 
     @ParameterizedTest
     @ValueSource(doubles = {0, -45, -34.9})
     void testConstructorThrowNegativeAmountException(double amount) {
         assertThrows(NegativeAmountException.class,
-                () -> new Entry("Went to SaveOn", amount, CATEGORY));
+                () -> new Record("Went to SaveOn", amount, CATEGORY));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"", "    "})
     void testConstructorThrowNameExceptionForTitle(String title) {
-        assertThrows(NameException.class, () -> new Entry(title, 30, CATEGORY));
+        assertThrows(NameException.class, () -> new Record(title, 30, CATEGORY));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"", "    "})
     void testConstructorThrowNameExceptionForCategory(String category) {
-        assertThrows(NameException.class, () -> new Entry("Title", 30, category));
+        assertThrows(NameException.class, () -> new Record("Title", 30, category));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"New Title", "   New Title   "})
     void testSetTitle(String title) {
         try {
-            testEntry.setTitle(title);
+            testRecord.setTitle(title);
         } catch (NameException e) {
             fail("'" + title + "' title is actually acceptable");
             e.printStackTrace();
         }
-        assertEquals(title.trim(), testEntry.getTitle());
+        assertEquals(title.trim(), testRecord.getTitle());
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"", "    "})
     void testSetTitleThrowNameException(String title) {
-        String previousTitle = testEntry.getTitle();
-        assertThrows(NameException.class, () -> testEntry.setTitle(title));
-        assertEquals(previousTitle, testEntry.getTitle());
+        String previousTitle = testRecord.getTitle();
+        assertThrows(NameException.class, () -> testRecord.setTitle(title));
+        assertEquals(previousTitle, testRecord.getTitle());
     }
 
     @ParameterizedTest
     @ValueSource(doubles = {0.01, 90.7})
     void testSetAmount(double amount) {
         try {
-            testEntry.setAmount(amount);
+            testRecord.setAmount(amount);
         } catch (NegativeAmountException e) {
             fail(amount + " amount is actually acceptable");
             e.printStackTrace();
         }
-        assertEquals(amount, testEntry.getAmount());
+        assertEquals(amount, testRecord.getAmount());
     }
 
     @ParameterizedTest
     @ValueSource(doubles = {0, -45, -34.9})
     void testSetAmountThrowNegativeAmountException(double amount) {
-        double oldAmount = testEntry.getAmount();
-        assertThrows(NegativeAmountException.class, () -> testEntry.setAmount(amount));
-        assertEquals(oldAmount, testEntry.getAmount());
+        double oldAmount = testRecord.getAmount();
+        assertThrows(NegativeAmountException.class, () -> testRecord.setAmount(amount));
+        assertEquals(oldAmount, testRecord.getAmount());
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"Category", "     Category      "})
     void testSetCategory(String category) {
         try {
-            testEntry.setCategory(category);
+            testRecord.setCategory(category);
         } catch (NameException e) {
             fail("'" + category + "' category is actually acceptable");
             e.printStackTrace();
         }
-        assertEquals(category.trim(), testEntry.getCategory());
+        assertEquals(category.trim(), testRecord.getCategory());
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"", "    "})
     void testSetCategoryThrowNameException(String category) {
-        String previousCategory = testEntry.getCategory();
-        assertThrows(NameException.class, () -> testEntry.setCategory(category));
-        assertEquals(previousCategory, testEntry.getCategory());
+        String previousCategory = testRecord.getCategory();
+        assertThrows(NameException.class, () -> testRecord.setCategory(category));
+        assertEquals(previousCategory, testRecord.getCategory());
     }
 
     @Test
     void testSetTimeAdded() {
         LocalDateTime time = LocalDateTime.of(2020, Month.DECEMBER, 4, 15, 4);
-        testEntry.setTimeAdded(time.toString());
-        assertEquals(time, testEntry.getTimeAdded());
+        testRecord.setTimeAdded(time.toString());
+        assertEquals(time, testRecord.getTimeAdded());
     }
 
     @Test
     void testToString() {
-        String expected = "Entry[" +
-                "title='" + testEntry.getTitle() + "', " +
-                "amount=" + testEntry.getAmount() + ", " +
-                "category='" + testEntry.getCategory() + "']";
-        assertEquals(expected, testEntry.toString());
+        String expected = "Record[" +
+                "title='" + testRecord.getTitle() + "', " +
+                "amount=" + testRecord.getAmount() + ", " +
+                "category='" + testRecord.getCategory() + "']";
+        assertEquals(expected, testRecord.toString());
     }
 }

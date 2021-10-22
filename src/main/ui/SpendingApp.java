@@ -1,8 +1,8 @@
 package ui;
 
-import model.Entry;
+import model.Record;
 import model.SpendingList;
-import model.exceptions.EntryFieldException;
+import model.exceptions.RecordFieldException;
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
 import persistence.JsonReader;
@@ -20,13 +20,13 @@ public class SpendingApp {
     private SpendingList spendingList;
     private Scanner input;
 
-    // EFFECTS: inits categories, entries, scanner, and runs the app
+    // EFFECTS: inits categories, records, scanner, and runs the app
     public SpendingApp() {
         try {
-            initEntries();
+            initRecords();
             initScanner();
             runApp();
-        } catch (EntryFieldException e) {
+        } catch (RecordFieldException e) {
             System.out.println("Couldn't initialize the required app components");
         }
     }
@@ -50,14 +50,14 @@ public class SpendingApp {
         }
     }
 
-    // EFFECTS: displays current list of entries and commands to operate on the list
+    // EFFECTS: displays current list of records and commands to operate on the list
     private void displayMenu() {
-        printSpendingEntries();
+        printSpendingRecords();
         System.out.println("\nSelect one of these commands:");
-        System.out.println("a -> add new entry");
-        System.out.println("c -> change existing entry");
-        System.out.println("r -> removeEntry entry");
-        System.out.println("s -> sort entries");
+        System.out.println("a -> add new record");
+        System.out.println("c -> change existing record");
+        System.out.println("r -> remove record");
+        System.out.println("s -> sort records");
         System.out.println("l -> load spending list from file");
         System.out.println("p -> save your changes");
         System.out.println(QUIT_COMMAND + " -> quit");
@@ -85,16 +85,16 @@ public class SpendingApp {
     private void processCommand(String command) {
         switch (command) {
             case "a":
-                addNewEntry(new Entry());
+                addNewRecord(new Record());
                 break;
             case "r":
-                removeEntry();
+                removeRecord();
                 break;
             case "s":
-                sortEntries();
+                sortRecords();
                 break;
             case "c":
-                changeEntry();
+                changeRecord();
                 break;
             case "l":
                 loadFromFile();
@@ -139,87 +139,87 @@ public class SpendingApp {
         }
     }
 
-    // MODIFIES: this and entry
-    // EFFECTS: asks user to enter each entry field separately
-    //          and populates entry fields if user input is valid
-    private void addNewEntry(Entry entry) {
-        String title = addTitle(entry);
+    // MODIFIES: this and record
+    // EFFECTS: asks user to enter each record field separately
+    //          and populates record fields if user input is valid
+    private void addNewRecord(Record record) {
+        String title = addTitle(record);
 
         System.out.println("Title: " + title);
-        double amount = addAmount(entry);
+        double amount = addAmount(record);
 
         System.out.println("Title: " + title);
         System.out.println("Amount: " + amount);
-        String category = addCategory(entry);
+        String category = addCategory(record);
 
         assert !(Objects.isNull(title) || Objects.isNull(category));
-        spendingList.addEntry(entry);
+        spendingList.addRecord(record);
     }
 
-    // MODIFIES: entry
-    // EFFECTS: asks user to enter category of financial entry and returns the entered category,
+    // MODIFIES: record
+    // EFFECTS: asks user to enter category of financial record and returns the entered category,
     //          asks user to enter again if they enter a blank string
-    private String addCategory(Entry entry) {
+    private String addCategory(Record record) {
         System.out.println("\nAdd Category: ");
         printCategories();
         String category = input.next();
         try {
-            entry.setCategory(category);
+            record.setCategory(category);
             spendingList.addCategory(category);
-            return entry.getCategory();
+            return record.getCategory();
         } catch (NameException e) {
             enteredWrong("string format");
-            return addCategory(entry);
+            return addCategory(record);
         }
     }
 
-    // MODIFIES: entry
-    // EFFECTS: asks user to enter amount of financial entry and returns the entered amount,
+    // MODIFIES: record
+    // EFFECTS: asks user to enter amount of financial record and returns the entered amount,
     //          asks user to enter again if they enter not acceptable amount
-    private double addAmount(Entry entry) {
+    private double addAmount(Record record) {
         System.out.println("\nAdd Amount Spent in CAD");
         try {
             double amount = Double.parseDouble(input.next());
-            entry.setAmount(amount);
+            record.setAmount(amount);
             return amount;
         } catch (NegativeAmountException e) {
             System.out.println("Error: " + e.getMessage());
-            return addAmount(entry);
+            return addAmount(record);
         } catch (NumberFormatException e) {
             enteredWrong("number format");
-            return addAmount(entry);
+            return addAmount(record);
         }
     }
 
-    // MODIFIES: entry
-    // EFFECTS: asks user to enter title of financial entry and returns the entered title,
+    // MODIFIES: record
+    // EFFECTS: asks user to enter title of financial record and returns the entered title,
     //          asks user to enter again if they enter not acceptable title
-    private String addTitle(Entry entry) {
+    private String addTitle(Record record) {
         System.out.println("\nAdd Title: ");
         try {
             String title = input.next();
-            entry.setTitle(title);
+            record.setTitle(title);
             return title;
         } catch (NameException e) {
             System.out.println("Error: " + e.getMessage());
-            return addTitle(entry);
+            return addTitle(record);
         }
     }
 
     // MODIFIES: this
-    // effects: asks used to choose entry and removes it
-    // EFFECTS: removes entry by its id if an entry with such id is found,
+    // effects: asks used to choose record and removes it
+    // EFFECTS: removes record by its id if a record with such id is found,
     //          asks user to enter id again otherwise
-    private void removeEntry() {
-        int index = readEntryIndex();
-        Entry chosenEntry = spendingList.getEntry(index);
-        spendingList.removeEntry(chosenEntry);
+    private void removeRecord() {
+        int index = readRecordIndex();
+        Record chosenRecord = spendingList.getRecord(index);
+        spendingList.removeRecord(chosenRecord);
     }
 
     // MODIFIES: this
-    // EFFECTS: asks user how they want to sort the entries and sorts them,
+    // EFFECTS: asks user how they want to sort the records and sorts them,
     //          asks user to reenter sorting command if they entered a wrong one
-    private void sortEntries() {
+    private void sortRecords() {
         printSortCommands();
         switch (input.next()) {
             case "am":
@@ -233,104 +233,104 @@ public class SpendingApp {
                 break;
             default:
                 enteredWrong("sorting command");
-                printSpendingEntries();
-                sortEntries();
+                printSpendingRecords();
+                sortRecords();
                 break;
         }
     }
 
     // MODIFIES: this
-    // EFFECTS: asks user to input id of the entry they want to change and specify the change,
+    // EFFECTS: asks user to input id of the record they want to change and specify the change,
     //          asks them to reenter id, if entered id isn't found
-    private void changeEntry() {
-        int index = readEntryIndex();
-        Entry foundEntry = spendingList.getEntry(index);
-        System.out.println(foundEntry);
+    private void changeRecord() {
+        int index = readRecordIndex();
+        Record foundRecord = spendingList.getRecord(index);
+        System.out.println(foundRecord);
         printChangeCommands();
         String command = input.next();
         if (!command.equals(QUIT_COMMAND)) {
-            processChange(foundEntry, command);
+            processChange(foundRecord, command);
         }
     }
 
     // MODIFIES: this
-    // EFFECTS: asks user if they want to further change the entry or quit the change menu,
-    //          changes specified entry field if user wants to change it
-    // INVARIANT: entry is valid
-    private void changeEntry(Entry entry) {
-        assert !(Objects.isNull(entry.getTitle()) || Objects.isNull(entry.getCategory()));
-        System.out.println(entry);
+    // EFFECTS: asks user if they want to further change the record or quit the change menu,
+    //          changes specified record field if user wants to change it
+    // INVARIANT: record is valid
+    private void changeRecord(Record record) {
+        assert !(Objects.isNull(record.getTitle()) || Objects.isNull(record.getCategory()));
+        System.out.println(record);
         printChangeCommands();
         String command = input.next();
         if (!command.equals(QUIT_COMMAND)) {
-            processChange(entry, command);
+            processChange(record, command);
         }
     }
 
-    // MODIFIES: entry
-    // EFFECTS: changes specific aspects of the entry,
-    //          and asks if user wants to change entry further
-    private void processChange(Entry entry, String command) {
+    // MODIFIES: record
+    // EFFECTS: changes specific aspects of the record,
+    //          and asks if user wants to change record further
+    private void processChange(Record record, String command) {
         switch (command) {
             case "ti":
-                changeTitle(entry);
+                changeTitle(record);
                 break;
             case "am":
-                changeAmount(entry);
+                changeAmount(record);
                 break;
             case "ca":
-                changeCategory(entry);
+                changeCategory(record);
                 break;
             default:
                 enteredWrong("changing command");
                 break;
         }
-        changeEntry(entry);
+        changeRecord(record);
     }
 
-    // MODIFIES: entry
-    // EFFECTS: changes entry's title,
+    // MODIFIES: record
+    // EFFECTS: changes record's title,
     //          asks user to reenter title if their input is unacceptable
-    private void changeTitle(Entry entry) {
+    private void changeTitle(Record record) {
         System.out.println("\nNew title:");
         try {
             String title = input.next();
-            entry.setTitle(title);
+            record.setTitle(title);
         } catch (NameException e) {
             System.out.println("Error: " + e.getMessage());
-            changeTitle(entry);
+            changeTitle(record);
         }
     }
 
-    // MODIFIES: entry
-    // EFFECTS: changes entry's amount
+    // MODIFIES: record
+    // EFFECTS: changes record's amount
     //          asks user to reenter amount if their input is unacceptable
-    private void changeAmount(Entry entry) {
+    private void changeAmount(Record record) {
         System.out.println("\nNew amount: CAD");
         try {
             double amount = Double.parseDouble(input.next());
-            entry.setAmount(amount);
+            record.setAmount(amount);
         } catch (NegativeAmountException e) {
             System.out.println("Error: " + e.getMessage());
         } catch (NumberFormatException e) {
             enteredWrong("number format");
-            changeAmount(entry);
+            changeAmount(record);
         }
     }
 
-    // MODIFIES: entry
-    // EFFECTS: changes entry's category
+    // MODIFIES: record
+    // EFFECTS: changes record's category
     //          asks user to reenter category if they enter a blank string
-    private void changeCategory(Entry entry) {
+    private void changeCategory(Record record) {
         printCategories();
         System.out.println("\nChanged category: ");
         String category = input.next();
         try {
-            entry.setCategory(category);
+            record.setCategory(category);
             spendingList.addCategory(category);
         } catch (NameException e) {
             enteredWrong("string format");
-            changeCategory(entry);
+            changeCategory(record);
         }
     }
 
@@ -340,28 +340,28 @@ public class SpendingApp {
         System.out.println(String.join(", ", spendingList.getCategories()));
     }
 
-    // EFFECTS: prints current entries
-    private void printSpendingEntries() {
-        System.out.println("\nHere's your list of entries: ");
+    // EFFECTS: prints current records
+    private void printSpendingRecords() {
+        System.out.println("\nHere's your list of records: ");
         int index = 1;
-        for (Entry entry : spendingList.getSpendingList()) {
-            System.out.println(index + ": " + entry);
+        for (Record record : spendingList.getSpendingList()) {
+            System.out.println(index + ": " + record);
             index++;
         }
     }
 
     // MODIFIES: this
-    // EFFECTS: inits entries with slight delay between each one,
+    // EFFECTS: inits records with slight delay between each one,
     //          throws NameException if title is blank
     //          throws NegativeAmountException if amount <= 0
-    private void initEntries() throws NegativeAmountException, NameException {
+    private void initRecords() throws NegativeAmountException, NameException {
         spendingList = new SpendingList();
         try {
-            spendingList.addEntry(new Entry("Went to Montreal", 507.68, "Travel"));
+            spendingList.addRecord(new Record("Went to Montreal", 507.68, "Travel"));
             Thread.sleep(10);
-            spendingList.addEntry(new Entry("Bought jeans", 68.98, "Clothing"));
+            spendingList.addRecord(new Record("Bought jeans", 68.98, "Clothing"));
             Thread.sleep(10);
-            spendingList.addEntry(new Entry("Went to NoFrills", 70.67, "Groceries"));
+            spendingList.addRecord(new Record("Went to NoFrills", 70.67, "Groceries"));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -373,36 +373,36 @@ public class SpendingApp {
         input = new Scanner(System.in).useDelimiter("\n");
     }
 
-    // EFFECTS: returns index of an entry that user chose,
+    // EFFECTS: returns index of a record that user chose,
     //          asks user to reenter index if they entered a wrong-formatted number
-    //          or there's no entry with such index
-    private int readEntryIndex() {
-        System.out.println("\nEnter entry Index: ");
+    //          or there's no record with such index
+    private int readRecordIndex() {
+        System.out.println("\nEnter record Index: ");
         try {
             int index = Integer.parseInt(input.next());
             --index;
-            spendingList.getEntry(index);
+            spendingList.getRecord(index);
             return index;
         } catch (NumberFormatException e) {
             enteredWrong("number format");
-            printSpendingEntries();
-            return readEntryIndex();
+            printSpendingRecords();
+            return readRecordIndex();
         } catch (IndexOutOfBoundsException e) {
-            enteredWrong("entry index");
-            printSpendingEntries();
-            return readEntryIndex();
+            enteredWrong("record index");
+            printSpendingRecords();
+            return readRecordIndex();
         }
     }
 
-    // EFFECTS: prints types of sorting user can perform on entries
+    // EFFECTS: prints types of sorting user can perform on records
     private void printSortCommands() {
-        System.out.println("\nHow do you want to sort entries?");
+        System.out.println("\nHow do you want to sort records?");
         System.out.println("am -> By amount spent (in descending order)");
         System.out.println("ca -> By category (in alphabetic order)");
         System.out.println("da -> By date (from newer to older)");
     }
 
-    // EFFECTS: prints entry with given id and shows changes user can perform on that entry
+    // EFFECTS: prints record with given id and shows changes user can perform on that record
     private void printChangeCommands() {
         System.out.println("ti -> Title");
         System.out.println("am -> Amount");
