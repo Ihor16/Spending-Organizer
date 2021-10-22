@@ -114,7 +114,7 @@ public class SpendingList implements Writable {
     public JSONObject toJsonObject() {
         JSONObject json = new JSONObject();
         json.put("categories", categoriesToJsonArray());
-        json.put("entries", entriesToJsonArray());
+        json.put("records", entriesToJsonArray());
         return json;
     }
 

@@ -97,8 +97,10 @@ class SpendingListTest {
 
     @Test
     void testRemoveEntry() {
+        int previousSetSize = spendingList.sizeOfSet();
         assertTrue(spendingList.removeEntry(entryGroceries));
         assertEquals(1, spendingList.sizeOfList());
+        assertEquals(previousSetSize, spendingList.sizeOfSet());
     }
 
     @Test
