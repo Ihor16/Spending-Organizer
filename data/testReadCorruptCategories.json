@@ -1,20 +1,20 @@
 {
-  "spending list": [
+  "records": [
     {
       "amount": 100.76,
-      "timeAdded": "2021-10-18T22:39:05.119",
+      "timeAdded": "2021-10-21T17:22:32.151",
       "title": "Went to SaveOnFoods",
       "category": "Groceries"
     },
     {
       "amount": 401.34,
-      "timeAdded": "2021-10-18T22:39:05.103",
+      "timeAdded": "2021-10-21T17:22:32.125",
       "title": "Went to Toronto",
       "category": "Travel"
     }
   ],
   "categories": [
     "",
-    "   "
+    "     "
   ]
 }

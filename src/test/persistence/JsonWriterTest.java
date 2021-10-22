@@ -4,13 +4,14 @@ import model.Entry;
 import model.SpendingList;
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,7 +50,7 @@ class JsonWriterTest {
 
         try {
             JsonReader reader = new JsonReader(path);
-            SpendingList fromFile = reader.readSpendingList();
+            SpendingList fromFile = reader.read();
             assertEquals(new SpendingList(), fromFile);
         } catch (IOException | NegativeAmountException | NameException e) {
             fail("File exists and is not corrupted");
@@ -59,7 +60,7 @@ class JsonWriterTest {
 
     @Test
     void testWriteEmptySpendingList() {
-        Arrays.asList(entryGroceries, entryTravel).forEach(spToWrite::removeEntry);
+        Stream.of(entryGroceries, entryTravel).forEach(spToWrite::removeEntry);
         String path = "./data/testWriteEmptySpendingList.json";
 
         try (JsonWriter writer = new JsonWriter(path)){
@@ -72,7 +73,7 @@ class JsonWriterTest {
 
         try {
             JsonReader reader = new JsonReader(path);
-            SpendingList fromFile = reader.readSpendingList();
+            SpendingList fromFile = reader.read();
             assertEquals(spToWrite, fromFile);
         } catch (IOException | NegativeAmountException | NameException e) {
             fail("File exists and is not corrupted");
@@ -81,7 +82,7 @@ class JsonWriterTest {
     }
 
     @Test
-    void testWriteEmptyCategory() {
+    void testWriteEmptyCategories() {
         Stream.of(entryGroceries, entryTravel)
                 .map(Entry::getCategory)
                 .forEach(spToWrite::removeCategory);
@@ -97,7 +98,7 @@ class JsonWriterTest {
 
         try {
             JsonReader reader = new JsonReader(path);
-            SpendingList fromFile = reader.readSpendingList();
+            SpendingList fromFile = reader.read();
             assertEquals(spToWrite, fromFile);
         } catch (IOException | NegativeAmountException | NameException e) {
             fail("File exists and is not corrupted");
@@ -119,7 +120,7 @@ class JsonWriterTest {
 
         try {
             JsonReader reader = new JsonReader(path);
-            SpendingList fromFile = reader.readSpendingList();
+            SpendingList fromFile = reader.read();
             assertEquals(spToWrite, fromFile);
         } catch (IOException | NegativeAmountException | NameException e) {
             fail("File exists and is not corrupted");

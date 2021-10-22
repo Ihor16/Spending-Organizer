@@ -5,10 +5,15 @@ import model.SpendingList;
 import model.exceptions.EntryFieldException;
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
+import persistence.JsonReader;
+import persistence.JsonWriter;
 
+import java.io.FileNotFoundException;
+import java.nio.file.InvalidPathException;
 import java.util.Objects;
 import java.util.Scanner;
 
+// Class for UI console user interactions
 public class SpendingApp {
 
     private static final String QUIT_COMMAND = "q";
@@ -64,7 +69,7 @@ public class SpendingApp {
         String answer = input.next();
         switch (answer) {
             case "Y":
-//                saveToFile();
+                saveToFile();
                 break;
             case "N":
                 System.out.println("Your file wasn't saved");
@@ -92,10 +97,10 @@ public class SpendingApp {
                 changeEntry();
                 break;
             case "l":
-//                loadFromFile();
+                loadFromFile();
                 break;
             case "p":
-//                saveToFile();
+                saveToFile();
                 break;
             default:
                 enteredWrong("command");
@@ -103,40 +108,36 @@ public class SpendingApp {
         }
     }
 
-//    // MODIFIES: this
-//    // EFFECTS: asks user to enter a filename they want to load from,
-//    //          and loads app state from that file
-//    private void loadFromFile() {
-//        System.out.println("Enter file name, e.g, [filename]");
-//        String fileName = input.next();
-//        JsonReader reader = new JsonReader("./data/" + fileName + ".json");
-//        try {
-//            reader.openFile();
-//            SpendingList fileSpendingList = reader.readSpendingList();
-//            Categories fileCategories = reader.readCategories();
-//            spendingList = fileSpendingList;
-//            categories = fileCategories;
-//        } catch (NameException | NegativeAmountException e) {
-//            System.out.println("The file you're trying to open is corrupted...");
-//        } catch (InvalidPathException e) {
-//            System.out.println("Your path contains invalid characters...");
-//        } catch (Exception e) {
-//            System.out.println("There's an error loading your file...");
-//        }
-//    }
+    // MODIFIES: this
+    // EFFECTS: asks user to enter a filename they want to load from,
+    //          and loads app state from that file
+    private void loadFromFile() {
+        System.out.println("Enter file name, e.g, [filename]");
+        String fileName = input.next();
+        JsonReader reader = new JsonReader("./data/" + fileName + ".json");
+        try {
+            spendingList = reader.read();
+        } catch (NameException | NegativeAmountException e) {
+            System.out.println("The file you're trying to open is corrupted...");
+        } catch (InvalidPathException e) {
+            enteredWrong("file path");
+        } catch (Exception e) {
+            System.out.println("There's an error loading your file...");
+        }
+    }
 
-//    // EFFECTS: asks user where to save file and saves app's state to it
-//    private void saveToFile() {
-//        System.out.println("Enter filename where you want to save, e.g., [filename]");
-//        String fileName = input.next();
-//        try (JsonWriter writer = new JsonWriter("./data/" + fileName + ".json")) {
-//            writer.open();
-//            writer.write(spendingList, categories);
-//            System.out.println("Your file was saved to " + fileName + ".json");
-//        } catch (FileNotFoundException e) {
-//            enteredWrong("filename format");
-//        }
-//    }
+    // EFFECTS: asks user where to save file and saves app's state to it
+    private void saveToFile() {
+        System.out.println("Enter filename where you want to save your spending list, e.g., [filename]");
+        String fileName = input.next();
+        try (JsonWriter writer = new JsonWriter("./data/" + fileName + ".json")) {
+            writer.open();
+            writer.write(spendingList);
+            System.out.println("Your file was saved to " + fileName + ".json");
+        } catch (FileNotFoundException e) {
+            enteredWrong("filename format");
+        }
+    }
 
     // MODIFIES: this and entry
     // EFFECTS: asks user to enter each entry field separately

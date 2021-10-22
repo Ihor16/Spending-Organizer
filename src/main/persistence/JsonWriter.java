@@ -6,7 +6,7 @@ import org.json.JSONObject;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
-// Represents writer that creates a JSON file from provided financial entries list
+// Represents writer that creates a JSON file from provided spending list
 // Implementation of the class is based on the JsonWriter class from JsonSerializationDemo
 public class JsonWriter implements AutoCloseable {
     private static final int TAB = 2;
@@ -19,7 +19,7 @@ public class JsonWriter implements AutoCloseable {
 
     // MODIFIES: this
     // EFFECTS: opens writer,
-    //          throws FileNotFoundException if it can't open file with destination
+    //          throws FileNotFoundException if file with path can't be found
     public void open() throws FileNotFoundException {
         writer = new PrintWriter(destination);
     }
@@ -28,13 +28,7 @@ public class JsonWriter implements AutoCloseable {
     // EFFECTS: writes spendingList to a JSON file and saves it
     public void write(SpendingList spendingList) {
         JSONObject json = spendingList.toJsonObject();
-        saveToFile(json.toString(TAB));
-    }
-
-    // MODIFIES: this
-    // EFFECTS: saves json to file at the destination
-    private void saveToFile(String json) {
-        writer.print(json);
+        writer.print(json.toString(TAB));
     }
 
     @Override
