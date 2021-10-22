@@ -1,7 +1,7 @@
 package model.exceptions;
 
-// Exception for invalid entry's amount field
-public class NegativeAmountException extends EntryFieldException {
+// Exception for invalid record's amount field
+public class NegativeAmountException extends RecordFieldException {
 
     public NegativeAmountException() {
         super("Amount must be > 0");

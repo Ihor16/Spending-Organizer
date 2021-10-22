@@ -9,23 +9,23 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-// Represents a financial entry where user stores their spending
-public class Entry implements Writable {
+// Represents a financial record where user stores their spending
+public class Record implements Writable {
     private String title;
     private double amount;
     private String category;
     private LocalDateTime timeAdded;
 
-    // EFFECTS: creates a new entry with incremented id, and timeAdded set to now
-    public Entry() {
+    // EFFECTS: creates a new record with incremented id, and timeAdded set to now
+    public Record() {
         this.timeAdded = LocalDateTime.now();
     }
 
-    // EFFECTS: creates a new entry with amount, trimmed title, and trimmed category,
+    // EFFECTS: creates a new record with amount, trimmed title, and trimmed category,
     //          timeAdded set to now,
     //          throws NameException if title or category is blank
     //          throws NegativeAmountException if amount <= 0
-    public Entry(String title, double amount, String category) throws NameException,
+    public Record(String title, double amount, String category) throws NameException,
             NegativeAmountException {
         if (isBlank(title)) {
             throw new NameException("title");
@@ -44,7 +44,7 @@ public class Entry implements Writable {
     }
 
     // MODIFIES: this
-    // EFFECTS: trims title and assigns it to the entry,
+    // EFFECTS: trims title and assigns it to the record,
     //          throws NameException if provided title is blank
     public void setTitle(String title) throws NameException {
         if (isBlank(title)) {
@@ -54,7 +54,7 @@ public class Entry implements Writable {
     }
 
     // MODIFIES: this
-    // EFFECTS: trims category and assigns it to the entry
+    // EFFECTS: trims category and assigns it to the record
     //          throws NameException if provided category is blank
     public void setCategory(String category) throws NameException {
         if (isBlank(category)) {
@@ -64,7 +64,7 @@ public class Entry implements Writable {
     }
 
     // MODIFIES: this
-    // EFFECTS: sets entry amount,
+    // EFFECTS: sets record amount,
     //          throws NegativeAmountException if amount is <= 0
     public void setAmount(double amount) throws NegativeAmountException {
         if (amount <= 0) {
@@ -73,7 +73,7 @@ public class Entry implements Writable {
         this.amount = amount;
     }
 
-    // REQUIREMENT: is used only when reading Entry from a file
+    // REQUIREMENT: is used only when reading record from a file
     // MODIFIES: this
     // EFFECTS: sets the time when this was created
     public void setTimeAdded(String timeStamp) {
@@ -105,9 +105,9 @@ public class Entry implements Writable {
     }
 
     @Override
-    // EFFECTS: returns a string representation of Entry
+    // EFFECTS: returns a string representation of record
     public String toString() {
-        return new StringJoiner(", ", Entry.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", Record.class.getSimpleName() + "[", "]")
                 .add("title='" + title + "'")
                 .add("amount=" + amount)
                 .add("category='" + category + "'")
@@ -134,17 +134,17 @@ public class Entry implements Writable {
             return false;
         }
 
-        Entry entry = (Entry) o;
-        if (Double.compare(entry.amount, amount) != 0) {
+        Record record = (Record) o;
+        if (Double.compare(record.amount, amount) != 0) {
             return false;
         }
-        if (!Objects.equals(title, entry.title)) {
+        if (!Objects.equals(title, record.title)) {
             return false;
         }
-        if (!Objects.equals(category, entry.category)) {
+        if (!Objects.equals(category, record.category)) {
             return false;
         }
-        return Objects.equals(timeAdded, entry.timeAdded);
+        return Objects.equals(timeAdded, record.timeAdded);
     }
 
     @Override

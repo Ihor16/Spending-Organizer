@@ -1,9 +1,9 @@
 package model.exceptions;
 
-// Exception for invalid entry's title and category
-public class NameException extends EntryFieldException {
+// Exception for invalid record's title and category
+public class NameException extends RecordFieldException {
 
-    public NameException(String entryField) {
-        super("Entry's " + entryField.toLowerCase() + " cannot be blank");
+    public NameException(String recordField) {
+        super("Record's " + recordField.toLowerCase() + " cannot be blank");
     }
 }

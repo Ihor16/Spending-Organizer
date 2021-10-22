@@ -6,7 +6,7 @@
 
 This application allows user to store and categorize their spending. 
 User can add spending entries to a list and refer to it later to see how much they spend every month.
-Spending entry consists of "Title", "Amount Spent", and "Category of spending" (e.g. "Went to NoFrills" | 70 CAD | Groceries).
+Spending record consists of "Title", "Amount Spent", and "Category of spending" (e.g. "Went to NoFrills" | 70 CAD | Groceries).
 Additionally, user can filter the spending entries by categories and/or sort them by the amount spent.
 
 - **Who will use it?**
@@ -23,11 +23,11 @@ And I'd love to spice up my implementations by using Java Streams.
 
 1. As a user, I want to be able to add new spending entries
 
-For example, spending entry is a class *Entry* and spending list is a class *SpendingList*. 
-When user adds a new spending entry in the app, we want to create a new instance of the *Entry* class
+For example, spending record is a class *Entry* and spending list is a class *SpendingList*. 
+When user adds a new spending record in the app, we want to create a new instance of the *Entry* class
 and add it to the *SpendingList* class (class that stores multiple *Entries*).
 
-2. As a user, I want to be able to remove an existing entry
+2. As a user, I want to be able to remove an existing record
 3. As a user, I want to be able to view all entries added
 4. As a user, I want to be able to sort my entries by:
    1. Amount spent in descending order

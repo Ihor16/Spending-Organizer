@@ -1,6 +1,6 @@
 package persistence;
 
-import model.Entry;
+import model.Record;
 import model.SpendingList;
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
@@ -43,7 +43,7 @@ public class JsonReader {
     //          throws NameException or NegativeAmountException if file is corrupted
     private SpendingList readSpendingList() throws NameException, NegativeAmountException {
         SpendingList spendingList = new SpendingList();
-        parseEntry(spendingList);
+        parseRecord(spendingList);
         parseCategory(spendingList);
         return spendingList;
     }
@@ -61,16 +61,16 @@ public class JsonReader {
     // MODIFIES: spendingList
     // EFFECTS: adds records from json to spendingList
     //          throws NameException or NegativeAmountException if records in the file are corrupted
-    private void parseEntry(SpendingList spendingList) throws NameException, NegativeAmountException {
+    private void parseRecord(SpendingList spendingList) throws NameException, NegativeAmountException {
         JSONArray jsonArray = json.getJSONArray("records");
         for (int i = 0; i < jsonArray.length(); i++) {
-            Entry entry = new Entry();
-            JSONObject jsonEntry = jsonArray.getJSONObject(i);
-            entry.setTitle(jsonEntry.getString("title"));
-            entry.setAmount(jsonEntry.getDouble("amount"));
-            entry.setCategory(jsonEntry.getString("category"));
-            entry.setTimeAdded(jsonEntry.getString("timeAdded"));
-            spendingList.addEntry(entry);
+            Record record = new Record();
+            JSONObject jsonRecord = jsonArray.getJSONObject(i);
+            record.setTitle(jsonRecord.getString("title"));
+            record.setAmount(jsonRecord.getDouble("amount"));
+            record.setCategory(jsonRecord.getString("category"));
+            record.setTimeAdded(jsonRecord.getString("timeAdded"));
+            spendingList.addRecord(record);
         }
         spendingList.sortByDate();
     }
