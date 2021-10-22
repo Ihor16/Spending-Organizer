@@ -30,7 +30,7 @@ class JsonWriterTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"./data/n|@$$oFile", "./data/myFi|\0le.txt", "./f\\s123124ile.json"})
+    @ValueSource(strings = {"./data/testing/n|@$$oFile", "./data/testing/myFi|\0le.txt", "./f\\s123124ile.json"})
     void testWriteUnacceptableFileName(String fileName) {
         JsonWriter jsonWriter = new JsonWriter(fileName);
         assertThrows(IOException.class, jsonWriter::open);
@@ -38,7 +38,7 @@ class JsonWriterTest {
 
     @Test
     void testWriteEmptyFile() {
-        String path = "./data/testWriterEmptyFile.json";
+        String path = "./data/testing/testWriterEmptyFile.json";
 
         try (JsonWriter writer = new JsonWriter(path)){
             writer.open();
@@ -61,7 +61,7 @@ class JsonWriterTest {
     @Test
     void testWriteEmptySpendingList() {
         Stream.of(recordGroceries, recordTravel).forEach(spToWrite::removeRecord);
-        String path = "./data/testWriteEmptySpendingList.json";
+        String path = "./data/testing/testWriteEmptySpendingList.json";
 
         try (JsonWriter writer = new JsonWriter(path)){
             writer.open();
@@ -87,7 +87,7 @@ class JsonWriterTest {
                 .map(Record::getCategory)
                 .forEach(spToWrite::removeCategory);
 
-        String path = "./data/testWriteEmptyCategory.json";
+        String path = "./data/testing/testWriteEmptyCategory.json";
         try (JsonWriter writer = new JsonWriter(path)){
             writer.open();
             writer.write(spToWrite);
@@ -108,7 +108,7 @@ class JsonWriterTest {
 
     @Test
     void testWriteRegularFile() {
-        String path = "./data/testWriteRegularFile.json";
+        String path = "./data/testing/testWriteRegularFile.json";
 
         try (JsonWriter writer = new JsonWriter(path)){
             writer.open();

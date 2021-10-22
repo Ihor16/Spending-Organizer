@@ -2,19 +2,16 @@
   "records": [
     {
       "amount": 100.76,
-      "timeAdded": "2021-10-21T17:51:39.863",
+      "timeAdded": "2021-10-22T00:19:43.051",
       "title": "Went to SaveOnFoods",
       "category": "Groceries"
     },
     {
       "amount": 401.34,
-      "timeAdded": "2021-10-21T17:51:39.838",
+      "timeAdded": "2021-10-22T00:19:43.038",
       "title": "Went to Toronto",
       "category": "Travel"
     }
   ],
-  "categories": [
-    "Groceries",
-    "Travel"
-  ]
+  "categories": []
 }

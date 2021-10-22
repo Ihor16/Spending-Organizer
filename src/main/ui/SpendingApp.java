@@ -8,10 +8,11 @@ import model.exceptions.NegativeAmountException;
 import persistence.JsonReader;
 import persistence.JsonWriter;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.InvalidPathException;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 // Class for UI console user interactions
 public class SpendingApp {
@@ -109,25 +110,70 @@ public class SpendingApp {
     }
 
     // MODIFIES: this
-    // EFFECTS: asks user to enter a filename they want to load from,
-    //          and loads app state from that file
+    // EFFECTS: loads app state from file chosen by user
     private void loadFromFile() {
-        System.out.println("Enter file name, e.g, [filename]");
-        String fileName = input.next();
-        JsonReader reader = new JsonReader("./data/" + fileName + ".json");
-        try {
-            spendingList = reader.read();
-        } catch (NameException | NegativeAmountException e) {
-            System.out.println("The file you're trying to open is corrupted...");
-        } catch (InvalidPathException e) {
-            enteredWrong("file path");
-        } catch (Exception e) {
-            System.out.println("There's an error loading your file...");
+        askAboutSaving();
+        String fileName = askFilename();
+        if (fileName.isEmpty()) {
+            System.out.println("\nYou don't have saved files...");
+        } else {
+            JsonReader reader = new JsonReader("./data/" + fileName);
+            try {
+                spendingList = reader.read();
+            } catch (NameException | NegativeAmountException e) {
+                System.out.println("The file you're trying to open is corrupted...");
+            } catch (InvalidPathException e) {
+                enteredWrong("file path");
+            } catch (Exception e) {
+                System.out.println("There's an error loading your file...");
+            }
         }
     }
 
-    // EFFECTS: asks user where to save file and saves app's state to it
+    // EFFECTS: returns filename user wants to load from
+    private String askFilename() {
+        List<String> files = getFilenames();
+        if (files.isEmpty()) {
+            return "";
+        }
+        System.out.println("\nSelect # of the file to load from");
+        for (int i = 1; i <= files.size(); i++) {
+            System.out.println(i + ": " + files.get(i - 1));
+        }
+        int number;
+        String name;
+        try {
+            number = input.nextInt();
+            name = files.get(number - 1);
+        } catch (InputMismatchException | IndexOutOfBoundsException e) {
+            return askFilename();
+        }
+        return name;
+    }
+
+    // EFFECTS: returns List<String> of all .json file names in
+    //          ./data/ directory
+    private List<String> getFilenames() throws NullPointerException {
+        // Implementation of retrieving list of names is taken from
+        // https://stackabuse.com/java-list-files-in-a-directory/
+        File file = new File("./data");
+        String[] files;
+        try {
+            files = Objects.requireNonNull(file.list());
+        } catch (NullPointerException e) {
+            return Collections.emptyList();
+        }
+        return Arrays.stream(files).filter(n -> n.contains(".json"))
+                .collect(Collectors.toList());
+    }
+
+    // EFFECTS: shows alredy saved files if present,
+    //          asks user where to save file and saves app's state to it
     private void saveToFile() {
+        if (!getFilenames().isEmpty()) {
+            System.out.println("Here are your saved files");
+            getFilenames().forEach(System.out::println);
+        }
         System.out.println("Enter filename where you want to save your spending list, e.g., [filename]");
         String fileName = input.next();
         try (JsonWriter writer = new JsonWriter("./data/" + fileName + ".json")) {

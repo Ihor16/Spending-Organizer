@@ -1,0 +1,71 @@
+{
+  "records": [
+    {
+      "amount": 120,
+      "timeAdded": "2021-10-21T22:33:41.925",
+      "title": "Jeans",
+      "category": "Clothing"
+    },
+    {
+      "amount": 900,
+      "timeAdded": "2021-10-21T22:33:41.927",
+      "title": "Housing",
+      "category": "Housing fee"
+    },
+    {
+      "amount": 70,
+      "timeAdded": "2021-10-21T22:33:41.930",
+      "title": "Cinema",
+      "category": "Recreation & Entertainment"
+    },
+    {
+      "amount": 700,
+      "timeAdded": "2021-10-21T22:33:41.935",
+      "title": "Went to Victoria",
+      "category": "Travel"
+    },
+    {
+      "amount": 98,
+      "timeAdded": "2021-10-21T22:33:41.940",
+      "title": "Shorts & T-Shirt",
+      "category": "Clothing"
+    },
+    {
+      "amount": 90,
+      "timeAdded": "2021-10-21T22:33:41.950",
+      "title": "NoFrills",
+      "category": "Groceries"
+    },
+    {
+      "amount": 500,
+      "timeAdded": "2021-10-21T22:33:41.955",
+      "title": "Visited Montreal",
+      "category": "Travel"
+    },
+    {
+      "amount": 80,
+      "timeAdded": "2021-10-21T22:33:41.958",
+      "title": "Theatre",
+      "category": "Recreation & Entertainment"
+    },
+    {
+      "amount": 100,
+      "timeAdded": "2021-10-21T22:33:41.961",
+      "title": "SaveOn",
+      "category": "Groceries"
+    }
+  ],
+  "categories": [
+    "Housing",
+    "Transportation",
+    "Food",
+    "Utilities",
+    "Insurance",
+    "Medical & Healthcare",
+    "Saving, Investing, & Debt Payments",
+    "Personal Spending",
+    "Recreation & Entertainment",
+    "Miscellaneous",
+    "Travel"
+  ]
+}
