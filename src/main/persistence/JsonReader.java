@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-// Represents reader that reads spending list from provided JSON file
+// Represents reader that reads SpendingList from provided JSON file
 // Implementation of the class is based on the JsonReader class from JsonSerializationDemo
 public class JsonReader {
     private JSONObject json;

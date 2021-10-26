@@ -392,7 +392,7 @@ public class SpendingApp {
     private void printSpendingRecords() {
         System.out.println("\nHere's your list of records: ");
         int index = 1;
-        for (Record record : spendingList.getSpendingList()) {
+        for (Record record : spendingList.getRecords()) {
             System.out.println(index + ": " + record);
             index++;
         }

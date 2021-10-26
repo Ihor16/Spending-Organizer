@@ -11,21 +11,21 @@ import java.util.stream.Collectors;
 // Represents the list of spending records
 public class SpendingList implements Writable {
 
-    private LinkedList<Record> spendingList;
-    private SortedSet<String> categories;
+    private LinkedList<Record> records;
+    private final SortedSet<String> categories;
 
-    // EFFECTS: creates empty spending list and empty categories set
+    // EFFECTS: creates empty records list and empty categories set
     public SpendingList() {
-        spendingList = new LinkedList<>();
+        records = new LinkedList<>();
         categories = new TreeSet<>();
     }
 
     // MODIFIES: this
-    // EFFECTS: adds a new record to the front of the spending list,
+    // EFFECTS: adds a new record to the front of the records list,
     //          adds this record's category to the categories set
     // INVARIANT: record is valid
     public void addRecord(Record record) {
-        spendingList.addFirst(record);
+        records.addFirst(record);
         // since categories is a set, it won't contain duplicates
         categories.add(record.getCategory());
     }
@@ -42,9 +42,9 @@ public class SpendingList implements Writable {
 
     // REQUIRES: record exists in the list
     // MODIFIES: this
-    // EFFECTS: removes record from spending list and returns true if the record is removed
+    // EFFECTS: removes record from records list and returns true if the record is removed
     public boolean removeRecord(Record record) {
-        return spendingList.remove(record);
+        return records.remove(record);
     }
 
     // REQUIRES: category exists in the list
@@ -54,23 +54,23 @@ public class SpendingList implements Writable {
         return categories.remove(category);
     }
 
-    // EFFECTS: returns record from the spending list at the given index,
+    // EFFECTS: returns record from the records list at the given index,
     //          throws IndexOutOfBoundsException if index is out of the range
     public Record getRecord(int index) throws IndexOutOfBoundsException {
-        return spendingList.get(index);
+        return records.get(index);
     }
 
     public Set<String> getCategories() {
         return categories;
     }
 
-    public List<Record> getSpendingList() {
-        return spendingList;
+    public List<Record> getRecords() {
+        return records;
     }
 
-    // EFFECTS: returns the size of spending list
+    // EFFECTS: returns the size of records list
     public int sizeOfList() {
-        return spendingList.size();
+        return records.size();
     }
 
     // EFFECTS: returns the size of categories set
@@ -78,34 +78,34 @@ public class SpendingList implements Writable {
         return categories.size();
     }
 
-    // EFFECTS: returns true if the spending list is empty,
+    // EFFECTS: returns true if the records list is empty,
     //          false otherwise
     public boolean isEmptyList() {
-        return spendingList.isEmpty();
+        return records.isEmpty();
     }
 
     // MODIFIES: this
-    // EFFECTS: sorts spending list by amount spent in descending order (from most expensive to least expensive)
+    // EFFECTS: sorts records list by amount spent in descending order (from most expensive to least expensive)
     public void sortByAmountSpent() {
         sort(Comparator.comparing(Record::getAmount).reversed());
     }
 
     // MODIFIES: this
-    // EFFECTS: sorts spending list by date added (from newer to older)
+    // EFFECTS: sorts records list by date added (from newer to older)
     public void sortByDate() {
         sort(Comparator.comparing(Record::getTimeAdded).reversed());
     }
 
     // MODIFIES: this
-    // EFFECTS: sorts spending list by category in alphabetical order
+    // EFFECTS: sorts records list by category in alphabetical order
     public void sortByCategory() {
         sort(Comparator.comparing(Record::getCategory));
     }
 
     // MODIFIES: this
-    // EFFECTS: sorts spending list according to comparator
+    // EFFECTS: sorts records list according to comparator
     private void sort(Comparator<Record> comparator) {
-        spendingList = spendingList.stream()
+        records = records.stream()
                 .sorted(comparator)
                 .collect(Collectors.toCollection(LinkedList::new));
     }
@@ -121,7 +121,7 @@ public class SpendingList implements Writable {
     // EFFECTS: returns records from this list as Json Array
     private JSONArray recordsToJsonArray() {
         JSONArray jsonArray = new JSONArray();
-        for (Record record : spendingList) {
+        for (Record record : records) {
             jsonArray.put(record.toJsonObject());
         }
         return jsonArray;
@@ -155,7 +155,7 @@ public class SpendingList implements Writable {
 
         SpendingList that = (SpendingList) o;
 
-        if (!Objects.equals(spendingList, that.spendingList)) {
+        if (!Objects.equals(records, that.records)) {
             return false;
         }
         return Objects.equals(categories, that.categories);
@@ -163,15 +163,16 @@ public class SpendingList implements Writable {
 
     @Override
     public int hashCode() {
-        int result = spendingList != null ? spendingList.hashCode() : 0;
-        result = 31 * result + (categories != null ? categories.hashCode() : 0);
+        int result = records != null ? records.hashCode() : 0;
+        result = 31 * result + categories.hashCode();
         return result;
     }
 
     @Override
+    // EFFECTS: returns a string of records list
     public String toString() {
         return new StringJoiner(", ", SpendingList.class.getSimpleName() + "[", "]")
-                .add("spendingList=" + spendingList)
+                .add("spendingList=" + records)
                 .toString();
     }
 }

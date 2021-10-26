@@ -47,7 +47,7 @@ class SpendingListTest {
         spendingList.addRecord(notAddedRecord);
 
         assertEquals(previousListSize + 1, spendingList.sizeOfList());
-        assertEquals(notAddedRecord, spendingList.getSpendingList().get(0));
+        assertEquals(notAddedRecord, spendingList.getRecords().get(0));
         assertTrue(spendingList.getCategories().contains(TRAVEL_CATEGORY));
         assertEquals(previousListSize, spendingList.sizeOfSet());
     }
@@ -58,7 +58,7 @@ class SpendingListTest {
         spendingList.addRecord(notAddedRecord);
 
         assertEquals(previousListSize + 1, spendingList.sizeOfList());
-        assertEquals(notAddedRecord, spendingList.getSpendingList().get(0));
+        assertEquals(notAddedRecord, spendingList.getRecords().get(0));
         assertTrue(spendingList.getCategories().contains(notAddedRecord.getCategory()));
         assertEquals(previousListSize + 1, spendingList.sizeOfSet());
     }
@@ -112,7 +112,7 @@ class SpendingListTest {
 
     @Test
     void testGetRecord() {
-        assertEquals(spendingList.getSpendingList().get(0), spendingList.getRecord(0));
+        assertEquals(spendingList.getRecords().get(0), spendingList.getRecord(0));
     }
 
     @Test
@@ -130,9 +130,9 @@ class SpendingListTest {
 
     @Test
     void testSortByDate() {
-        List<Record> expectedList = spendingList.getSpendingList();
+        List<Record> expectedList = spendingList.getRecords();
         spendingList.sortByDate();
-        assertEquals(expectedList, spendingList.getSpendingList());
+        assertEquals(expectedList, spendingList.getRecords());
     }
 
     @Test
@@ -153,7 +153,7 @@ class SpendingListTest {
         }
         List<Record> expectedList = Arrays.asList(manualRecord, recordGroceries, recordTravel);
         spendingList.sortByDate();
-        assertEquals(expectedList, spendingList.getSpendingList());
+        assertEquals(expectedList, spendingList.getRecords());
     }
 
     @Test
@@ -161,7 +161,7 @@ class SpendingListTest {
         spendingList.addRecord(notAddedRecord);
         List<Record> expectedList = Arrays.asList(notAddedRecord, recordTravel, recordGroceries);
         spendingList.sortByAmountSpent();
-        assertEquals(expectedList, spendingList.getSpendingList());
+        assertEquals(expectedList, spendingList.getRecords());
     }
 
     @Test
@@ -174,14 +174,14 @@ class SpendingListTest {
         }
         spendingList.sortByAmountSpent();
         List<Record> expectedList = Arrays.asList(recordTravel, notAddedRecord, recordGroceries);
-        assertEquals(expectedList, spendingList.getSpendingList());
+        assertEquals(expectedList, spendingList.getRecords());
     }
 
     @Test
     void testSortByCategory() {
         spendingList.sortByCategory();
         List<Record> expectedList = Arrays.asList(recordGroceries, recordTravel);
-        assertEquals(expectedList, spendingList.getSpendingList());
+        assertEquals(expectedList, spendingList.getRecords());
     }
 
     @Test
@@ -194,7 +194,7 @@ class SpendingListTest {
         }
         spendingList.sortByCategory();
         List<Record> expectedList = Arrays.asList(recordGroceries, notAddedRecord, recordTravel);
-        assertEquals(expectedList, spendingList.getSpendingList());
+        assertEquals(expectedList, spendingList.getRecords());
     }
 
     @Test
@@ -215,7 +215,7 @@ class SpendingListTest {
             Record record = new Record(recordTravel.getTitle() + "...",
                     recordTravel.getAmount(), recordTravel.getCategory());
             SpendingList list = new SpendingList();
-            list.getSpendingList().addAll(spendingList.getSpendingList());
+            list.getRecords().addAll(spendingList.getRecords());
 
             list.addRecord(record);
             list.getCategories().addAll(spendingList.getCategories());
@@ -232,7 +232,7 @@ class SpendingListTest {
     @Test
     void testEqualsSameList() {
         SpendingList list = new SpendingList();
-        list.getSpendingList().addAll(spendingList.getSpendingList());
+        list.getRecords().addAll(spendingList.getRecords());
         list.getCategories().addAll(spendingList.getCategories());
         assertEquals(spendingList, list);
     }
@@ -240,7 +240,7 @@ class SpendingListTest {
     @Test
     void testToString() {
         String expected = SpendingList.class.getSimpleName() +
-                "[spendingList=" + spendingList.getSpendingList() + "]";
+                "[spendingList=" + spendingList.getRecords() + "]";
         assertEquals(expected, spendingList.toString());
     }
 
