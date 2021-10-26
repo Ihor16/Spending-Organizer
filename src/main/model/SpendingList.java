@@ -152,13 +152,20 @@ public class SpendingList implements Writable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
+
         SpendingList that = (SpendingList) o;
-        return Objects.equals(spendingList, that.spendingList);
+
+        if (!Objects.equals(spendingList, that.spendingList)) {
+            return false;
+        }
+        return Objects.equals(categories, that.categories);
     }
 
     @Override
     public int hashCode() {
-        return spendingList != null ? spendingList.hashCode() : 0;
+        int result = spendingList != null ? spendingList.hashCode() : 0;
+        result = 31 * result + (categories != null ? categories.hashCode() : 0);
+        return result;
     }
 
     @Override

@@ -82,31 +82,6 @@ class JsonWriterTest {
     }
 
     @Test
-    void testWriteEmptyCategories() {
-        Stream.of(recordGroceries, recordTravel)
-                .map(Record::getCategory)
-                .forEach(spToWrite::removeCategory);
-
-        String path = "./data/testing/testWriteEmptyCategory.json";
-        try (JsonWriter writer = new JsonWriter(path)){
-            writer.open();
-            writer.write(spToWrite);
-        } catch (FileNotFoundException e) {
-            fail("File actually exists");
-            e.printStackTrace();
-        }
-
-        try {
-            JsonReader reader = new JsonReader(path);
-            SpendingList fromFile = reader.read();
-            assertEquals(spToWrite, fromFile);
-        } catch (IOException | NegativeAmountException | NameException e) {
-            fail("File exists and is not corrupted");
-            e.printStackTrace();
-        }
-    }
-
-    @Test
     void testWriteRegularFile() {
         String path = "./data/testing/testWriteRegularFile.json";
 

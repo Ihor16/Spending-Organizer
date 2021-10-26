@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -132,5 +133,94 @@ class RecordTest {
                 "amount=" + testRecord.getAmount() + ", " +
                 "category='" + testRecord.getCategory() + "']";
         assertEquals(expected, testRecord.toString());
+    }
+
+    @Test
+    void testEqualsReference() {
+        Record testRecordRef = testRecord;
+        assertEquals(testRecord, testRecordRef);
+    }
+
+    @Test
+    void testEqualsNullOrDiffClass() {
+        assertNotEquals(testRecord, null);
+        assertNotEquals(testRecord, new ArrayList<String>());
+    }
+
+    @Test
+    void testEqualsDiffTitle() {
+        Record record;
+        try {
+            record = new Record(testRecord.getTitle() + "...", testRecord.getAmount(), testRecord.getCategory());
+            assertNotEquals(testRecord, record);
+        } catch (NameException e) {
+            fail("Title is actually valid");
+            e.printStackTrace();
+        } catch (NegativeAmountException e) {
+            fail("Amount is actually valid");
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void testEqualsDiffAmount() {
+        Record record;
+        try {
+            record = new Record(testRecord.getTitle(), testRecord.getAmount() + 1, testRecord.getCategory());
+            assertNotEquals(testRecord, record);
+        } catch (NameException e) {
+            fail("Title is actually valid");
+            e.printStackTrace();
+        } catch (NegativeAmountException e) {
+            fail("Amount is actually valid");
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void testEqualsDiffCategory() {
+        Record record;
+        try {
+            record = new Record(testRecord.getTitle(), testRecord.getAmount(), testRecord.getCategory() + "...");
+            assertNotEquals(testRecord, record);
+        } catch (NameException e) {
+            fail("Title is actually valid");
+            e.printStackTrace();
+        } catch (NegativeAmountException e) {
+            fail("Amount is actually valid");
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void testEqualsSameFields() {
+        Record record;
+        try {
+            record = new Record(testRecord.getTitle(), testRecord.getAmount(), testRecord.getCategory());
+            record.setTimeAdded(testRecord.getTimeAdded().toString());
+            assertEquals(testRecord, record);
+        } catch (NameException e) {
+            fail("Title is actually valid");
+            e.printStackTrace();
+        } catch (NegativeAmountException e) {
+            fail("Amount is actually valid");
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void testHashCodeSameFields() {
+        Record record;
+        try {
+            record = new Record(testRecord.getTitle(), testRecord.getAmount(), testRecord.getCategory());
+            record.setTimeAdded(testRecord.getTimeAdded().toString());
+            assertEquals(testRecord.hashCode(), record.hashCode());
+        } catch (NameException e) {
+            fail("Title is actually valid");
+            e.printStackTrace();
+        } catch (NegativeAmountException e) {
+            fail("Amount is actually valid");
+            e.printStackTrace();
+        }
     }
 }

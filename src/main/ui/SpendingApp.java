@@ -2,9 +2,9 @@ package ui;
 
 import model.Record;
 import model.SpendingList;
-import model.exceptions.RecordFieldException;
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
+import model.exceptions.RecordFieldException;
 import persistence.JsonReader;
 import persistence.JsonWriter;
 
@@ -167,12 +167,13 @@ public class SpendingApp {
                 .collect(Collectors.toList());
     }
 
-    // EFFECTS: shows alredy saved files if present,
-    //          asks user where to save file and saves app's state to it
+    // EFFECTS: shows already saved files if present,
+    //          asks user where to save file and saves app's state to it,
+    //          asks user to reenter filename to save to if they entered a wrong filename format
     private void saveToFile() {
         if (!getFilenames().isEmpty()) {
             System.out.println("Here are your saved files");
-            getFilenames().forEach(System.out::println);
+            getFilenames().forEach(f -> System.out.println(" - " + f));
         }
         System.out.println("Enter filename where you want to save your spending list, e.g., [filename]");
         String fileName = input.next();
@@ -182,6 +183,7 @@ public class SpendingApp {
             System.out.println("Your file was saved to " + fileName + ".json");
         } catch (FileNotFoundException e) {
             enteredWrong("filename format");
+            saveToFile();
         }
     }
 

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -194,6 +195,53 @@ class SpendingListTest {
         spendingList.sortByCategory();
         List<Record> expectedList = Arrays.asList(recordGroceries, notAddedRecord, recordTravel);
         assertEquals(expectedList, spendingList.getSpendingList());
+    }
+
+    @Test
+    void testEqualsReference() {
+        SpendingList list = spendingList;
+        assertEquals(spendingList, list);
+    }
+
+    @Test
+    void testEqualsNullOrDiffObject() {
+        assertNotEquals(spendingList, null);
+        assertNotEquals(spendingList, new ArrayList<String>());
+    }
+
+    @Test
+    void testEqualsDiffRecordsList() {
+        try {
+            Record record = new Record(recordTravel.getTitle() + "...",
+                    recordTravel.getAmount(), recordTravel.getCategory());
+            SpendingList list = new SpendingList();
+            list.getSpendingList().addAll(spendingList.getSpendingList());
+
+            list.addRecord(record);
+            list.getCategories().addAll(spendingList.getCategories());
+            assertNotEquals(spendingList, list);
+        } catch (NameException e) {
+            fail("Title is actually valid");
+            e.printStackTrace();
+        } catch (NegativeAmountException e) {
+            fail("Amount is actually valid");
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void testEqualsSameList() {
+        SpendingList list = new SpendingList();
+        list.getSpendingList().addAll(spendingList.getSpendingList());
+        list.getCategories().addAll(spendingList.getCategories());
+        assertEquals(spendingList, list);
+    }
+
+    @Test
+    void testToString() {
+        String expected = SpendingList.class.getSimpleName() +
+                "[spendingList=" + spendingList.getSpendingList() + "]";
+        assertEquals(expected, spendingList.toString());
     }
 
     // EFFECTS: inits test records
