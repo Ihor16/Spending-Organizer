@@ -385,7 +385,7 @@ public class SpendingApp {
     // EFFECTS: displays available categories
     private void printCategories() {
         System.out.println("\nSelect from one of these categories or add a new one:");
-        System.out.println(String.join(", ", spendingList.getCategories()));
+        System.out.println(String.join("\n", spendingList.getCategories()));
     }
 
     // EFFECTS: prints current records

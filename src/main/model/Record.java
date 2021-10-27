@@ -6,7 +6,6 @@ import org.json.JSONObject;
 import persistence.Writable;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.StringJoiner;
 
 // Represents a financial record where user stores their spending
@@ -135,27 +134,28 @@ public class Record implements Writable {
         }
 
         Record record = (Record) o;
+
         if (Double.compare(record.amount, amount) != 0) {
             return false;
         }
-        if (!Objects.equals(title, record.title)) {
+        if (!title.equals(record.title)) {
             return false;
         }
-        if (!Objects.equals(category, record.category)) {
+        if (!category.equals(record.category)) {
             return false;
         }
-        return Objects.equals(timeAdded, record.timeAdded);
+        return timeAdded.equals(record.timeAdded);
     }
 
     @Override
     public int hashCode() {
         int result;
         long temp;
-        result = title != null ? title.hashCode() : 0;
+        result = title.hashCode();
         temp = Double.doubleToLongBits(amount);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + (category != null ? category.hashCode() : 0);
-        result = 31 * result + (timeAdded != null ? timeAdded.hashCode() : 0);
+        result = 31 * result + category.hashCode();
+        result = 31 * result + timeAdded.hashCode();
         return result;
     }
 }
