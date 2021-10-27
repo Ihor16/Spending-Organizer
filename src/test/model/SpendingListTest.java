@@ -238,6 +238,14 @@ class SpendingListTest {
     }
 
     @Test
+    void testHashCode() {
+        SpendingList list = new SpendingList();
+        list.getRecords().addAll(spendingList.getRecords());
+        list.getCategories().addAll(spendingList.getCategories());
+        assertEquals(spendingList.hashCode(), list.hashCode());
+    }
+
+    @Test
     void testToString() {
         String expected = SpendingList.class.getSimpleName() +
                 "[spendingList=" + spendingList.getRecords() + "]";
