@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import persistence.Writable;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.StringJoiner;
 
 // Represents a financial record where user stores their spending
@@ -53,13 +54,14 @@ public class Record implements Writable {
     }
 
     // MODIFIES: this
-    // EFFECTS: trims category and assigns it to the record
+    // EFFECTS: trims category and assigns it to the record, adds category to existingCategories,
     //          throws NameException if provided category is blank
-    public void setCategory(String category) throws NameException {
+    public void setCategory(String category, Set<String> existingCategories) throws NameException {
         if (isBlank(category)) {
             throw new NameException("category");
         }
         this.category = category.trim();
+        existingCategories.add(this.category);
     }
 
     // MODIFIES: this

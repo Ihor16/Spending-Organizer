@@ -10,6 +10,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -102,20 +104,22 @@ class RecordTest {
     @ParameterizedTest
     @ValueSource(strings = {"Category", "     Category      "})
     void testSetCategory(String category) {
+        Set<String> existingCategories = new HashSet<>();
         try {
-            testRecord.setCategory(category);
+            testRecord.setCategory(category, existingCategories);
         } catch (NameException e) {
             fail("'" + category + "' category is actually acceptable");
             e.printStackTrace();
         }
         assertEquals(category.trim(), testRecord.getCategory());
+        assertEquals(1, existingCategories.size());
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"", "    "})
     void testSetCategoryThrowNameException(String category) {
         String previousCategory = testRecord.getCategory();
-        assertThrows(NameException.class, () -> testRecord.setCategory(category));
+        assertThrows(NameException.class, () -> testRecord.setCategory(category, new HashSet<>()));
         assertEquals(previousCategory, testRecord.getCategory());
     }
 

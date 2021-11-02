@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashSet;
 
 // Represents reader that reads SpendingList from provided JSON file
 // Implementation of the class is based on the JsonReader class from JsonSerializationDemo
@@ -68,7 +69,7 @@ public class JsonReader {
             JSONObject jsonRecord = jsonArray.getJSONObject(i);
             record.setTitle(jsonRecord.getString("title"));
             record.setAmount(jsonRecord.getDouble("amount"));
-            record.setCategory(jsonRecord.getString("category"));
+            record.setCategory(jsonRecord.getString("category"), new HashSet<>());
             record.setTimeAdded(jsonRecord.getString("timeAdded"));
             spendingList.addRecord(record);
         }

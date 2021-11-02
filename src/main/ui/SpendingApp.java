@@ -212,8 +212,7 @@ public class SpendingApp {
         printCategories();
         String category = input.next();
         try {
-            record.setCategory(category);
-            spendingList.addCategory(category);
+            record.setCategory(category, spendingList.getCategories());
             return record.getCategory();
         } catch (NameException e) {
             enteredWrong("string format");
@@ -374,8 +373,7 @@ public class SpendingApp {
         System.out.println("\nChanged category: ");
         String category = input.next();
         try {
-            record.setCategory(category);
-            spendingList.addCategory(category);
+            record.setCategory(category, spendingList.getCategories());
         } catch (NameException e) {
             enteredWrong("string format");
             changeCategory(record);

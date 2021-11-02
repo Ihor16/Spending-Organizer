@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,7 +41,7 @@ class SpendingListTest {
     void testAddRecordSameCategory() {
         int previousListSize = spendingList.sizeOfList();
         try {
-            notAddedRecord.setCategory(TRAVEL_CATEGORY);
+            notAddedRecord.setCategory(TRAVEL_CATEGORY, new HashSet<>());
         } catch (NameException e) {
             fail("Category name is actually fine");
         }
@@ -142,7 +143,7 @@ class SpendingListTest {
             manualRecord = new Record();
             manualRecord.setTitle("Jeans");
             manualRecord.setAmount(560);
-            manualRecord.setCategory("Clothes");
+            manualRecord.setCategory("Clothes", new HashSet<>());
             spendingList.addRecord(manualRecord);
         } catch (NegativeAmountException e) {
             fail("Amount is actually acceptable");
@@ -187,7 +188,7 @@ class SpendingListTest {
     @Test
     void testSortByCategorySameCategory() {
         try {
-            notAddedRecord.setCategory(TRAVEL_CATEGORY);
+            notAddedRecord.setCategory(TRAVEL_CATEGORY, new HashSet<>());
             spendingList.addRecord(notAddedRecord);
         } catch (NameException e) {
             fail("Category name is actually acceptable");
