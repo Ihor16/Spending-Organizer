@@ -131,6 +131,12 @@ class RecordTest {
     }
 
     @Test
+    void testSetIndex() {
+        testRecord.setIndex(1);
+        assertEquals(1, testRecord.getIndex());
+    }
+
+    @Test
     void testToString() {
         String expected = "Record[" +
                 "title='" + testRecord.getTitle() + "', " +

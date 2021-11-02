@@ -1,20 +1,25 @@
 package model;
 
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
 import org.json.JSONObject;
 import persistence.Writable;
 
 import java.time.LocalDateTime;
+import java.util.Observable;
 import java.util.Set;
 import java.util.StringJoiner;
 
 // Represents a financial record where user stores their spending
 public class Record implements Writable {
-    private String title;
+    private SimpleStringProperty title;
     private double amount;
-    private String category;
+    private SimpleStringProperty category;
     private LocalDateTime timeAdded;
+    private int index = 0;
 
     // EFFECTS: creates a new record with incremented id, and timeAdded set to now
     public Record() {
@@ -37,9 +42,9 @@ public class Record implements Writable {
             throw new NameException("category");
         }
 
-        this.title = title.trim();
+        this.title = new SimpleStringProperty(title.trim());
         this.amount = amount;
-        this.category = category;
+        this.category = new SimpleStringProperty(category.trim());
         this.timeAdded = LocalDateTime.now();
     }
 
@@ -50,7 +55,7 @@ public class Record implements Writable {
         if (isBlank(title)) {
             throw new NameException("title");
         }
-        this.title = title.trim();
+        this.title = new SimpleStringProperty(title.trim());
     }
 
     // MODIFIES: this
@@ -60,8 +65,8 @@ public class Record implements Writable {
         if (isBlank(category)) {
             throw new NameException("category");
         }
-        this.category = category.trim();
-        existingCategories.add(this.category);
+        this.category = new SimpleStringProperty(category.trim());
+        existingCategories.add(this.category.get());
     }
 
     // MODIFIES: this
@@ -81,8 +86,11 @@ public class Record implements Writable {
         this.timeAdded = LocalDateTime.parse(timeStamp);
     }
 
+    public void setIndex(int i) {
+        this.index = i;
+    }
     public String getTitle() {
-        return title;
+        return title.get();
     }
 
     public double getAmount() {
@@ -90,11 +98,19 @@ public class Record implements Writable {
     }
 
     public String getCategory() {
-        return category;
+        return category.get();
+    }
+
+    public ObservableValue<LocalDateTime> getTimeAddedAsProperty() {
+        return new ReadOnlyObjectWrapper<>(timeAdded);
     }
 
     public LocalDateTime getTimeAdded() {
         return timeAdded;
+    }
+
+    public int getIndex() {
+        return index;
     }
 
     // EFFECTS: returns true if provided string is blank,
@@ -109,9 +125,9 @@ public class Record implements Writable {
     // EFFECTS: returns a string representation of record
     public String toString() {
         return new StringJoiner(", ", Record.class.getSimpleName() + "[", "]")
-                .add("title='" + title + "'")
+                .add("title='" + title.get() + "'")
                 .add("amount=" + amount)
-                .add("category='" + category + "'")
+                .add("category='" + category.get() + "'")
                 .toString();
     }
 
@@ -119,9 +135,9 @@ public class Record implements Writable {
     // Implementation is based on the Thingy class from JsonSerializationDemo
     public JSONObject toJsonObject() {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("title", title);
+        jsonObject.put("title", title.get());
         jsonObject.put("amount", amount);
-        jsonObject.put("category", category);
+        jsonObject.put("category", category.get());
         jsonObject.put("timeAdded", timeAdded);
         return jsonObject;
     }
@@ -140,10 +156,10 @@ public class Record implements Writable {
         if (Double.compare(record.amount, amount) != 0) {
             return false;
         }
-        if (!title.equals(record.title)) {
+        if (!title.get().equals(record.title.get())) {
             return false;
         }
-        if (!category.equals(record.category)) {
+        if (!category.get().equals(record.category.get())) {
             return false;
         }
         return timeAdded.equals(record.timeAdded);
@@ -153,10 +169,10 @@ public class Record implements Writable {
     public int hashCode() {
         int result;
         long temp;
-        result = title.hashCode();
+        result = title.get().hashCode();
         temp = Double.doubleToLongBits(amount);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + category.hashCode();
+        result = 31 * result + category.get().hashCode();
         result = 31 * result + timeAdded.hashCode();
         return result;
     }

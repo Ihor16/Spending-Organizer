@@ -1,5 +1,12 @@
 package model;
 
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.ReadOnlySetProperty;
+import javafx.beans.property.ReadOnlySetWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
+import javafx.fxml.FXMLLoader;
 import model.exceptions.NameException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -21,13 +28,14 @@ public class SpendingList implements Writable {
     }
 
     // MODIFIES: this
-    // EFFECTS: adds a new record to the front of the records list,
+    // EFFECTS: adds a new record to the front of the records list, and sets this record's index
     //          adds this record's category to the categories set
     // INVARIANT: record is valid
     public void addRecord(Record record) {
         records.addFirst(record);
         // since categories is a set, it won't contain duplicates
         categories.add(record.getCategory());
+        recalculateIndexes();
     }
 
     // MODIFIES: this
@@ -44,7 +52,9 @@ public class SpendingList implements Writable {
     // MODIFIES: this
     // EFFECTS: removes record from records list and returns true if the record is removed
     public boolean removeRecord(Record record) {
-        return records.remove(record);
+        boolean isRemoved = records.remove(record);
+        recalculateIndexes();
+        return isRemoved;
     }
 
     // REQUIRES: category exists in the list
@@ -62,6 +72,12 @@ public class SpendingList implements Writable {
 
     public Set<String> getCategories() {
         return categories;
+    }
+
+    public ObservableList<String> getCategoriesAsProperty() {
+        ObservableList<String> list = FXCollections.observableArrayList();
+        list.addAll(categories);
+        return list;
     }
 
     public List<Record> getRecords() {
@@ -142,6 +158,16 @@ public class SpendingList implements Writable {
         // implementation of removing whitespaces is taken from
         // https://stackoverflow.com/questions/5455794/removing-whitespace-from-strings-in-java
         return str.replaceAll("[\\s]+", "").isEmpty();
+    }
+
+    // MODIFIES: this
+    // EFFECTS: sets record's indexes in same order the records appear
+    private void recalculateIndexes() {
+        int index = 1;
+        for (Record r : records) {
+            r.setIndex(index);
+            index++;
+        }
     }
 
     @Override
