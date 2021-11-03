@@ -89,6 +89,7 @@ public class Record implements Writable {
     public void setIndex(int i) {
         this.index = i;
     }
+
     public String getTitle() {
         return title.get();
     }
