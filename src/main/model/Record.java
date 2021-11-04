@@ -9,7 +9,6 @@ import org.json.JSONObject;
 import persistence.Writable;
 
 import java.time.LocalDateTime;
-import java.util.Observable;
 import java.util.Set;
 import java.util.StringJoiner;
 
@@ -19,7 +18,6 @@ public class Record implements Writable {
     private double amount;
     private SimpleStringProperty category;
     private LocalDateTime timeAdded;
-    private int index = 0;
 
     // EFFECTS: creates a new record with incremented id, and timeAdded set to now
     public Record() {
@@ -86,10 +84,6 @@ public class Record implements Writable {
         this.timeAdded = LocalDateTime.parse(timeStamp);
     }
 
-    public void setIndex(int i) {
-        this.index = i;
-    }
-
     public String getTitle() {
         return title.get();
     }
@@ -108,10 +102,6 @@ public class Record implements Writable {
 
     public LocalDateTime getTimeAdded() {
         return timeAdded;
-    }
-
-    public int getIndex() {
-        return index;
     }
 
     // EFFECTS: returns true if provided string is blank,

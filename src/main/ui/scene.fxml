@@ -19,7 +19,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.Controller">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.controller.Controller">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
@@ -49,9 +49,23 @@
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
-            </items>
+               <items>
+                <MenuItem mnemonicParsing="false" onAction="#removeSelected" text="Remove record(s)">
+                     <accelerator>
+                        <KeyCodeCombination alt="ANY" code="DELETE" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#focusOnAddMenu" text="Focus on add menu">
+                     <accelerator>
+                        <KeyCodeCombination alt="DOWN" code="N" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#focusOnRecords" text="Focus on records">
+                     <accelerator>
+                        <KeyCodeCombination alt="ANY" code="ESCAPE" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator>
+                  </MenuItem>
+               </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
@@ -66,8 +80,7 @@
          <children>
             <TableView fx:id="categoriesTable" prefHeight="357.0" prefWidth="289.0">
               <columns>
-                <TableColumn fx:id="categoriesColumn" prefWidth="194.0" resizable="false" text="Category" />
-                  <TableColumn prefWidth="68.0" text="Show" />
+                <TableColumn fx:id="categoriesColumn" prefWidth="262.0" resizable="false" text="Categories" />
               </columns>
             </TableView>
             <TabPane prefHeight="372.0" prefWidth="263.0" tabClosingPolicy="UNAVAILABLE">
@@ -78,7 +91,7 @@
                            <children>
                               <HBox prefHeight="42.0" prefWidth="263.0">
                                  <children>
-                                    <RadioButton mnemonicParsing="false" selected="true" text="Record">
+                                    <RadioButton fx:id="recordToggleAdd" mnemonicParsing="false" onAction="#recordRadioButtonPressedAdd" selected="true" text="Record">
                                        <HBox.margin>
                                           <Insets bottom="10.0" left="10.0" right="10.0" top="15.0" />
                                        </HBox.margin>
@@ -86,7 +99,7 @@
                                           <ToggleGroup fx:id="addGroup" />
                                        </toggleGroup>
                                     </RadioButton>
-                                    <RadioButton mnemonicParsing="false" text="Category" toggleGroup="$addGroup">
+                                    <RadioButton fx:id="categoryToggleAdd" mnemonicParsing="false" onAction="#categoryRadioButtonPressedAdd" text="Category" toggleGroup="$addGroup">
                                        <HBox.margin>
                                           <Insets bottom="10.0" left="10.0" right="10.0" top="15.0" />
                                        </HBox.margin>
@@ -111,7 +124,7 @@
                                     <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                                  </VBox.margin>
                               </ComboBox>
-                              <Button fx:id="addRecordButton" mnemonicParsing="false" onAction="#addRecord" text="Add">
+                              <Button mnemonicParsing="false" onAction="#add" text="Add">
                                  <VBox.margin>
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                  </VBox.margin>
@@ -141,20 +154,7 @@
                                     </RadioButton>
                                  </children>
                               </HBox>
-                              <TextField fx:id="indexFieldRemove" promptText="Index">
-                                 <opaqueInsets>
-                                    <Insets />
-                                 </opaqueInsets>
-                                 <VBox.margin>
-                                    <Insets bottom="5.0" left="10.0" right="10.0" top="20.0" />
-                                 </VBox.margin>
-                              </TextField>
-                              <ComboBox fx:id="categoriesBoxRemove" disable="true" prefWidth="150.0" promptText="Category">
-                                 <VBox.margin>
-                                    <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-                                 </VBox.margin>
-                              </ComboBox>
-                              <Button fx:id="removeRecordButton" mnemonicParsing="false" onAction="#removeRecord" text="Remove">
+                              <Button mnemonicParsing="false" onAction="#removeSelected" text="Remove Selected">
                                  <VBox.margin>
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                  </VBox.margin>
@@ -169,13 +169,12 @@
       </VBox>
    </left>
    <center>
-      <TableView fx:id="recordTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <TableView fx:id="recordTable" editable="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <columns>
-            <TableColumn fx:id="indexColumn" editable="false" prefWidth="75.0" resizable="false" text="Index" />
-            <TableColumn fx:id="titleColumn" prefWidth="324.0" resizable="false" text="Title" />
-            <TableColumn fx:id="amountColumn" prefWidth="119.0" resizable="false" text="Amount" />
-            <TableColumn fx:id="categoryColumn" prefWidth="198.0" resizable="false" text="Category" />
-            <TableColumn fx:id="dateColumn" prefWidth="120.0" resizable="false" text="Date" />
+            <TableColumn fx:id="titleColumn" onEditCommit="#changeRecordTitleCell" prefWidth="324.0" resizable="false" text="Title" />
+            <TableColumn fx:id="amountColumn" onEditCommit="#changeRecordAmountCell" prefWidth="119.0" resizable="false" text="Amount" />
+            <TableColumn fx:id="categoryColumn" onEditCommit="#changeRecordCategoryCell" prefWidth="248.0" resizable="false" text="Category" />
+            <TableColumn fx:id="dateColumn" editable="false" prefWidth="145.0" resizable="false" text="Date" />
         </columns>
       </TableView>
    </center>

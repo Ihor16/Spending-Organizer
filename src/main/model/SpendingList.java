@@ -1,12 +1,7 @@
 package model;
 
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.ReadOnlySetProperty;
-import javafx.beans.property.ReadOnlySetWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableSet;
-import javafx.fxml.FXMLLoader;
 import model.exceptions.NameException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -15,15 +10,15 @@ import persistence.Writable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-// Represents the list of spending records
+// Class representing list of records and categories
 public class SpendingList implements Writable {
 
-    private LinkedList<Record> records;
-    private final SortedSet<String> categories;
+    private ObservableList<Record> records;
+    private final Set<String> categories;
 
     // EFFECTS: creates empty records list and empty categories set
     public SpendingList() {
-        records = new LinkedList<>();
+        records = FXCollections.observableArrayList();
         categories = new TreeSet<>();
     }
 
@@ -32,10 +27,9 @@ public class SpendingList implements Writable {
     //          adds this record's category to the categories set
     // INVARIANT: record is valid
     public void addRecord(Record record) {
-        records.addFirst(record);
+        records.add(0, record);
         // since categories is a set, it won't contain duplicates
         categories.add(record.getCategory());
-        recalculateIndexes();
     }
 
     // MODIFIES: this
@@ -52,9 +46,7 @@ public class SpendingList implements Writable {
     // MODIFIES: this
     // EFFECTS: removes record from records list and returns true if the record is removed
     public boolean removeRecord(Record record) {
-        boolean isRemoved = records.remove(record);
-        recalculateIndexes();
-        return isRemoved;
+        return records.remove(record);
     }
 
     // REQUIRES: category exists in the list
@@ -74,14 +66,20 @@ public class SpendingList implements Writable {
         return categories;
     }
 
-    public ObservableList<String> getCategoriesAsProperty() {
-        ObservableList<String> list = FXCollections.observableArrayList();
-        list.addAll(categories);
-        return list;
+    public ObservableList<Record> getRecords() {
+        return records;
     }
 
-    public List<Record> getRecords() {
-        return records;
+    // EFFECTS: returns categories as observable list of type Map (required for GUI Table)
+    // Based on: https://docs.oracle.com/javafx/2/ui_controls/table-view.htm
+    public ObservableList<Map<String, String>> getCategoriesAsObservableList(String key) {
+        ObservableList<Map<String, String>> allData = FXCollections.observableArrayList();
+        for (String c : categories) {
+            Map<String, String> row = new HashMap<>();
+            row.put(key, c);
+            allData.add(row);
+        }
+        return allData;
     }
 
     // EFFECTS: returns the size of records list
@@ -123,7 +121,7 @@ public class SpendingList implements Writable {
     private void sort(Comparator<Record> comparator) {
         records = records.stream()
                 .sorted(comparator)
-                .collect(Collectors.toCollection(LinkedList::new));
+                .collect(Collectors.toCollection(FXCollections::observableArrayList));
     }
 
     @Override
@@ -158,16 +156,6 @@ public class SpendingList implements Writable {
         // implementation of removing whitespaces is taken from
         // https://stackoverflow.com/questions/5455794/removing-whitespace-from-strings-in-java
         return str.replaceAll("[\\s]+", "").isEmpty();
-    }
-
-    // MODIFIES: this
-    // EFFECTS: sets record's indexes in same order the records appear
-    private void recalculateIndexes() {
-        int index = 1;
-        for (Record r : records) {
-            r.setIndex(index);
-            index++;
-        }
     }
 
     @Override
