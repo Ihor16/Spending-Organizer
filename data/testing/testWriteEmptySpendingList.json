@@ -1,7 +1,17 @@
 {
   "records": [],
   "categories": [
-    "Groceries",
-    "Travel"
+    {
+      "name": "Travel",
+      "isShown": true
+    },
+    {
+      "name": "undefined",
+      "isShown": true
+    },
+    {
+      "name": "Groceries",
+      "isShown": true
+    }
   ]
 }

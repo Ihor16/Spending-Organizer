@@ -1,4 +1,7 @@
 {
   "records": [],
-  "categories": []
+  "categories": [{
+    "name": "undefined",
+    "isShown": true
+  }]
 }

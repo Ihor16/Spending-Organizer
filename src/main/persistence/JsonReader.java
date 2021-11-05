@@ -1,5 +1,7 @@
 package persistence;
 
+import model.Categories;
+import model.Category;
 import model.Record;
 import model.SpendingList;
 import model.exceptions.NameException;
@@ -10,7 +12,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashSet;
+import java.util.Comparator;
 
 // Represents reader that reads SpendingList from provided JSON file
 // Implementation of the class is based on the JsonReader class from JsonSerializationDemo
@@ -43,36 +45,44 @@ public class JsonReader {
     // EFFECTS: returns SpendingList from json,
     //          throws NameException or NegativeAmountException if file is corrupted
     private SpendingList readSpendingList() throws NameException, NegativeAmountException {
-        SpendingList spendingList = new SpendingList();
-        parseRecord(spendingList);
-        parseCategory(spendingList);
+        SpendingList spendingList = parseCategories();
+        parseRecords(spendingList);
         return spendingList;
     }
 
     // MODIFIES: spendingList
     // EFFECTS: adds categories from json to spendingList
-    //          throws NameException if categories in the file are corrupted
-    private void parseCategory(SpendingList spendingList) throws NameException {
+    private SpendingList parseCategories() throws NameException {
         JSONArray jsonArray = json.getJSONArray("categories");
-        for (Object obj : jsonArray) {
-            spendingList.addCategory((String) obj);
+        Categories categories = new Categories();
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject jsonCategory = jsonArray.getJSONObject(i);
+            new Category(jsonCategory.getString("name"), jsonCategory.getBoolean("isShown"), categories);
         }
+        return new SpendingList(categories);
+    }
+
+    // MODIFIES: spendingList
+    // EFFECTS: parses category from json
+    private Category parseCategory(JSONObject json, SpendingList spendingList) throws NameException {
+        return new Category(json.getString("name"), json.getBoolean("isShown"), spendingList.getCategories());
     }
 
     // MODIFIES: spendingList
     // EFFECTS: adds records from json to spendingList
     //          throws NameException or NegativeAmountException if records in the file are corrupted
-    private void parseRecord(SpendingList spendingList) throws NameException, NegativeAmountException {
+    private void parseRecords(SpendingList spendingList) throws NameException, NegativeAmountException {
         JSONArray jsonArray = json.getJSONArray("records");
         for (int i = 0; i < jsonArray.length(); i++) {
             Record record = new Record();
             JSONObject jsonRecord = jsonArray.getJSONObject(i);
             record.setTitle(jsonRecord.getString("title"));
             record.setAmount(jsonRecord.getDouble("amount"));
-            record.setCategory(jsonRecord.getString("category"), new HashSet<>());
+            record.setCategory(parseCategory(jsonRecord.getJSONObject("category"), spendingList));
             record.setTimeAdded(jsonRecord.getString("timeAdded"));
             spendingList.addRecord(record);
         }
-        spendingList.sortByDate();
+        spendingList.getRecords()
+                .sort(Comparator.comparing(Record::getTimeAdded).reversed());
     }
 }

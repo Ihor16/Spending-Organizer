@@ -10,55 +10,55 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class RecordTest {
 
-    private final String CATEGORY = "Groceries";
-    private final String TITLE = "Went to NoFrills";
-    private final double AMOUNT = 80.76;
+    private String title;
+    private double amount;
+    private Category category;
+    private Categories categories;
     private Record testRecord;
 
     @BeforeEach
     void setUp() {
         try {
-            testRecord = new Record(TITLE, AMOUNT, CATEGORY);
+            title = "Went to SaveOn";
+            amount = 80.74;
+            categories = new Categories();
+            category = new Category("Groceries", categories);
+            testRecord = new Record(title, amount, category);
         } catch (NameException e) {
             fail("Title and category are actually acceptable");
             e.printStackTrace();
         } catch (NegativeAmountException e) {
-            fail(AMOUNT + " amount is actually acceptable");
+            fail(amount + " amount is actually acceptable");
             e.printStackTrace();
         }
     }
 
     @Test
     void testConstructor() {
-        assertEquals(TITLE, testRecord.getTitle());
-        assertEquals(AMOUNT, testRecord.getAmount());
-        assertEquals(CATEGORY, testRecord.getCategory());
+        assertEquals(title, testRecord.getTitle());
+        assertEquals(title, testRecord.titleProperty().get());
+        assertEquals(amount, testRecord.getAmount());
+        assertEquals(amount, testRecord.amountProperty().get());
+        assertEquals(category, testRecord.getCategory());
+        assertEquals(category, testRecord.categoryProperty().get());
     }
 
     @ParameterizedTest
-    @ValueSource(doubles = {0, -45, -34.9})
+    @ValueSource(doubles = {-1.09, -45})
     void testConstructorThrowNegativeAmountException(double amount) {
         assertThrows(NegativeAmountException.class,
-                () -> new Record("Went to SaveOn", amount, CATEGORY));
+                () -> new Record("Went to SaveOn", amount, category));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"", "    "})
     void testConstructorThrowNameExceptionForTitle(String title) {
-        assertThrows(NameException.class, () -> new Record(title, 30, CATEGORY));
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"", "    "})
-    void testConstructorThrowNameExceptionForCategory(String category) {
-        assertThrows(NameException.class, () -> new Record("Title", 30, category));
+        assertThrows(NameException.class, () -> new Record(title, amount, category));
     }
 
     @ParameterizedTest
@@ -76,9 +76,9 @@ class RecordTest {
     @ParameterizedTest
     @ValueSource(strings = {"", "    "})
     void testSetTitleThrowNameException(String title) {
-        String previousTitle = testRecord.getTitle();
+        String oldTitle = testRecord.getTitle();
         assertThrows(NameException.class, () -> testRecord.setTitle(title));
-        assertEquals(previousTitle, testRecord.getTitle());
+        assertEquals(oldTitle, testRecord.getTitle());
     }
 
     @ParameterizedTest
@@ -94,33 +94,26 @@ class RecordTest {
     }
 
     @ParameterizedTest
-    @ValueSource(doubles = {0, -45, -34.9})
+    @ValueSource(doubles = {-0.89, -45})
     void testSetAmountThrowNegativeAmountException(double amount) {
         double oldAmount = testRecord.getAmount();
         assertThrows(NegativeAmountException.class, () -> testRecord.setAmount(amount));
         assertEquals(oldAmount, testRecord.getAmount());
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"Category", "     Category      "})
-    void testSetCategory(String category) {
-        Set<String> existingCategories = new HashSet<>();
+    @Test
+    void testSetCategory() {
+        Category newCategory;
+        String name = category.getName() + "...     ";
         try {
-            testRecord.setCategory(category, existingCategories);
+            newCategory = new Category(name, categories);
+            testRecord.setCategory(newCategory);
+            assertEquals(newCategory, testRecord.getCategory());
+            assertEquals(3, categories.getCategories().size());
         } catch (NameException e) {
             fail("'" + category + "' category is actually acceptable");
             e.printStackTrace();
         }
-        assertEquals(category.trim(), testRecord.getCategory());
-        assertEquals(1, existingCategories.size());
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"", "    "})
-    void testSetCategoryThrowNameException(String category) {
-        String previousCategory = testRecord.getCategory();
-        assertThrows(NameException.class, () -> testRecord.setCategory(category, new HashSet<>()));
-        assertEquals(previousCategory, testRecord.getCategory());
     }
 
     @Test
@@ -133,9 +126,10 @@ class RecordTest {
     @Test
     void testToString() {
         String expected = "Record[" +
-                "title='" + testRecord.getTitle() + "', " +
+                "title=" + testRecord.getTitle() + ", " +
                 "amount=" + testRecord.getAmount() + ", " +
-                "category='" + testRecord.getCategory() + "']";
+                "category=" + testRecord.getCategory() + ", " +
+                "timeAdded=" + testRecord.getTimeAdded() + "]";
         assertEquals(expected, testRecord.toString());
     }
 
@@ -183,10 +177,13 @@ class RecordTest {
 
     @Test
     void testEqualsDiffCategory() {
-        Record record;
+        Record newRecord;
+        Category newCategory;
+        String name = category.getName() + "...     ";
         try {
-            record = new Record(testRecord.getTitle(), testRecord.getAmount(), testRecord.getCategory() + "...");
-            assertNotEquals(testRecord, record);
+            newCategory = new Category(name, categories);
+            newRecord = new Record(testRecord.getTitle(), testRecord.getAmount(), newCategory);
+            assertNotEquals(testRecord, newRecord);
         } catch (NameException e) {
             fail("Title is actually valid");
             e.printStackTrace();

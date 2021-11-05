@@ -2,19 +2,35 @@
   "records": [
     {
       "amount": 100.76,
-      "timeAdded": "2021-10-21T17:22:32.151",
+      "timeAdded": "2021-11-04T23:55:58.125",
       "title": "Went to SaveOnFoods",
-      "category": "Groceries"
+      "category": {
+        "name": "Groceries",
+        "isShown": true
+      }
     },
     {
       "amount": 401.34,
-      "timeAdded": "2021-10-21T17:22:32.125",
+      "timeAdded": "2021-11-04T23:55:58.106",
       "title": "Went to Toronto",
-      "category": "Travel"
+      "category": {
+        "name": "Travel",
+        "isShown": true
+      }
     }
   ],
   "categories": [
-    "",
-    "     "
+    {
+      "name": "",
+      "isShown": true
+    },
+    {
+      "name": "undefined",
+      "isShown": true
+    },
+    {
+      "name": "  ",
+      "isShown": true
+    }
   ]
 }
