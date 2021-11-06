@@ -13,7 +13,7 @@ import java.util.StringJoiner;
 public class Category implements WritableObject {
 
     private SimpleStringProperty name;
-    private final SimpleBooleanProperty isShown;
+    private SimpleBooleanProperty isShown;
 
     public Category(@NotNull String name, @NotNull Categories categories) throws NameException {
         if (isBlank(name)) {

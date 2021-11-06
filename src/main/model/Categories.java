@@ -2,51 +2,78 @@ package model;
 
 import com.sun.istack.internal.NotNull;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableSet;
+import javafx.collections.ObservableList;
 import model.exceptions.NameException;
 import org.json.JSONArray;
 import persistence.WritableArray;
 
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 // Represents set of categories available for user
+// INVARIANT: defaultCategory is always present
 public class Categories implements WritableArray {
 
-    private Category undefinedCategory;
-    private ObservableSet<Category> categories;
+    private Category defaultCategory;
+    private ObservableList<Category> categories;
 
     public Categories() {
-        this.categories = FXCollections.observableSet();
+        this.categories = FXCollections.observableArrayList();
         try {
-            undefinedCategory = new Category("undefined", this);
+            defaultCategory = new Category("default", this);
         } catch (NameException e) {
             assert false;
         }
     }
 
     // MODIFIES: this
-    // EFFECTS: adds category to the set of categories
+    // EFFECTS: adds category to the set of categories if category isn't already there
     public void add(@NotNull Category category) {
-        categories.add(category);
+        if (!categories.contains(category)) {
+            categories.add(category);
+        }
     }
 
     // MODIFIES: this
-    // EFFECTS: gives all records with provided category an undefinedCategory,
-    //          removes category from categories and returns true if category was removed,
-    //          returns false otherwise
-    public boolean remove(@NotNull Category category, @NotNull SpendingList spendingList) {
-        spendingList.getRecords()
-                .filtered(r -> r.getCategory().equals(category))
-                .forEach(r -> r.setCategory(undefinedCategory));
-        return categories.remove(category);
+    // EFFECTS: if category is defaultCategory, does nothing
+    //          otherwise, sets all spendingList's records with category to defaultCategory,
+    //          and removes category from categories
+    public void remove(@NotNull Category category, @NotNull SpendingList spendingList) {
+        if (!category.equals(defaultCategory)) {
+            spendingList.getRecords()
+                    .filtered(r -> r.getCategory().equals(category))
+                    .forEach(r -> r.setCategory(defaultCategory));
+            categories.remove(category);
+        }
     }
 
-    public ObservableSet<Category> getCategories() {
+    // MODIFIES: this
+    // EFFECTS: sets categories, and adds an defaultCategory as well
+    public void setCategories(@NotNull ObservableList<Category> categories) {
+        this.categories = categories;
+        this.categories.add(defaultCategory);
+    }
+
+    public ObservableList<Category> getCategories() {
         return categories;
     }
 
-    public void setCategories(ObservableSet<Category> categories) {
-        this.categories = categories;
+    // EFFECTS: returns all names of this
+    public ObservableList<String> getCategoriesNames() {
+        return categories.stream().map(Category::getName)
+                .collect(Collectors.toCollection(FXCollections::observableArrayList));
+    }
+
+    // EFFECTS: returns category with name,
+    //          if not found, returns defaultCategory
+    public Category getCategoryByName(String name) {
+        return categories.filtered(c -> c.getName().equals(name))
+                .stream().findAny()
+                .orElse(defaultCategory);
+    }
+
+    public Category getDefaultCategory() {
+        return defaultCategory;
     }
 
     @Override

@@ -7,7 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.WritableObject;
 
-import java.util.*;
+import java.util.StringJoiner;
 
 // Class representing list of spending records
 // INVARIANT: filteredRecords is a subset of records

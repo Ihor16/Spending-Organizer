@@ -117,7 +117,7 @@ class SpendingListTest {
                 "Record[title=" + recordTravel.getTitle() + ", amount=" + recordTravel.getAmount() + ", category=" +
                 "Category[name=" + travelCategory.getName() + "], timeAdded=" + recordTravel.getTimeAdded() + "]], " +
                 "categories=" + Categories.class.getSimpleName() + "[categories=[" +
-                "Category[name=undefined]]]]";
+                "Category[name=default]]]]";
         assertEquals(expected, spendingList.toString());
     }
 

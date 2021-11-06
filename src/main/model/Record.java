@@ -14,6 +14,7 @@ import java.util.StringJoiner;
 
 // Represents a financial record where user stores their spending
 public class Record implements WritableObject {
+
     private SimpleStringProperty title;
     private SimpleDoubleProperty amount;
     private SimpleObjectProperty<Category> category;

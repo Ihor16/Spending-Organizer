@@ -73,12 +73,13 @@ public class JsonReader {
     //          throws NameException or NegativeAmountException if records in the file are corrupted
     private void parseRecords(SpendingList spendingList) throws NameException, NegativeAmountException {
         JSONArray jsonArray = json.getJSONArray("records");
+        Categories categories = spendingList.getCategories();
         for (int i = 0; i < jsonArray.length(); i++) {
             Record record = new Record();
             JSONObject jsonRecord = jsonArray.getJSONObject(i);
             record.setTitle(jsonRecord.getString("title"));
             record.setAmount(jsonRecord.getDouble("amount"));
-            record.setCategory(parseCategory(jsonRecord.getJSONObject("category"), spendingList));
+            record.setCategory(categories.getCategoryByName(jsonRecord.getJSONObject("category").getString("name")));
             record.setTimeAdded(jsonRecord.getString("timeAdded"));
             spendingList.addRecord(record);
         }

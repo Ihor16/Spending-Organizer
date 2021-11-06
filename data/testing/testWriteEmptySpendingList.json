@@ -2,11 +2,11 @@
   "records": [],
   "categories": [
     {
-      "name": "Travel",
+      "name": "default",
       "isShown": true
     },
     {
-      "name": "undefined",
+      "name": "Travel",
       "isShown": true
     },
     {

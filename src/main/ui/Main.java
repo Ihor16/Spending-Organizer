@@ -1,6 +1,8 @@
 package ui;
 
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -14,9 +16,10 @@ public class Main extends Application {
     // Implementation is based on https://www.youtube.com/watch?v=9XJicRt_FaI [12:40]
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("scene.fxml")));
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("resources/scene.fxml")));
         Scene scene = new Scene(root);
-        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("resources/style.css"))
+                .toExternalForm());
 
         primaryStage.setTitle("Spending Organizer");
         primaryStage.setScene(scene);

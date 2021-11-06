@@ -19,9 +19,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.controller.Controller">
+<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1166.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.controller.Controller">
    <top>
-      <MenuBar BorderPane.alignment="CENTER">
+      <MenuBar prefWidth="1100.0" BorderPane.alignment="CENTER">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
@@ -76,11 +76,12 @@
       </MenuBar>
    </top>
    <left>
-      <VBox prefHeight="568.0" prefWidth="263.0" BorderPane.alignment="CENTER">
+      <VBox prefHeight="568.0" prefWidth="327.0" BorderPane.alignment="CENTER">
          <children>
-            <TableView fx:id="categoriesTable" prefHeight="357.0" prefWidth="289.0">
+            <TableView fx:id="categoriesTable" editable="true" prefHeight="357.0" prefWidth="383.0">
               <columns>
-                <TableColumn fx:id="categoriesColumn" prefWidth="262.0" resizable="false" text="Categories" />
+                <TableColumn fx:id="categoriesColumn" onEditCommit="#changeCategoriesCategoryCell" prefWidth="250.0" resizable="false" sortType="DESCENDING" text="Categories" />
+                  <TableColumn fx:id="isShownColumn" maxWidth="76.0" minWidth="55.0" prefWidth="76.0" text="Show" />
               </columns>
             </TableView>
             <TabPane prefHeight="372.0" prefWidth="263.0" tabClosingPolicy="UNAVAILABLE">
@@ -139,7 +140,7 @@
                            <children>
                               <HBox prefHeight="42.0" prefWidth="263.0">
                                  <children>
-                                    <RadioButton mnemonicParsing="false" selected="true" text="Record">
+                                    <RadioButton fx:id="recordToggleRemove" mnemonicParsing="false" selected="true" text="Record">
                                        <HBox.margin>
                                           <Insets bottom="10.0" left="10.0" right="10.0" top="15.0" />
                                        </HBox.margin>
@@ -147,7 +148,7 @@
                                           <ToggleGroup fx:id="removeGroup" />
                                        </toggleGroup>
                                     </RadioButton>
-                                    <RadioButton mnemonicParsing="false" text="Category" toggleGroup="$removeGroup">
+                                    <RadioButton fx:id="categoryToggleRemove" mnemonicParsing="false" text="Category" toggleGroup="$removeGroup">
                                        <HBox.margin>
                                           <Insets bottom="10.0" left="10.0" right="10.0" top="15.0" />
                                        </HBox.margin>
@@ -169,12 +170,12 @@
       </VBox>
    </left>
    <center>
-      <TableView fx:id="recordTable" editable="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <TableView fx:id="recordTable" editable="true" prefHeight="568.0" prefWidth="804.0" tableMenuButtonVisible="true" BorderPane.alignment="CENTER_RIGHT">
         <columns>
-            <TableColumn fx:id="titleColumn" onEditCommit="#changeRecordTitleCell" prefWidth="324.0" resizable="false" text="Title" />
-            <TableColumn fx:id="amountColumn" onEditCommit="#changeRecordAmountCell" prefWidth="119.0" resizable="false" text="Amount" />
-            <TableColumn fx:id="categoryColumn" onEditCommit="#changeRecordCategoryCell" prefWidth="248.0" resizable="false" text="Category" />
-            <TableColumn fx:id="dateColumn" editable="false" prefWidth="145.0" resizable="false" text="Date" />
+            <TableColumn fx:id="titleColumn" maxWidth="400.0" minWidth="300.0" onEditCommit="#changeRecordTitleCell" prefWidth="350.0" text="Title" />
+            <TableColumn fx:id="amountColumn" maxWidth="100.0" minWidth="100.0" onEditCommit="#changeRecordAmountCell" prefWidth="100.0" resizable="false" text="Amount" />
+            <TableColumn fx:id="categoryColumn" maxWidth="300.0" minWidth="200.0" onEditCommit="#changeRecordCategoryCell" prefWidth="250.0" text="Category" />
+            <TableColumn fx:id="dateColumn" editable="false" maxWidth="120.0" minWidth="120.0" prefWidth="120.0" resizable="false" text="Date" />
         </columns>
       </TableView>
    </center>

@@ -84,7 +84,7 @@
   ],
   "categories": [
     {
-      "name": "Housing",
+      "name": "Housing fee",
       "isShown": true
     },
     {
@@ -125,6 +125,14 @@
     },
     {
       "name": "Travel",
+      "isShown": true
+    },
+    {
+      "name": "Groceries",
+      "isShown": true
+    },
+    {
+      "name": "Clothing",
       "isShown": true
     }
   ]

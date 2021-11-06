@@ -121,6 +121,7 @@ class RecordTest {
         LocalDateTime time = LocalDateTime.of(2020, Month.DECEMBER, 4, 15, 4);
         testRecord.setTimeAdded(time.toString());
         assertEquals(time, testRecord.getTimeAdded());
+        assertEquals(time, testRecord.timeAddedProperty().get());
     }
 
     @Test
