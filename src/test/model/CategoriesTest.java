@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -140,7 +142,7 @@ class CategoriesTest {
     void testEquals() {
         Categories instanceCategory = categories;
         Categories copyCategories = new Categories();
-        copyCategories.setCategories(categories.getCategories());
+        copyCategories.setCategories(Collections.singletonList(recordCategory));
 
         assertEquals(categories, instanceCategory);
         assertEquals(categories, copyCategories);

@@ -1,19 +1,17 @@
 package ui.controller;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
 import javafx.util.converter.DoubleStringConverter;
 import model.Categories;
@@ -23,16 +21,21 @@ import model.SpendingList;
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
 import persistence.JsonReader;
+import persistence.JsonWriter;
+import ui.Main;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 // Class that handles events and loads data to the GUI
-public class Controller implements Initializable {
+public class Controller extends Main implements Initializable {
 
     private final String fieldsInitError = "Couldn't initialize data";
+    private final String fileError = "Choose a file";
 
     @FXML private TextField titleFieldAdd;
     @FXML private TextField amountFieldAdd;
@@ -66,17 +69,103 @@ public class Controller implements Initializable {
     private Category groceriesCategory;
     private Category clothingCategory;
 
+    private boolean isChanged = false;
+    private String currentFile = "";
+
     // EFFECTS: initializes the data
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-//            initCategories();
+            currentFile = "./data/spendingList.json";
             initSpendingList();
             bindDataWithComponents();
             setUpUIComponents();
         } catch (NegativeAmountException | NameException e) {
             showErrorMessage(fieldsInitError);
         }
+    }
+
+    @FXML
+    void newMenuItemClicked() {
+        if (isChanged) {
+            // TODO: ask if they want to save
+        }
+        currentFile = "./data/emptyFile.json";
+        try {
+            initSpendingList();
+            bindDataWithComponents();
+            setUpUIComponents();
+        } catch (NegativeAmountException | NameException e) {
+            showErrorMessage(fieldsInitError);
+        }
+    }
+
+    @FXML
+    // Implementation is based on: https://www.youtube.com/watch?v=hNz8Xf4tMI4
+    void openMenuItemClicked() {
+        if (isChanged) {
+            // TODO: ask if they want to save
+        }
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File("./data"));
+        File selectedFile = fileChooser.showOpenDialog(null);
+
+        if (Objects.nonNull(selectedFile)) {
+            currentFile = selectedFile.getPath();
+            try {
+                initSpendingList();
+                bindDataWithComponents();
+                setUpUIComponents();
+            } catch (NegativeAmountException | NameException e) {
+                showErrorMessage(fieldsInitError);
+            }
+        } else {
+            showErrorMessage(fileError);
+        }
+    }
+
+    @FXML
+    void saveMenuItemClicked() {
+        try (JsonWriter writer = new JsonWriter(currentFile)) {
+            writer.open();
+            writer.write(spendingList);
+        } catch (FileNotFoundException e) {
+            showErrorMessage(e.getMessage());
+        }
+        isChanged = false;
+    }
+
+    @FXML
+    // Implementation is based on: http://java-buddy.blogspot.com/2015/03/javafx-example-save-textarea-to-file.html
+    void saveAsMenuItemClicked() {
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter extensionFilter =
+                new FileChooser.ExtensionFilter("Spending List (*.json)", "*.json");
+        fileChooser.getExtensionFilters().add(extensionFilter);
+
+        fileChooser.setInitialDirectory(new File("./data"));
+        File file = fileChooser.showSaveDialog(null);
+
+        if (Objects.nonNull(file)) {
+            currentFile = file.getPath();
+            try (JsonWriter writer = new JsonWriter(currentFile)) {
+                writer.open();
+                writer.write(spendingList);
+            } catch (FileNotFoundException e) {
+                showErrorMessage(e.getMessage());
+            }
+        } else {
+            showErrorMessage(fileError);
+        }
+        isChanged = false;
+    }
+
+    @FXML
+    void closeMenuItemClicked() {
+        if (isChanged) {
+            // TODO: ask if they want to save
+        }
+        getPrimaryStage().close();
     }
 
     // MODIFIES: this
@@ -118,6 +207,7 @@ public class Controller implements Initializable {
         } finally {
             recordTable.refresh();
             recordTable.requestFocus();
+            isChanged = true;
         }
     }
 
@@ -133,6 +223,7 @@ public class Controller implements Initializable {
         } finally {
             recordTable.refresh();
             recordTable.requestFocus();
+            isChanged = true;
         }
     }
 
@@ -144,6 +235,7 @@ public class Controller implements Initializable {
         record.setCategory(editedCell.getNewValue());
         recordTable.refresh();
         recordTable.requestFocus();
+        isChanged = true;
     }
 
     // MODIFIES: this
@@ -160,7 +252,7 @@ public class Controller implements Initializable {
             recordTable.refresh();
             categoriesTable.requestFocus();
             repopulateCategoriesComboBox();
-            System.out.println(spendingList);
+            isChanged = true;
         }
     }
 
@@ -295,7 +387,7 @@ public class Controller implements Initializable {
     //          sets first element of the combo box to the first element of categories
     private void repopulateCategoriesComboBox() {
         categoriesBoxAdd.getItems().clear();
-        categoriesBoxAdd.setItems(categories.getCategoriesNames());
+        categoriesBoxAdd.setItems(FXCollections.observableArrayList(categories.getCategoriesNames()));
         categoriesBoxAdd.getSelectionModel().select(0);
     }
 
@@ -353,28 +445,14 @@ public class Controller implements Initializable {
     }
 
     // MODIFIES: this
-    // EFFECTS: initializes categories, and adds a listener for categories
-    private void initCategories() {
-        categories = new Categories();
-        try {
-            travelCategory = new Category("Travel", categories);
-            groceriesCategory = new Category("Groceries", categories);
-            clothingCategory = new Category("Clothing", categories);
-            categoriesNamesList = FXCollections.observableArrayList();
-            categories.getCategories().addListener((ListChangeListener<Category>) c -> repopulateCategoriesComboBox());
-        } catch (NameException e) {
-            showErrorMessage(fieldsInitError);
-        }
-    }
-
-    // MODIFIES: this
     // EFFECTS: inits records with slight delay between each one,
     //          throws NameException if title is blank
     //          throws NegativeAmountException if amount <= 0
     private void initSpendingList() throws NegativeAmountException, NameException {
+        categories = new Categories();
         spendingList = new SpendingList(categories);
         try {
-            JsonReader reader = new JsonReader("./data/spendingList.json");
+            JsonReader reader = new JsonReader(currentFile);
             spendingList = reader.read();
             categories = spendingList.getCategories();
             categories.getCategories().addListener((ListChangeListener<Category>) c -> repopulateCategoriesComboBox());

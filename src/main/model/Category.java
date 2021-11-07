@@ -12,8 +12,8 @@ import java.util.StringJoiner;
 // Represents category available for user
 public class Category implements WritableObject {
 
-    private SimpleStringProperty name;
-    private SimpleBooleanProperty isShown;
+    private final SimpleStringProperty name;
+    private final SimpleBooleanProperty isShown;
 
     public Category(@NotNull String name, @NotNull Categories categories) throws NameException {
         if (isBlank(name)) {
@@ -42,6 +42,7 @@ public class Category implements WritableObject {
         return name;
     }
 
+    // MODIFIES: this
     // EFFECTS: sets name of category,
     //          throws NameException if provided name is invalid
     public void setName(String name) throws NameException {
@@ -67,7 +68,7 @@ public class Category implements WritableObject {
     //          false otherwise
     private boolean isBlank(String str) {
         // implementation of removing whitespaces is taken from
-        // https://stackoverflow.com/questions/5455794/removing-whitespace-from-strings-in-java
+        // https://stackoverflow.com/a/5455809
         return str.replaceAll("[\\s]+", "").isEmpty();
     }
 

@@ -7,15 +7,16 @@ import model.exceptions.NameException;
 import org.json.JSONArray;
 import persistence.WritableArray;
 
+import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-// Represents set of categories available for user
+// Represents categories user can choose from
 // INVARIANT: defaultCategory is always present
 public class Categories implements WritableArray {
 
     private Category defaultCategory;
-    private ObservableList<Category> categories;
+    private final ObservableList<Category> categories;
 
     public Categories() {
         this.categories = FXCollections.observableArrayList();
@@ -27,7 +28,7 @@ public class Categories implements WritableArray {
     }
 
     // MODIFIES: this
-    // EFFECTS: adds category to the set of categories if category isn't already there
+    // EFFECTS: adds category to the categories if category isn't already there
     public void add(@NotNull Category category) {
         if (!categories.contains(category)) {
             categories.add(category);
@@ -47,29 +48,30 @@ public class Categories implements WritableArray {
         }
     }
 
-    // MODIFIES: this
-    // EFFECTS: sets categories, and adds an defaultCategory as well
-    public void setCategories(@NotNull ObservableList<Category> categories) {
-        this.categories = categories;
-        this.categories.add(defaultCategory);
-    }
-
-    public ObservableList<Category> getCategories() {
-        return categories;
-    }
-
-    // EFFECTS: returns all names of this
-    public ObservableList<String> getCategoriesNames() {
-        return categories.stream().map(Category::getName)
-                .collect(Collectors.toCollection(FXCollections::observableArrayList));
-    }
-
     // EFFECTS: returns category with name,
     //          if not found, returns defaultCategory
     public Category getCategoryByName(String name) {
         return categories.filtered(c -> c.getName().equals(name))
                 .stream().findAny()
                 .orElse(defaultCategory);
+    }
+
+    // EFFECTS: returns a list of all names of categories
+    public List<String> getCategoriesNames() {
+        return categories.stream().map(Category::getName)
+                .collect(Collectors.toList());
+    }
+
+    // MODIFIES: this
+    // EFFECTS: sets categories, and adds a defaultCategory as well
+    public void setCategories(@NotNull List<Category> categories) {
+        this.categories.clear();
+        this.categories.add(defaultCategory);
+        this.categories.addAll(categories);
+    }
+
+    public ObservableList<Category> getCategories() {
+        return categories;
     }
 
     public Category getDefaultCategory() {

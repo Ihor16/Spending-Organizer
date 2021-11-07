@@ -10,12 +10,14 @@ import persistence.WritableObject;
 import java.util.StringJoiner;
 
 // Class representing list of spending records
-// INVARIANT: filteredRecords is a subset of records
+// INVARIANT: Categories is constructed first,
+//            categories of records is a subset of categories in Categories,
+//            filteredRecords is a subset of records
 public class SpendingList implements WritableObject {
 
-    private ObservableList<Record> records;
-    private ObservableList<Record> filteredRecords;
-    private Categories categories;
+    private final ObservableList<Record> records;
+    private final ObservableList<Record> filteredRecords;
+    private final Categories categories;
 
     public SpendingList(@NotNull Categories categories) {
         this.categories = categories;

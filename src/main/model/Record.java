@@ -15,15 +15,18 @@ import java.util.StringJoiner;
 // Represents a financial record where user stores their spending
 public class Record implements WritableObject {
 
-    private SimpleStringProperty title;
-    private SimpleDoubleProperty amount;
-    private SimpleObjectProperty<Category> category;
-    private SimpleObjectProperty<LocalDateTime> timeAdded;
+    private final SimpleStringProperty title;
+    private final SimpleDoubleProperty amount;
+    private final SimpleObjectProperty<Category> category;
+    private final SimpleObjectProperty<LocalDateTime> timeAdded;
 
     // REQUIRED: used only while reading from Json file and testing
     // EFFECTS: creates a new record with timeAdded set to now
     public Record() {
         this.timeAdded = new SimpleObjectProperty<>(LocalDateTime.now());
+        this.title = new SimpleStringProperty("");
+        this.amount = new SimpleDoubleProperty(0);
+        this.category = new SimpleObjectProperty<>(null);
     }
 
     // EFFECTS: creates a new record with trimmed title, amount, category,
@@ -53,7 +56,7 @@ public class Record implements WritableObject {
         if (isBlank(title)) {
             throw new NameException("title");
         }
-        this.title = new SimpleStringProperty(title.trim());
+        this.title.set(title.trim());
     }
 
     // MODIFIES: this
@@ -63,16 +66,16 @@ public class Record implements WritableObject {
         if (amount < 0) {
             throw new NegativeAmountException();
         }
-        this.amount = new SimpleDoubleProperty(amount);
+        this.amount.set(amount);
     }
 
     public void setCategory(@NotNull Category category) {
-        this.category = new SimpleObjectProperty<>(category);
+        this.category.set(category);
     }
 
     // INVARIANT: is used only when reading record from a file
     public void setTimeAdded(@NotNull String timeStamp) {
-        this.timeAdded = new SimpleObjectProperty<>(LocalDateTime.parse(timeStamp));
+        this.timeAdded.set(LocalDateTime.parse(timeStamp));
     }
 
     public String getTitle() {
@@ -111,7 +114,7 @@ public class Record implements WritableObject {
     //          false otherwise
     private boolean isBlank(@NotNull String str) {
         // implementation of removing whitespaces is taken from
-        // https://stackoverflow.com/questions/5455794/removing-whitespace-from-strings-in-java
+        // https://stackoverflow.com/a/5455809
         return str.replaceAll("[\\s]+", "").isEmpty();
     }
 

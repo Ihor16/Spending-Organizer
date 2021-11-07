@@ -1,65 +1,20 @@
 {
   "records": [
     {
-      "amount": 120,
-      "timeAdded": "2021-10-21T22:33:41.925",
-      "title": "Jeans",
-      "category": {
-        "name": "Clothing",
-        "isShown": true
-      }
-    },
-    {
-      "amount": 900,
-      "timeAdded": "2021-10-21T22:33:41.927",
-      "title": "Housing",
+      "amount": 1234,
+      "timeAdded": "2021-11-06T18:13:56.411",
+      "title": "Housing record",
       "category": {
         "name": "Housing fee",
         "isShown": true
       }
     },
     {
-      "amount": 70,
-      "timeAdded": "2021-10-21T22:33:41.930",
-      "title": "Cinema",
-      "category": {
-        "name": "Recreation & Entertainment",
-        "isShown": true
-      }
-    },
-    {
-      "amount": 700,
-      "timeAdded": "2021-10-21T22:33:41.935",
-      "title": "Went to Victoria",
-      "category": {
-        "name": "Travel",
-        "isShown": true
-      }
-    },
-    {
-      "amount": 98,
-      "timeAdded": "2021-10-21T22:33:41.940",
-      "title": "Shorts & T-Shirt",
-      "category": {
-        "name": "Clothing",
-        "isShown": true
-      }
-    },
-    {
-      "amount": 90,
-      "timeAdded": "2021-10-21T22:33:41.950",
-      "title": "NoFrills",
+      "amount": 100,
+      "timeAdded": "2021-10-21T22:33:41.961",
+      "title": "SaveOn",
       "category": {
         "name": "Groceries",
-        "isShown": true
-      }
-    },
-    {
-      "amount": 500,
-      "timeAdded": "2021-10-21T22:33:41.955",
-      "title": "Visited Montreal",
-      "category": {
-        "name": "Travel",
         "isShown": true
       }
     },
@@ -73,16 +28,74 @@
       }
     },
     {
-      "amount": 100,
-      "timeAdded": "2021-10-21T22:33:41.961",
-      "title": "SaveOn",
+      "amount": 500,
+      "timeAdded": "2021-10-21T22:33:41.955",
+      "title": "Visited Montreal",
+      "category": {
+        "name": "Travel",
+        "isShown": true
+      }
+    },
+    {
+      "amount": 90,
+      "timeAdded": "2021-10-21T22:33:41.950",
+      "title": "NoFrills",
       "category": {
         "name": "Groceries",
+        "isShown": true
+      }
+    },
+    {
+      "amount": 98,
+      "timeAdded": "2021-10-21T22:33:41.940",
+      "title": "Shorts & T-Shirt",
+      "category": {
+        "name": "Clothing",
+        "isShown": true
+      }
+    },
+    {
+      "amount": 700,
+      "timeAdded": "2021-10-21T22:33:41.935",
+      "title": "Went to Victoria",
+      "category": {
+        "name": "Travel",
+        "isShown": true
+      }
+    },
+    {
+      "amount": 70,
+      "timeAdded": "2021-10-21T22:33:41.930",
+      "title": "Cinema",
+      "category": {
+        "name": "Recreation & Entertainment",
+        "isShown": true
+      }
+    },
+    {
+      "amount": 900,
+      "timeAdded": "2021-10-21T22:33:41.927",
+      "title": "Housing",
+      "category": {
+        "name": "Housing fee",
+        "isShown": true
+      }
+    },
+    {
+      "amount": 120,
+      "timeAdded": "2021-10-21T22:33:41.925",
+      "title": "Jeans",
+      "category": {
+        "name": "Clothing",
         "isShown": true
       }
     }
   ],
   "categories": [
+    {
+      "name": "default",
+      "isShown": true
+    },
     {
       "name": "Housing fee",
       "isShown": true

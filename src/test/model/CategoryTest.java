@@ -69,6 +69,7 @@ class CategoryTest {
             e.printStackTrace();
         }
         assertEquals(newName.trim(), category.getName());
+        assertTrue(categories.getCategories().contains(category));
     }
 
     @Test
@@ -76,6 +77,7 @@ class CategoryTest {
         boolean newIsShown = !category.isShown();
         category.setIsShown(newIsShown);
         assertEquals(newIsShown, category.isShown());
+        assertTrue(categories.getCategories().contains(category));
     }
 
     @Test
