@@ -1,7 +1,9 @@
 {
   "records": [],
-  "categories": [{
-    "name": "default",
-    "isShown": true
-  }]
+  "categories": [
+    {
+      "name": "default",
+      "isShown": true
+    }
+  ]
 }

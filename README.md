@@ -49,5 +49,8 @@ and add it to the *SpendingList* class (class that stores multiple *Records*).
 12. Remove my categories and automatically see changes in the whole app
 13. See my default category highlighted so that I can remember this category is default after renaming it
 14. See all my records with default category highlighted so that I see I should assign them
-15. Use shortcuts to edit my spending list quickly
-16. Build a bar chart of my spending by category, by month, or by day
+15. Exit or open a new file without saving my current one if I didn't make any changes to it
+16. See if I saved my changes by checking the 'Save' option in the menu (if it's disabled, then my changes are saved)
+17. See file I'm editing
+18. Use shortcuts to edit my spending list quickly
+19. Build a bar chart of my spending by category, by month, or by day
