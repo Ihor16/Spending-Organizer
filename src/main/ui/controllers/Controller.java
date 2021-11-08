@@ -386,7 +386,7 @@ public class Controller implements Initializable {
         if (currentFilePath.get().equals(defaultFilePath)) {
             alert.getButtonTypes().setAll(saveAs, dontSave, cancel);
         } else {
-            alert.getButtonTypes().setAll(save, saveAs, cancel);
+            alert.getButtonTypes().setAll(save, saveAs, dontSave, cancel);
         }
 
         Optional<ButtonType> chosenButton = alert.showAndWait();
