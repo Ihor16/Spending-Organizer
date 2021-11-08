@@ -23,9 +23,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+// Helper class that loads data to the GUI and formats GUI components
 public class SetUpHelper {
 
     private final Controller cl;
+    private final String defaultCellStyle = "-fx-background-color: skyblue";
 
     public SetUpHelper(Controller controller) {
         this.cl = controller;
@@ -41,7 +43,7 @@ public class SetUpHelper {
             bindDataWithComponents();
             setUpUIComponents();
         } catch (NegativeAmountException | NameException e) {
-            cl.showErrorMessage(cl.fieldsInitError);
+            cl.showErrorMessage("Couldn't initialize data");
         }
     }
 
@@ -73,7 +75,16 @@ public class SetUpHelper {
         cl.spendingList.getRecords()
                 .addListener((ListChangeListener<Record>) c -> cl.isChanged.set(true));
 
-        cl.isChanged.addListener(c -> cl.saveMenuItem.setDisable(!(cl.isChanged.get())));
+        cl.isChanged.addListener(c -> {
+            cl.saveMenuItem.setDisable(!(cl.isChanged.get()));
+            if (cl.isChanged.get()) {
+                cl.saveMenuItem.setDisable(false);
+                cl.filenameLabel.setText("*" + parseFileName(cl.currentFilePath.get()));
+            } else {
+                cl.saveMenuItem.setDisable(true);
+                cl.filenameLabel.setText(parseFileName(cl.currentFilePath.get()));
+            }
+        });
         cl.currentFilePath.addListener(c -> cl.filenameLabel.setText(parseFileName(cl.currentFilePath.get())));
     }
 
@@ -92,7 +103,9 @@ public class SetUpHelper {
         cl.categoriesBoxAdd.getItems().clear();
         cl.categoriesBoxAdd
                 .setItems(FXCollections.observableArrayList(cl.categories.getCategoriesNames()));
-        cl.categoriesBoxAdd.getSelectionModel().select(0);
+        // TODO: probably remove
+//        formatComboBoxes(cl.categoriesBoxAdd);
+        cl.categoriesBoxAdd.getSelectionModel().selectFirst();
     }
 
     // MODIFIES: cl
@@ -102,7 +115,8 @@ public class SetUpHelper {
         cl.titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
         cl.amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
         cl.categoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
-        formatCategoryColumn(cl.categoryColumn);
+        // TODO: probably remove
+//        formatCategoryColumnInRecords(cl.categoryColumn);
         cl.dateColumn.setCellValueFactory(new PropertyValueFactory<>("timeAdded"));
         formatDateColumn(cl.dateColumn);
 
@@ -120,28 +134,61 @@ public class SetUpHelper {
         cl.categoriesTable.setItems(cl.categories.getCategories());
     }
 
-    // MODIFIES: cl
-    // EFFECTS: formats category cells
-    // Based on https://stackoverflow.com/a/50224259
-    private void formatCategoryColumn(TableColumn<Record, Category> categoryColumn) {
-        categoryColumn.setCellFactory(tableColumn -> new TableCell<Record, Category>() {
-            @Override
-            protected void updateItem(Category item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setText("");
-                } else {
-                    setText(item.getName());
-                }
-            }
-        });
-    }
+    // TODO: probably remove
+//    // MODIFIES: cl
+//    // EFFECTS: formats category cells
+//    // Based on https://stackoverflow.com/a/50224259
+//    private void formatCategoryColumnInRecords(TableColumn<Record, Category> categoryColumn) {
+//        categoryColumn.setCellFactory(tableColumn -> new TableCell<Record, Category>() {
+//            @Override
+//            protected void updateItem(Category item, boolean empty) {
+//                super.updateItem(item, empty);
+//                if (empty) {
+//                    setText("");
+//                } else {
+//                    setText(item.getName());
+//                    if (item.getName().equals(cl.categories.getDefaultCategory().getName())) {
+//                        setTextFill(Color.BLUE);
+//                    }
+//                }
+//            }
+//        });
+//    }
+//
+
+//    // TODO: probably remove
+//    // MODIFIES: cl
+//    // EFFECTS: formats combobox items to show only categories names, and colors default category
+//    // Implementation is based on: https://docs.oracle.com/javafx/2/ui_controls/combo-box.htm
+//    private void formatComboBoxes(ComboBox<String> categoriesBoxAdd) {
+//        categoriesBoxAdd.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
+//            @Override
+//            public ListCell<String> call(ListView<String> param) {
+//                return new ListCell<String>() {
+//                    @Override
+//                    protected void updateItem(String item, boolean empty) {
+//                        super.updateItem(item, empty);
+//                        if (item != null) {
+//                            setText(item);
+//                            if (item.equals(cl.categories.getDefaultCategory().getName())) {
+//                                setTextFill(Color.BLUE);
+//                            } else {
+//                                setTextFill(Color.BLACK);
+//                            }
+//                        } else {
+//                            setText(null);
+//                        }
+//                    }
+//                };
+//            }
+//        });
+//    }
 
     // MODIFIES: cl
     // EFFECTS: formats date cells
     // Based on https://stackoverflow.com/a/50224259
     private void formatDateColumn(TableColumn<Record, LocalDateTime> dateColumn) {
-        String pattern = "MMM. dd - HH:mm";
+        String pattern = "MMM. dd, yyyy - HH:mm";
         dateColumn.setCellFactory(tableColumn -> new TableCell<Record, LocalDateTime>() {
             @Override
             protected void updateItem(LocalDateTime item, boolean empty) {
@@ -179,7 +226,7 @@ public class SetUpHelper {
     private void setUpUIComponents() {
         cl.filenameLabel.setText(parseFileName(cl.currentFilePath.get()));
         enableMultipleCellsSelection();
-        colorDefaultCategory();
+        colorDefaultCategoryInCategoriesTable();
         colorRecordsWithDefaultCategory();
         makeCellsEditable();
         Platform.runLater(() -> cl.recordTable.requestFocus());
@@ -205,7 +252,7 @@ public class SetUpHelper {
                 super.updateItem(record, empty);
                 if (Objects.nonNull(record)
                         && record.getCategory().equals(cl.categories.getDefaultCategory())) {
-                    setStyle("-fx-background-color: skyblue");
+                    setStyle(defaultCellStyle);
                 } else {
                     setStyle("");
                 }
@@ -216,14 +263,14 @@ public class SetUpHelper {
 
     // MODIFIES: cl
     // EFFECTS: colors default category in the categories table
-    private void colorDefaultCategory() {
+    private void colorDefaultCategoryInCategoriesTable() {
         // implementation is based on: https://stackoverflow.com/a/56309916
         cl.categoriesTable.setRowFactory(callable -> new TableRow<Category>() {
             @Override
             protected void updateItem(Category category, boolean empty) {
                 super.updateItem(category, empty);
                 if (Objects.nonNull(category) && category.equals(cl.categories.getDefaultCategory())) {
-                    setStyle("-fx-background-color: skyblue");
+                    setStyle(defaultCellStyle);
                 } else {
                     setStyle("");
                 }

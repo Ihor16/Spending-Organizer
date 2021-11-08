@@ -48,13 +48,13 @@ public class SpendingList implements WritableObject {
         return categories;
     }
 
-    // TODO: implement filtering by isSelected in Record
-    public ObservableList<Record> getFilteredRecords() {
-//        filteredRecords.clear();
-//        filteredRecords.addAll(records);
-//        records.filtered(r -> r.getCategory().equals("Groceries")).forEach(filteredRecords::add);
-        return filteredRecords;
-    }
+//    // TODO: implement filtering by isSelected in Record
+//    public ObservableList<Record> getFilteredRecords() {
+////        filteredRecords.clear();
+////        filteredRecords.addAll(records);
+////        records.filtered(r -> r.getCategory().equals("Groceries")).forEach(filteredRecords::add);
+//        return filteredRecords;
+//    }
 
     @Override
     // EFFECTS: returns this as Json Object

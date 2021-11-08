@@ -1,6 +1,5 @@
 package persistence;
 
-import model.SpendingList;
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
 import org.junit.jupiter.api.Test;

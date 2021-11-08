@@ -139,6 +139,27 @@ class CategoriesTest {
     }
 
     @Test
+    void testSetDefaultCategorySameName() {
+        try {
+            categories.setDefaultCategory(new Category(categories.getDefaultCategory().getName(),
+                    categories, true, true));
+            assertEquals(spendingList.getCategories(), categories);
+        } catch (NameException e) {
+            fail("Not the case: " + e.getMessage());
+        }
+    }
+
+    @Test
+    void testSetDefaultCategory() {
+        try {
+            categories.setDefaultCategory(new Category("new default", categories, true, true));
+            assertEquals(spendingList.getCategories(), categories);
+        } catch (NameException e) {
+            fail("Not the case: " + e.getMessage());
+        }
+    }
+
+    @Test
     void testEquals() {
         Categories instanceCategory = categories;
         Categories copyCategories = new Categories();

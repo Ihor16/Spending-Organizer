@@ -12,7 +12,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 // Represents reader that reads SpendingList from provided JSON file
 // Implementation of the class is based on the JsonReader class from JsonSerializationDemo
@@ -47,7 +49,20 @@ public class JsonReader {
     private SpendingList readSpendingList() throws NameException, NegativeAmountException {
         SpendingList spendingList = parseCategories();
         parseRecords(spendingList);
+        removeDuplicateDefaultCategories(spendingList);
         return spendingList;
+    }
+
+    // MODIFIES: spendingList
+    // EFFECTS: removes automatically created default category from categories
+    private void removeDuplicateDefaultCategories(SpendingList spendingList) {
+        List<Category> defaultCategories = spendingList.getCategories().getCategories()
+                .filtered(Category::isDefault);
+
+        if (defaultCategories.size() == 2) {
+            spendingList.getCategories().getCategories().removeIf(c -> c.getName().equals("default"));
+            spendingList.getCategories().setDefaultCategory(defaultCategories.get(0));
+        }
     }
 
     // MODIFIES: spendingList
@@ -57,15 +72,10 @@ public class JsonReader {
         Categories categories = new Categories();
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonCategory = jsonArray.getJSONObject(i);
-            new Category(jsonCategory.getString("name"), jsonCategory.getBoolean("isShown"), categories);
+            new Category(jsonCategory.getString("name"), categories,
+                    jsonCategory.getBoolean("isShown"), jsonCategory.getBoolean("isDefault"));
         }
         return new SpendingList(categories);
-    }
-
-    // MODIFIES: spendingList
-    // EFFECTS: parses category from json
-    private Category parseCategory(JSONObject json, SpendingList spendingList) throws NameException {
-        return new Category(json.getString("name"), json.getBoolean("isShown"), spendingList.getCategories());
     }
 
     // MODIFIES: spendingList

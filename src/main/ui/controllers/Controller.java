@@ -1,5 +1,6 @@
 package ui.controllers;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
@@ -20,12 +21,16 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.*;
 
-// Class that handles events and loads data to the GUI
+// Class that handles events
 public class Controller implements Initializable {
 
-    final String fieldsInitError = "Couldn't initialize data";
-    final String fileError = "Choose a file";
-    final String defaultFilePath = "./data/emptyFile.json";
+    private final String fileError = "Choose a file";
+    // File path to load from when user does File -> New,
+    // file at this path is never modified
+    private final String defaultFilePath = "./data/emptyFile.json";
+    // File user selected during SaveAs operation
+    // At the start of SaveAs operation it is set to null, and if user didn't choose a file, it remains null
+    private File selectedFileDuringSaveAs;
 
     @FXML TextField titleFieldAdd;
     @FXML TextField amountFieldAdd;
@@ -51,21 +56,23 @@ public class Controller implements Initializable {
 
     @FXML MenuItem saveMenuItem;
     @FXML Label filenameLabel;
+
     Categories categories;
     SpendingList spendingList;
 
+    // True if data has been changed (if it's been changed, save pop-up menu is displayed)
     SimpleBooleanProperty isChanged;
+    // File path to load from (to load from a new file, change this variable and call setUpHelper)
     SimpleStringProperty currentFilePath;
 
     private SetUpHelper setUpHelper;
 
     // MODIFIES: this
-    // EFFECTS: initializes the data
+    // EFFECTS: initializes application
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        isChanged = new SimpleBooleanProperty(false);
         setUpHelper = new SetUpHelper(this);
-
+        isChanged = new SimpleBooleanProperty(false);
         currentFilePath = new SimpleStringProperty("./data/spendingList.json");
         setUpHelper.setUpUI();
     }
@@ -75,8 +82,17 @@ public class Controller implements Initializable {
     @FXML
     void newMenuItemClicked() {
         if (isChanged.get()) {
-            showSavePopup();
+            if (showSavePopup()) {
+                newFile();
+            }
+        } else {
+            newFile();
         }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: opens an empty file
+    private void newFile() {
         currentFilePath.set(defaultFilePath);
         setUpHelper.setUpUI();
         isChanged.set(false);
@@ -84,13 +100,22 @@ public class Controller implements Initializable {
 
     // MODIFIES: this
     // EFFECTS: asks user if they want to save changes, and opens chosen file
-    //          shows error message if used didn't choose a file
-    // Implementation is based on: https://www.youtube.com/watch?v=hNz8Xf4tMI4
     @FXML
     void openMenuItemClicked() {
         if (isChanged.get()) {
-            showSavePopup();
+            if (showSavePopup()) {
+                openChosenFile();
+            }
+        } else {
+            openChosenFile();
         }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: opens chosen file,
+    //          shows error message if used didn't choose a file
+    // Implementation is based on: https://youtu.be/hNz8Xf4tMI4?t=345
+    private void openChosenFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File("./data"));
         File selectedFile = fileChooser.showOpenDialog(null);
@@ -105,39 +130,17 @@ public class Controller implements Initializable {
     }
 
     // MODIFIES: this
-    // EFFECTS: saves app state to the file with currentFilePath,
-    //          shows error message if used didn't choose a file
-    //          if user is in the default file, treat as if they clicked SaveAs button
+    // EFFECTS: saves app state to the file with currentFilePath path,
+    //          shows error message if used didn't choose a file,
+    //          if user is in default empty file, treat as if they clicked SaveAs button
     @FXML
     void saveMenuItemClicked() {
         if (currentFilePath.get().equals(defaultFilePath)) {
             saveAsMenuItemClicked();
-        }
-        try (JsonWriter writer = new JsonWriter(currentFilePath.get())) {
-            writer.open();
-            writer.write(spendingList);
-            isChanged.set(false);
-        } catch (FileNotFoundException e) {
-            showErrorMessage(e.getMessage());
-        }
-    }
-
-    // MODIFIES: this
-    // EFFECTS: saves app state to a file that user chooses,
-    //          shows error message if user didn't choose a file
-    // Implementation is based on: http://java-buddy.blogspot.com/2015/03/javafx-example-save-textarea-to-file.html
-    @FXML
-    void saveAsMenuItemClicked() {
-        FileChooser fileChooser = new FileChooser();
-        FileChooser.ExtensionFilter extensionFilter =
-                new FileChooser.ExtensionFilter("Spending List (*.json)", "*.json");
-        fileChooser.getExtensionFilters().add(extensionFilter);
-
-        fileChooser.setInitialDirectory(new File("./data"));
-        File file = fileChooser.showSaveDialog(null);
-
-        if (Objects.nonNull(file)) {
-            currentFilePath.set(file.getPath());
+            if (Objects.isNull(selectedFileDuringSaveAs)) {
+                focusOnRecordsOrCategories();
+            }
+        } else {
             try (JsonWriter writer = new JsonWriter(currentFilePath.get())) {
                 writer.open();
                 writer.write(spendingList);
@@ -145,18 +148,50 @@ public class Controller implements Initializable {
             } catch (FileNotFoundException e) {
                 showErrorMessage(e.getMessage());
             }
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: saves app state to a file that user chooses,
+    //          shows error message if user didn't choose a file
+    // INVARIANT: if user didn't choose a file, selectedFileDuringSaveAs is null after this methods
+    // Implementation is based on: http://java-buddy.blogspot.com/2015/03/javafx-example-save-textarea-to-file.html
+    @FXML
+    void saveAsMenuItemClicked() {
+        selectedFileDuringSaveAs = null;
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter extensionFilter =
+                new FileChooser.ExtensionFilter("Spending Organizer (*.json)", "*.json");
+        fileChooser.getExtensionFilters().add(extensionFilter);
+        fileChooser.setInitialDirectory(new File("./data"));
+
+        selectedFileDuringSaveAs = fileChooser.showSaveDialog(null);
+
+        if (Objects.nonNull(selectedFileDuringSaveAs)) {
+            currentFilePath.set(selectedFileDuringSaveAs.getPath());
+            try (JsonWriter writer = new JsonWriter(currentFilePath.get())) {
+                writer.open();
+                writer.write(spendingList);
+                isChanged.set(false);
+            } catch (FileNotFoundException e) {
+                showErrorMessage(e.getMessage());
+                selectedFileDuringSaveAs = null;
+            }
         } else {
             showErrorMessage(fileError);
         }
     }
 
-    // TODO: document
+    // EFFECTS: asks user if they want to save changes and closes the app
     @FXML
-    void closeMenuItemClicked() {
+    public void closeMenuItemClicked() {
         if (isChanged.get()) {
-            showSavePopup();
+            if (showSavePopup()) {
+                Platform.exit();
+            }
+        } else {
+            Platform.exit();
         }
-//        getPrimaryStage().close();
     }
 
     // MODIFIES: this
@@ -266,19 +301,46 @@ public class Controller implements Initializable {
     }
 
     // MODIFIES: this
-    // EFFECTS: focuses on add menu
+    // EFFECTS: switches focus from records to categories table and vice versa
     @FXML
-    void focusOnAddMenu()  {
-        titleFieldAdd.requestFocus();
+    void focusOnRecordsOrCategories() {
+        if (recordTable.isFocused()) {
+            categoriesTable.requestFocus();
+        } else {
+            recordTable.requestFocus();
+        }
     }
 
     // MODIFIES: this
-    // EFFECTS: focuses on records table
+    // EFFECTS: focuses on add menu to add a new record
     @FXML
-    void focusOnRecords()  {
-        recordTable.requestFocus();
+    public void focusOnAddRecord() {
+        titleFieldAdd.requestFocus();
+        recordToggleAdd.setSelected(true);
+        recordRBPressedInAddMenu();
     }
 
+    // MODIFIES: this
+    // EFFECTS: focuses on add menu to add a new category
+    @FXML
+    public void focusOnAddCategory() {
+        titleFieldAdd.requestFocus();
+        categoryToggleAdd.setSelected(true);
+        categoryRBPressedInAddMenu();
+    }
+
+    // MODIFIES: this
+    // EFFECTS: removes selected records or categories depending which table user is focused on
+    @FXML
+    public void removeSelectedRecordsOrCategories() {
+        if (recordTable.isFocused()) {
+            recordToggleRemove.setSelected(true);
+            removeSelected();
+        } else if (categoriesTable.isFocused()) {
+            categoryToggleRemove.setSelected(true);
+            removeSelected();
+        }
+    }
 
     // MODIFIES: this
     // EFFECTS: adds new category to the categories table,
@@ -307,34 +369,49 @@ public class Controller implements Initializable {
         }
     }
 
-    // EFFECTS: shows a pop-up window asking user if they want to save changes
+    // EFFECTS: shows a pop-up window asking user if they want to save changes and does a chosen operation,
+    //          returns false if user chooses to cancel this pop-up window
     // Implementation is based on https://code.makery.ch/blog/javafx-dialogs-official/
-    void showSavePopup() {
+    boolean showSavePopup() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Save changes dialog");
         alert.setHeaderText("Would you like to save changes?");
+        alert.getDialogPane().setMinWidth(470);
 
         ButtonType save = new ButtonType("Save");
         ButtonType saveAs = new ButtonType("Save As");
+        ButtonType dontSave = new ButtonType("Don't Save");
         ButtonType cancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
 
         if (currentFilePath.get().equals(defaultFilePath)) {
-            alert.getButtonTypes().setAll(saveAs, cancel);
+            alert.getButtonTypes().setAll(saveAs, dontSave, cancel);
         } else {
             alert.getButtonTypes().setAll(save, saveAs, cancel);
         }
 
         Optional<ButtonType> chosenButton = alert.showAndWait();
-        chosenButton.ifPresent(b -> {
-            if (b.equals(save)) {
-                saveMenuItemClicked();
-            } else if (b.equals(saveAs)) {
-                saveAsMenuItemClicked();
-            }
-        });
+        return chosenButton.map(buttonType -> didChooseASaveOption(buttonType, save, saveAs, dontSave))
+                .orElse(false);
     }
 
-    // EFFECTS: shows a pop-up error message window with a given message
+    // EFFECTS: returns false if (1) user chooses none of save, saveAs, don't save buttons
+    //          OR (2) user chose saveAs option but didn't specify a file to save to
+    private boolean didChooseASaveOption(ButtonType chosenButton, ButtonType save,
+                                         ButtonType saveAs, ButtonType dontSave) {
+        if (chosenButton.equals(save)) {
+            saveMenuItemClicked();
+            return true;
+        } else if (chosenButton.equals(saveAs)) {
+            saveAsMenuItemClicked();
+            // If user didn't choose file during SaveAs (i.e., if selectedFileDuringSaveAs is null),
+            // treat as if they chose to cancel pop-up window
+            return selectedFileDuringSaveAs != null;
+        } else {
+            return chosenButton.equals(dontSave);
+        }
+    }
+
+    // EFFECTS: shows a pop-up error window with a given message
     // Implementation is based on https://stackoverflow.com/a/39151264
     void showErrorMessage(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);

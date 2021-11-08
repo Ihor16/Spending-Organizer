@@ -2,7 +2,7 @@
   "records": [
     {
       "amount": 100.76,
-      "timeAdded": "2021-11-07T23:42:58.290",
+      "timeAdded": "2021-11-07T23:42:58.688",
       "title": "Went to SaveOnFoods",
       "category": {
         "isDefault": false,
@@ -12,7 +12,7 @@
     },
     {
       "amount": 401.34,
-      "timeAdded": "2021-11-07T23:42:58.280",
+      "timeAdded": "2021-11-07T23:42:58.666",
       "title": "Went to Toronto",
       "category": {
         "isDefault": false,
@@ -35,6 +35,11 @@
     {
       "isDefault": false,
       "name": "Groceries",
+      "isShown": true
+    },
+    {
+      "isDefault": true,
+      "name": "new default",
       "isShown": true
     }
   ]

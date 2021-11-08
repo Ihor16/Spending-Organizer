@@ -20,14 +20,14 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.controllers.Controller">
+<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1148.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.controllers.Controller">
    <left>
       <VBox prefHeight="568.0" prefWidth="263.0" BorderPane.alignment="CENTER">
          <children>
             <TableView fx:id="categoriesTable" editable="true" prefHeight="357.0" prefWidth="383.0">
               <columns>
                 <TableColumn fx:id="categoriesColumn" maxWidth="500.0" onEditCommit="#changeCategoryInCategories" prefWidth="190.0" sortType="DESCENDING" text="Categories" />
-                  <TableColumn fx:id="isShownColumn" maxWidth="500.0" prefWidth="72.0" text="Show" />
+                  <TableColumn fx:id="isShownColumn" maxWidth="500.0" prefWidth="72.0" text="Show" visible="false" />
               </columns>
             </TableView>
             <TabPane prefHeight="372.0" prefWidth="263.0" tabClosingPolicy="UNAVAILABLE">
@@ -116,12 +116,12 @@
       </VBox>
    </left>
    <center>
-      <TableView fx:id="recordTable" editable="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER_RIGHT">
+      <TableView fx:id="recordTable" editable="true" prefHeight="568.0" prefWidth="931.0" tableMenuButtonVisible="true" BorderPane.alignment="CENTER_RIGHT">
         <columns>
             <TableColumn fx:id="titleColumn" maxWidth="400.0" minWidth="300.0" onEditCommit="#changeTitleInRecords" prefWidth="400.0" text="Title" />
             <TableColumn fx:id="amountColumn" maxWidth="500.0" minWidth="31.0" onEditCommit="#changeAmountInRecords" prefWidth="116.0" text="Amount" />
             <TableColumn fx:id="categoryColumn" maxWidth="500.0" minWidth="55.0" onEditCommit="#changeCategoryInRecords" prefWidth="190.0" text="Category" />
-            <TableColumn fx:id="dateColumn" editable="false" maxWidth="500.0" minWidth="100.0" prefWidth="130.0" text="Date" />
+            <TableColumn fx:id="dateColumn" editable="false" maxWidth="500.0" minWidth="100.0" prefWidth="161.0" text="Date" />
         </columns>
       </TableView>
    </center>
@@ -154,27 +154,28 @@
                         </MenuItem>
                         <SeparatorMenuItem mnemonicParsing="false" onAction="#closeMenuItemClicked" />
                         <MenuItem mnemonicParsing="false" onAction="#closeMenuItemClicked" text="Close">
-                           <accelerator>
-                              <KeyCodeCombination alt="DOWN" code="F4" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                           </accelerator>
                         </MenuItem>
                      </items>
                   </Menu>
                   <Menu mnemonicParsing="false" text="Edit">
                      <items>
-                        <MenuItem mnemonicParsing="false" onAction="#removeSelected" text="Remove record(s)">
+                        <MenuItem mnemonicParsing="false" onAction="#focusOnAddRecord" text="Add new record">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="R" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator>
+                        </MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#focusOnAddCategory" text="Add new category">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="E" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator></MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#removeSelectedRecordsOrCategories" text="Remove records/categories">
                            <accelerator>
                               <KeyCodeCombination alt="ANY" code="DELETE" control="UP" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator>
                         </MenuItem>
-                        <MenuItem mnemonicParsing="false" onAction="#focusOnAddMenu" text="Focus on add menu">
+                        <MenuItem mnemonicParsing="false" onAction="#focusOnRecordsOrCategories" text="Focus on records/categories">
                            <accelerator>
-                              <KeyCodeCombination alt="DOWN" code="N" control="UP" meta="UP" shift="UP" shortcut="UP" />
-                           </accelerator>
-                        </MenuItem>
-                        <MenuItem mnemonicParsing="false" onAction="#focusOnRecords" text="Focus on records">
-                           <accelerator>
-                              <KeyCodeCombination alt="ANY" code="ESCAPE" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                              <KeyCodeCombination alt="ANY" code="F" control="UP" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator>
                         </MenuItem>
                      </items>
@@ -186,7 +187,7 @@
                   </Menu>
                </menus>
             </MenuBar>
-            <Label fx:id="filenameLabel" disable="true" prefHeight="32.0" prefWidth="641.0" text="filename.json">
+            <Label fx:id="filenameLabel" disable="true" prefHeight="32.0" prefWidth="689.0" text="filename.json">
                <HBox.margin>
                   <Insets />
                </HBox.margin>

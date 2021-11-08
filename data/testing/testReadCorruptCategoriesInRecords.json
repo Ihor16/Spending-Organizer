@@ -6,6 +6,7 @@
       "title": "Went to SaveOnFoods",
       "category": {
         "name": "Groceries",
+        "isDefault": false,
         "isShown": true
       }
     },
@@ -15,6 +16,7 @@
       "title": "Went to Toronto",
       "category": {
         "name": "Travel",
+        "isDefault": false,
         "isShown": true
       }
     }
@@ -22,14 +24,17 @@
   "categories": [
     {
       "name": "",
+      "isDefault": false,
       "isShown": true
     },
     {
       "name": "undefined",
+      "isDefault": true,
       "isShown": true
     },
     {
       "name": "  ",
+      "isDefault": false,
       "isShown": true
     }
   ]

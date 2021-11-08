@@ -12,16 +12,21 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 // Represents categories user can choose from
-// INVARIANT: defaultCategory is always present
+// INVARIANT: defaultCategory is always present,
+//            there's only 1 default category
 public class Categories implements WritableArray {
 
     private Category defaultCategory;
     private final ObservableList<Category> categories;
 
+    // TODO: solve a bug with default category:
+    //       when you change name of default category, save file, and load it,
+    //       you have this default category and the old one.
+    //       Should be only old one
     public Categories() {
         this.categories = FXCollections.observableArrayList();
         try {
-            defaultCategory = new Category("default", this);
+            defaultCategory = new Category("default", this, true, true);
         } catch (NameException e) {
             assert false;
         }
@@ -68,6 +73,10 @@ public class Categories implements WritableArray {
         this.categories.clear();
         this.categories.add(defaultCategory);
         this.categories.addAll(categories);
+    }
+
+    public void setDefaultCategory(Category defaultCategory) {
+        this.defaultCategory = defaultCategory;
     }
 
     public ObservableList<Category> getCategories() {

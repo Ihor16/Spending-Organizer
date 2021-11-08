@@ -14,6 +14,7 @@ public class Category implements WritableObject {
 
     private final SimpleStringProperty name;
     private final SimpleBooleanProperty isShown;
+    private final boolean isDefault;
 
     public Category(@NotNull String name, @NotNull Categories categories) throws NameException {
         if (isBlank(name)) {
@@ -21,16 +22,19 @@ public class Category implements WritableObject {
         }
         this.name = new SimpleStringProperty(name.trim());
         this.isShown = new SimpleBooleanProperty(true);
+        this.isDefault = false;
         categories.add(this);
     }
 
     // REQUIRED: used only when reading from Json file
-    public Category(@NotNull String name, boolean isShown, @NotNull Categories categories) throws NameException {
+    public Category(@NotNull String name, @NotNull Categories categories, boolean isShown, boolean isDefault)
+            throws NameException {
         if (isBlank(name)) {
             throw new NameException("category");
         }
         this.name = new SimpleStringProperty(name.trim());
         this.isShown = new SimpleBooleanProperty(isShown);
+        this.isDefault = isDefault;
         categories.add(this);
     }
 
@@ -64,6 +68,10 @@ public class Category implements WritableObject {
         this.isShown.set(isShown);
     }
 
+    public boolean isDefault() {
+        return isDefault;
+    }
+
     // EFFECTS: returns true if provided string is blank,
     //          false otherwise
     private boolean isBlank(String str) {
@@ -78,6 +86,7 @@ public class Category implements WritableObject {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("name", name.get());
         jsonObject.put("isShown", isShown.get());
+        jsonObject.put("isDefault", isDefault);
         return jsonObject;
     }
 

@@ -112,6 +112,37 @@ class JsonWriterTest {
         assertEquals(3, categories.getCategories().size());
     }
 
+    @Test
+    void testWriteRegularFileChangedDefaultCategory() {
+        String path = "./data/testing/testWriteRegularFileChangedDefaultCategory.json";
+        try {
+            new Category("new default", categories, true, true);
+        } catch (NameException e) {
+            fail("Not the case: " + e.getMessage());
+        }
+
+        try (JsonWriter writer = new JsonWriter(path)){
+            writer.open();
+            writer.write(spToWrite);
+        } catch (FileNotFoundException e) {
+            fail("File actually exists");
+            e.printStackTrace();
+        }
+
+        try {
+            JsonReader reader = new JsonReader(path);
+            SpendingList fromFile = reader.read();
+            assertEquals(spToWrite.getRecords(), fromFile.getRecords());
+            assertNotEquals(spToWrite.getCategories().getDefaultCategory(),
+                    fromFile.getCategories().getDefaultCategory());
+            assertEquals(spToWrite.getCategories().getCategories().size() - 1,
+                    fromFile.getCategories().getCategories().size());
+        } catch (IOException | NegativeAmountException | NameException e) {
+            fail("File exists and is not corrupted");
+            e.printStackTrace();
+        }
+    }
+
     // EFFECTS: inits test entries
     private void initEntries() {
         categories = new Categories();
