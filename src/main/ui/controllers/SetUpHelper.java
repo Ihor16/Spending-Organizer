@@ -26,8 +26,12 @@ import java.util.Objects;
 // Helper class that loads data to the GUI and formats GUI components
 public class SetUpHelper {
 
-    private final Controller cl;
+    private Controller cl;
     private final String defaultCellStyle = "-fx-background-color: skyblue";
+
+    // Is used for all controllers apart from ui.controllers.Controller
+    public SetUpHelper() {
+    }
 
     public SetUpHelper(Controller controller) {
         this.cl = controller;
@@ -103,8 +107,6 @@ public class SetUpHelper {
         cl.categoriesBoxAdd.getItems().clear();
         cl.categoriesBoxAdd
                 .setItems(FXCollections.observableArrayList(cl.categories.getCategoriesNames()));
-        // TODO: probably remove
-//        formatComboBoxes(cl.categoriesBoxAdd);
         cl.categoriesBoxAdd.getSelectionModel().selectFirst();
     }
 
@@ -115,8 +117,6 @@ public class SetUpHelper {
         cl.titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
         cl.amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
         cl.categoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
-        // TODO: probably remove
-//        formatCategoryColumnInRecords(cl.categoryColumn);
         cl.dateColumn.setCellValueFactory(new PropertyValueFactory<>("timeAdded"));
         formatDateColumn(cl.dateColumn);
 
@@ -130,59 +130,21 @@ public class SetUpHelper {
         cl.categoriesColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         cl.isShownColumn.setCellValueFactory(new PropertyValueFactory<>("isShown"));
         formatIsShownColumn(cl.isShownColumn);
-
         cl.categoriesTable.setItems(cl.categories.getCategories());
     }
 
-    // TODO: probably remove
-//    // MODIFIES: cl
-//    // EFFECTS: formats category cells
-//    // Based on https://stackoverflow.com/a/50224259
-//    private void formatCategoryColumnInRecords(TableColumn<Record, Category> categoryColumn) {
-//        categoryColumn.setCellFactory(tableColumn -> new TableCell<Record, Category>() {
-//            @Override
-//            protected void updateItem(Category item, boolean empty) {
-//                super.updateItem(item, empty);
-//                if (empty) {
-//                    setText("");
-//                } else {
-//                    setText(item.getName());
-//                    if (item.getName().equals(cl.categories.getDefaultCategory().getName())) {
-//                        setTextFill(Color.BLUE);
-//                    }
-//                }
-//            }
-//        });
-//    }
-//
-
-//    // TODO: probably remove
-//    // MODIFIES: cl
-//    // EFFECTS: formats combobox items to show only categories names, and colors default category
-//    // Implementation is based on: https://docs.oracle.com/javafx/2/ui_controls/combo-box.htm
-//    private void formatComboBoxes(ComboBox<String> categoriesBoxAdd) {
-//        categoriesBoxAdd.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
-//            @Override
-//            public ListCell<String> call(ListView<String> param) {
-//                return new ListCell<String>() {
-//                    @Override
-//                    protected void updateItem(String item, boolean empty) {
-//                        super.updateItem(item, empty);
-//                        if (item != null) {
-//                            setText(item);
-//                            if (item.equals(cl.categories.getDefaultCategory().getName())) {
-//                                setTextFill(Color.BLUE);
-//                            } else {
-//                                setTextFill(Color.BLACK);
-//                            }
-//                        } else {
-//                            setText(null);
-//                        }
-//                    }
-//                };
-//            }
-//        });
-//    }
+    // MODIFIES: categoriesTable, categoriesColumn, isShownColumn, categories
+    // EFFECTS: populates categories table and colors default category in categoriesTable
+    void populateCategoriesTable(TableView<Category> categoriesTable,
+                                         TableColumn<Category, String> categoriesColumn,
+                                         TableColumn<Category, Boolean> isShownColumn,
+                                         Categories categories) {
+        categoriesColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        isShownColumn.setCellValueFactory(new PropertyValueFactory<>("isShown"));
+        formatIsShownColumn(isShownColumn);
+        categoriesTable.setItems(categories.getCategories());
+        colorDefaultCategoryInCategoriesTable(categoriesTable, categories);
+    }
 
     // MODIFIES: cl
     // EFFECTS: formats date cells
@@ -270,6 +232,23 @@ public class SetUpHelper {
             protected void updateItem(Category category, boolean empty) {
                 super.updateItem(category, empty);
                 if (Objects.nonNull(category) && category.equals(cl.categories.getDefaultCategory())) {
+                    setStyle(defaultCellStyle);
+                } else {
+                    setStyle("");
+                }
+            }
+        });
+    }
+
+    // MODIFIES: categoriesTable
+    // EFFECTS: colors default category in categoriesTable
+    private void colorDefaultCategoryInCategoriesTable(TableView<Category> categoriesTable, Categories categories) {
+        // implementation is based on: https://stackoverflow.com/a/56309916
+        categoriesTable.setRowFactory(callable -> new TableRow<Category>() {
+            @Override
+            protected void updateItem(Category category, boolean empty) {
+                super.updateItem(category, empty);
+                if (Objects.nonNull(category) && category.equals(categories.getDefaultCategory())) {
                     setStyle(defaultCellStyle);
                 } else {
                     setStyle("");

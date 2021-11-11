@@ -20,23 +20,23 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1148.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.controllers.Controller">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1148.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.controllers.Controller">
    <left>
       <VBox prefHeight="568.0" prefWidth="263.0" BorderPane.alignment="CENTER">
          <children>
-            <TableView fx:id="categoriesTable" editable="true" prefHeight="357.0" prefWidth="383.0">
+            <TableView fx:id="categoriesTable" editable="true" prefHeight="357.0" prefWidth="383.0" VBox.vgrow="ALWAYS">
               <columns>
                 <TableColumn fx:id="categoriesColumn" maxWidth="500.0" onEditCommit="#changeCategoryInCategories" prefWidth="190.0" sortType="DESCENDING" text="Categories" />
                   <TableColumn fx:id="isShownColumn" maxWidth="500.0" prefWidth="72.0" text="Show" visible="false" />
               </columns>
             </TableView>
-            <TabPane prefHeight="372.0" prefWidth="263.0" tabClosingPolicy="UNAVAILABLE">
+            <TabPane prefHeight="372.0" prefWidth="263.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="NEVER">
               <tabs>
                 <Tab text="Add">
                      <content>
                         <VBox prefHeight="200.0" prefWidth="100.0">
                            <children>
-                              <HBox prefHeight="42.0" prefWidth="263.0">
+                              <HBox prefHeight="42.0" prefWidth="263.0" VBox.vgrow="NEVER">
                                  <children>
                                     <RadioButton fx:id="recordToggleAdd" mnemonicParsing="false" onAction="#recordRBPressedInAddMenu" selected="true" text="Record">
                                        <HBox.margin>
@@ -128,7 +128,7 @@
    <top>
       <HBox prefHeight="0.0" prefWidth="1100.0" BorderPane.alignment="CENTER">
          <children>
-            <MenuBar prefWidth="1100.0">
+            <MenuBar prefWidth="1100.0" HBox.hgrow="NEVER">
                <menus>
                   <Menu mnemonicParsing="false" text="File">
                      <items>
@@ -179,6 +179,11 @@
                            </accelerator>
                         </MenuItem>
                      </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="View">
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#changeSceneToChart" text="Bar chart" />
+                    </items>
                   </Menu>
                   <Menu mnemonicParsing="false" text="Help">
                      <items>

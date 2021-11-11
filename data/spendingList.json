@@ -1,9 +1,39 @@
 {
   "records": [
     {
+      "amount": 100,
+      "timeAdded": "2021-08-06T15:37:27.411",
+      "title": "Went to save on",
+      "category": {
+        "isDefault": false,
+        "name": "Groceries",
+        "isShown": true
+      }
+    },
+    {
       "amount": 70,
       "timeAdded": "2021-08-01T18:12:06.411",
       "title": "Cinema",
+      "category": {
+        "isDefault": false,
+        "name": "Recreation & Entertainment",
+        "isShown": true
+      }
+    },
+    {
+      "amount": 700,
+      "timeAdded": "2021-06-12T03:18:49.411",
+      "title": "Went to Victoria",
+      "category": {
+        "isDefault": false,
+        "name": "Travel",
+        "isShown": true
+      }
+    },
+    {
+      "amount": 80,
+      "timeAdded": "2021-06-08T03:09:14.411",
+      "title": "Theatre",
       "category": {
         "isDefault": false,
         "name": "Recreation & Entertainment",
@@ -17,6 +47,36 @@
       "category": {
         "isDefault": false,
         "name": "Housing Fee",
+        "isShown": true
+      }
+    },
+    {
+      "amount": 90,
+      "timeAdded": "2021-05-16T13:28:32.411",
+      "title": "No Frills",
+      "category": {
+        "isDefault": false,
+        "name": "Groceries",
+        "isShown": true
+      }
+    },
+    {
+      "amount": 500,
+      "timeAdded": "2021-05-08T20:40:35.411",
+      "title": "Visited Montreal",
+      "category": {
+        "isDefault": false,
+        "name": "Travel",
+        "isShown": true
+      }
+    },
+    {
+      "amount": 98,
+      "timeAdded": "2021-03-27T22:41:16.411",
+      "title": "Shorts & T-Shirt",
+      "category": {
+        "isDefault": false,
+        "name": "Clothing",
         "isShown": true
       }
     },
@@ -39,66 +99,6 @@
         "name": "Clothing",
         "isShown": true
       }
-    },
-    {
-      "amount": 90,
-      "timeAdded": "2021-05-16T13:28:32.411",
-      "title": "No Frills",
-      "category": {
-        "isDefault": false,
-        "name": "Groceries",
-        "isShown": true
-      }
-    },
-    {
-      "amount": 98,
-      "timeAdded": "2021-03-27T22:41:16.411",
-      "title": "Shorts & T-Shirt",
-      "category": {
-        "isDefault": false,
-        "name": "Clothing",
-        "isShown": true
-      }
-    },
-    {
-      "amount": 80,
-      "timeAdded": "2021-06-08T03:09:14.411",
-      "title": "Theatre",
-      "category": {
-        "isDefault": false,
-        "name": "Recreation & Entertainment",
-        "isShown": true
-      }
-    },
-    {
-      "amount": 500,
-      "timeAdded": "2021-05-08T20:40:35.411",
-      "title": "Visited Montreal",
-      "category": {
-        "isDefault": false,
-        "name": "Travel",
-        "isShown": true
-      }
-    },
-    {
-      "amount": 100,
-      "timeAdded": "2021-08-06T15:37:27.411",
-      "title": "Went to Save On Foods",
-      "category": {
-        "isDefault": false,
-        "name": "Groceries",
-        "isShown": true
-      }
-    },
-    {
-      "amount": 700,
-      "timeAdded": "2021-06-12T03:18:49.411",
-      "title": "Went to Victoria",
-      "category": {
-        "isDefault": false,
-        "name": "Travel",
-        "isShown": true
-      }
     }
   ],
   "categories": [
@@ -109,7 +109,7 @@
     },
     {
       "isDefault": false,
-      "name": "Transportation",
+      "name": "Travel",
       "isShown": true
     },
     {
@@ -150,11 +150,6 @@
     {
       "isDefault": false,
       "name": "Miscellaneous",
-      "isShown": true
-    },
-    {
-      "isDefault": false,
-      "name": "Travel",
       "isShown": true
     },
     {

@@ -4,9 +4,13 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import model.Categories;
 import model.Category;
 import model.Record;
@@ -17,6 +21,7 @@ import persistence.JsonWriter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -66,6 +71,8 @@ public class Controller implements Initializable {
     SimpleStringProperty currentFilePath;
 
     private SetUpHelper setUpHelper;
+    private SceneHolder sceneHolder = SceneHolder.getInstance();
+    private SpendingListHolder spendingListHolder = SpendingListHolder.getInstance();
 
     // MODIFIES: this
     // EFFECTS: initializes application
@@ -339,6 +346,27 @@ public class Controller implements Initializable {
         } else if (categoriesTable.isFocused()) {
             categoryToggleRemove.setSelected(true);
             removeSelected();
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: changes scene to bar chart scene, and puts this scene to sceneHolder
+    // Implementation is based on https://dev.to/devtony101/javafx-3-ways-of-passing-information-between-scenes-1bm8
+    @FXML
+    public void changeSceneToChart() {
+        sceneHolder.getSceneMap().put(SceneEnum.MAIN, recordTable.getScene());
+        Stage window = (Stage) recordTable.getScene().getWindow();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../resources/chart.fxml"));
+            spendingListHolder.setSpendingList(spendingList);
+            Parent chartViewParent = loader.load();
+
+            window.setScene(new Scene(chartViewParent));
+            window.show();
+
+        } catch (IOException e) {
+            showErrorMessage("Couldn't load the chart view");
+            e.printStackTrace();
         }
     }
 
