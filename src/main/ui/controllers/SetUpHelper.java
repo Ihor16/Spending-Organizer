@@ -294,4 +294,14 @@ public class SetUpHelper {
         }
         return chunks.get(chunks.size() - 1);
     }
+
+    // EFFECTS: shows a pop-up error window with a given message
+    // Implementation is based on https://stackoverflow.com/a/39151264
+    void showErrorMessage(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setHeaderText("Input not valid");
+        alert.setHeaderText(message);
+        alert.showAndWait();
+    }
+
 }

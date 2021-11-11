@@ -7,7 +7,16 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.WritableObject;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalUnit;
+import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 // Class representing list of spending records
 // INVARIANT: Categories is constructed first,
@@ -72,6 +81,17 @@ public class SpendingList implements WritableObject {
             jsonArray.put(record.toJsonObject());
         }
         return jsonArray;
+    }
+
+    // effects: groups records by date and sums up all records' amounts on that date
+    public Map<String, Double> groupByCategoryInSelectedDates(LocalDate from, LocalDate to) {
+        Predicate<Record> predicate = r -> r.getTimeAdded().isAfter(from.atStartOfDay())
+                && r.getTimeAdded().isBefore(to.atTime(23, 59, 59));
+
+        return records.stream()
+                .filter(predicate)
+                .collect(Collectors.groupingBy(r -> r.getCategory().getName(),
+                        Collectors.summingDouble(Record::getAmount)));
     }
 
     @Override

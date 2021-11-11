@@ -5,7 +5,11 @@ import model.exceptions.NegativeAmountException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,10 +19,17 @@ class SpendingListTest {
     private Category travelCategory;
     private Category notAddedCategory;
     private Categories categories;
+
     private SpendingList spendingList;
+
     private Record recordTravel;
     private Record recordGroceries;
     private Record notAddedRecord;
+
+    private LocalDateTime travelDate = LocalDateTime.of(
+            LocalDate.of(2020, Month.DECEMBER, 15), LocalTime.NOON);
+    private LocalDateTime groceriesDate = LocalDateTime.of(
+            LocalDate.of(2021, Month.APRIL, 21), LocalTime.of(17, 15));
 
     @BeforeEach
     void setUp() {
@@ -121,12 +132,58 @@ class SpendingListTest {
         assertEquals(expected, spendingList.toString());
     }
 
+    @Test
+    void testGroupByCategoryInSelectedDatesWrongOrder() {
+        assertEquals(Collections.emptyMap(),
+                spendingList.groupByCategoryInSelectedDates(groceriesDate.toLocalDate(),
+                        travelDate.toLocalDate()));
+    }
+
+    @Test
+    void testGroupByCategoryInSelectedDatesSameCategory() {
+        recordTravel.setCategory(groceriesCategory);
+        Map<String, Double> map = new HashMap<>();
+        map.put(groceriesCategory.getName(), recordTravel.getAmount() + recordGroceries.getAmount());
+        assertEquals(map, spendingList.groupByCategoryInSelectedDates(travelDate.toLocalDate(),
+                groceriesDate.toLocalDate()));
+    }
+
+    @Test
+    void testGroupByCategoryInSelectedDates() {
+        Map<String, Double> map = new HashMap<>();
+        recordTravel.setTimeAdded(LocalDateTime.of(LocalDate.now(), LocalTime.of(14, 15, 10))
+                .toString());
+        recordGroceries.setTimeAdded(LocalDateTime.of(LocalDate.now(), LocalTime.of(14, 15, 20))
+                .toString());
+        map.put(travelCategory.getName(), recordTravel.getAmount());
+        map.put(groceriesCategory.getName(), recordGroceries.getAmount());
+        assertEquals(map, spendingList.groupByCategoryInSelectedDates(recordTravel.getTimeAdded().toLocalDate(),
+                recordTravel.getTimeAdded().toLocalDate()));
+    }
+
+    @Test
+    void testGroupByMonthsInSelectedDates() {
+//        fail();
+    }
+
+    @Test
+    void testGroupByWeeksInSelectedDates() {
+//        fail();
+    }
+
+    @Test
+    void testGroupByDaysInSelectedDates() {
+//        fail();
+    }
+
     // EFFECTS: inits test records
     private void initRecords() {
         try {
             recordTravel = new Record("Went to Toronto", 401.34, travelCategory);
+            recordTravel.setTimeAdded(travelDate.toString());
             Thread.sleep(10);
             recordGroceries = new Record("Went to SaveOnFoods", 100.76, groceriesCategory);
+            recordGroceries.setTimeAdded(groceriesDate.toString());
             Thread.sleep(10);
             notAddedRecord = new Record("Other record", recordTravel.getAmount() * 195, notAddedCategory);
         } catch (NameException | NegativeAmountException | InterruptedException e) {
