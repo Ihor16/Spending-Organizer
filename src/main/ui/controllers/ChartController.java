@@ -1,21 +1,20 @@
 package ui.controllers;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.chart.*;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 import model.Category;
-import model.Record;
 import model.SpendingList;
 
 import java.net.URL;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -63,6 +62,8 @@ public class ChartController implements Initializable {
 
     @FXML
     public void plotChart() {
+        barChart.getData().clear();
+        barChart.setAnimated(false);
         barChart.setTitle("Records by Categories");
         categoryAxis = new CategoryAxis();
         numberAxis = new NumberAxis();
@@ -73,7 +74,7 @@ public class ChartController implements Initializable {
 
         try {
             Map<String, Double> map = spendingList
-                    .groupByCategoryInSelectedDates(fromDateField.getValue(), toDateField.getValue());
+                    .groupByCategory(fromDateField.getValue(), toDateField.getValue());
 
             map.forEach((key, value) -> series.getData().add(new XYChart.Data<>(key, value)));
 
@@ -82,6 +83,5 @@ public class ChartController implements Initializable {
             setUpHelper.showErrorMessage(e.getMessage());
         }
     }
-
 }
 
