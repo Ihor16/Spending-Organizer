@@ -74,6 +74,22 @@ public class SpendingListGroupingTest {
     }
 
     @Test
+    void testGroupByCategoryOneMonthAllRecords() {
+        initFullSpendingList();
+        Map<String, Double> expectedMap = new LinkedHashMap<>();
+        spendingList.getRecords().forEach(r -> expectedMap.put(r.getCategory().getName(), r.getAmount()));
+        assertEquals(expectedMap, spendingList.groupByCategory(LocalDate.MIN));
+    }
+
+    @Test
+    void testGroupByCategoryOneMonth() {
+        initFullSpendingList();
+        Map<String, Double> expectedMap = new LinkedHashMap<>();
+        spendingList.getRecords().forEach(r -> expectedMap.put(r.getCategory().getName(), r.getAmount()));
+        assertEquals(expectedMap, spendingList.groupByCategory(dateAdded.withDayOfMonth(1)));
+    }
+
+    @Test
     void testGroupByCategorySameMonthSameCategory() {
         initFullSpendingList();
         String categoryName = "Same category";
@@ -275,7 +291,11 @@ public class SpendingListGroupingTest {
             r4.setTimeAdded(LocalDateTime.of(laterDateAdded, LocalTime.now()).toString());
             Record r5 = new Record("Title 5", 500, new Category("Category 2", categories));
             r5.setTimeAdded(LocalDateTime.of(laterDateAdded, LocalTime.now()).toString());
-            Arrays.asList(r1, r2, r3, r4, r5).forEach(spendingList::addRecord);
+            Record r6 = new Record("Title 6", 0, new Category("Category 4", categories));
+            r6.setTimeAdded(LocalDateTime.of(laterDateAdded, LocalTime.now()).toString());
+            Record r7 = new Record("Title 7", 100, new Category("Category 4", categories));
+            r7.setTimeAdded(LocalDateTime.of(dateAdded, LocalTime.now()).toString());
+            Arrays.asList(r1, r2, r3, r4, r5, r6, r7).forEach(spendingList::addRecord);
         } catch (NameException | NegativeAmountException e) {
             e.printStackTrace();
         }
@@ -290,6 +310,10 @@ public class SpendingListGroupingTest {
             }});
             put("Category 3", new LinkedHashMap<LocalDate, Double>() {{
                 put(dateAdded.withDayOfMonth(1), 400.0);
+            }});
+            put("Category 4", new LinkedHashMap<LocalDate, Double>() {{
+                put(dateAdded.withDayOfMonth(1), 100.0);
+                put(laterDateAdded.withDayOfMonth(1), 0.0);
             }});
         }};
 

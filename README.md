@@ -53,4 +53,8 @@ and add it to the *SpendingList* class (class that stores multiple *Records*).
 16. See if I saved my changes by checking my current filename (if I see * in front of it, my changes are not saved)
 17. See file I'm editing
 18. Use shortcuts to edit my spending list quickly
-19. Build a bar chart of my spending by category, by month, or by day
+19. Build a bar chart of my spending records:
+    1. Amount Spent by Category
+    2. Amount Spent by Month
+    3. Amount Spent by Category (stacked)
+    4. Amount Spent by Month (stacked)

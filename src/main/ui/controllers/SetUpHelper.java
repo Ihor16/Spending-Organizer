@@ -28,6 +28,10 @@ public class SetUpHelper {
 
     private Controller cl;
     private final String defaultCellStyle = "-fx-background-color: skyblue";
+    protected final String dateTimeFormat = "MMM. dd, yyyy - HH:mm";
+    protected final String monthFormat = "MMMM yyyy";
+    protected final String prettyDateFormat = "MMM. dd, yyyy";
+    protected final String standardDateFormat = "MM/dd/yyyy";
 
     // Is used for all controllers apart from ui.controllers.Controller
     public SetUpHelper() {
@@ -133,24 +137,10 @@ public class SetUpHelper {
         cl.categoriesTable.setItems(cl.categories.getCategories());
     }
 
-    // MODIFIES: categoriesTable, categoriesColumn, isShownColumn, categories
-    // EFFECTS: populates categories table and colors default category in categoriesTable
-    void populateCategoriesTable(TableView<Category> categoriesTable,
-                                         TableColumn<Category, String> categoriesColumn,
-                                         TableColumn<Category, Boolean> isShownColumn,
-                                         Categories categories) {
-        categoriesColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        isShownColumn.setCellValueFactory(new PropertyValueFactory<>("isShown"));
-        formatIsShownColumn(isShownColumn);
-        categoriesTable.setItems(categories.getCategories());
-        colorDefaultCategoryInCategoriesTable(categoriesTable, categories);
-    }
-
     // MODIFIES: cl
     // EFFECTS: formats date cells
     // Based on https://stackoverflow.com/a/50224259
     private void formatDateColumn(TableColumn<Record, LocalDateTime> dateColumn) {
-        String pattern = "MMM. dd, yyyy - HH:mm";
         dateColumn.setCellFactory(tableColumn -> new TableCell<Record, LocalDateTime>() {
             @Override
             protected void updateItem(LocalDateTime item, boolean empty) {
@@ -158,7 +148,7 @@ public class SetUpHelper {
                 if (empty) {
                     setText("");
                 } else {
-                    setText(DateTimeFormatter.ofPattern(pattern).format(item));
+                    setText(DateTimeFormatter.ofPattern(dateTimeFormat).format(item));
                 }
             }
         });
@@ -167,7 +157,7 @@ public class SetUpHelper {
     // MODIFIES: cl
     // EFFECTS: formats isShown cells
     // Based on https://stackoverflow.com/a/50224259
-    private void formatIsShownColumn(TableColumn<Category, Boolean> isShownColumn) {
+    protected void formatIsShownColumn(TableColumn<Category, Boolean> isShownColumn) {
         isShownColumn.setCellFactory(tableColumn -> new TableCell<Category, Boolean>() {
             @Override
             protected void updateItem(Boolean item, boolean empty) {
@@ -242,7 +232,7 @@ public class SetUpHelper {
 
     // MODIFIES: categoriesTable
     // EFFECTS: colors default category in categoriesTable
-    private void colorDefaultCategoryInCategoriesTable(TableView<Category> categoriesTable, Categories categories) {
+    protected void colorDefaultCategoryInCategoriesTable(TableView<Category> categoriesTable, Categories categories) {
         // implementation is based on: https://stackoverflow.com/a/56309916
         categoriesTable.setRowFactory(callable -> new TableRow<Category>() {
             @Override

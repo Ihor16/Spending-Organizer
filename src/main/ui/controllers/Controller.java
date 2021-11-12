@@ -103,6 +103,7 @@ public class Controller implements Initializable {
         currentFilePath.set(defaultFilePath);
         setUpHelper.setUpUI();
         isChanged.set(false);
+        sceneHolder.getSceneMap().remove(SceneEnum.CHART);
     }
 
     // MODIFIES: this
@@ -131,6 +132,7 @@ public class Controller implements Initializable {
             currentFilePath.set(selectedFile.getPath());
             setUpHelper.setUpUI();
             isChanged.set(false);
+            sceneHolder.getSceneMap().remove(SceneEnum.CHART);
         } else {
             showErrorMessage(fileError);
         }
@@ -356,17 +358,21 @@ public class Controller implements Initializable {
     public void changeSceneToChart() {
         sceneHolder.getSceneMap().put(SceneEnum.MAIN, recordTable.getScene());
         Stage window = (Stage) recordTable.getScene().getWindow();
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../resources/chart.fxml"));
-            spendingListHolder.setSpendingList(spendingList);
-            Parent chartViewParent = loader.load();
+        if (sceneHolder.getSceneMap().containsKey(SceneEnum.CHART)) {
+            window.setScene(sceneHolder.getSceneMap().get(SceneEnum.CHART));
+        } else {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("../resources/chart.fxml"));
+                spendingListHolder.setSpendingList(spendingList);
+                Parent chartViewParent = loader.load();
 
-            window.setScene(new Scene(chartViewParent));
-            window.show();
+                window.setScene(new Scene(chartViewParent));
+                window.show();
 
-        } catch (IOException e) {
-            showErrorMessage("Couldn't load the chart view");
-            e.printStackTrace();
+            } catch (IOException e) {
+                showErrorMessage("Couldn't load the chart view");
+                e.printStackTrace();
+            }
         }
     }
 

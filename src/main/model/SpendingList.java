@@ -70,6 +70,17 @@ public class SpendingList implements WritableObject {
         return sortMapByValue(map);
     }
 
+    // EFFECTS: filters records that were added in the given month, and
+    //          same as groupByCategory(@NotNull LocalDate from, @NotNull LocalDate to),
+    //          if user selects LocalDate.MIN, treat as if they want to group all records
+    public Map<String, Double> groupByCategory(@NotNull LocalDate month) {
+        if (month.equals(LocalDate.MIN)) {
+            return groupByCategory(LocalDate.MIN, LocalDate.MAX);
+        } else {
+            return groupByCategory(month.withDayOfMonth(1), month.withDayOfMonth(month.lengthOfMonth()));
+        }
+    }
+
     // EFFECTS: returns a map of records grouped by category, i.e.,
     //          {category: list of records which have this category};
     private Map<String, List<Record>> groupByCategory(List<Record> filteredRecords) {
@@ -92,9 +103,21 @@ public class SpendingList implements WritableObject {
         return groupByDate(sortedGroupedByCategories);
     }
 
+    // EFFECTS: filters records that were added in month, and
+    //          same as groupByCategoryAndDate(@NotNull LocalDate from, @NotNull LocalDate to)
+    //          if user selects LocalDate.MIN, treat as if they want to group all records
+    public Map<String, Map<LocalDate, Double>> groupByCategoryAndDate(@NotNull LocalDate month) {
+        if (month.equals(LocalDate.MIN)) {
+            return groupByCategoryAndDate(LocalDate.MIN, LocalDate.MAX);
+        } else {
+            return groupByCategoryAndDate(month.withDayOfMonth(1), month.withDayOfMonth(month.lengthOfMonth()));
+        }
+    }
+
     // EFFECTS: returns a new map that transforms unwrappedMap's List<Record> value to Map<LocalDate, Double>
     //          LocalDate - date record was created,
     //          Double - sum of amounts of records which were created in same month and have same category
+    //          this transformed part is sorted by Double (amount)
     private Map<String, Map<LocalDate, Double>> groupByDate(Map<String, List<Record>> unwrappedMap) {
         Map<String, Map<LocalDate, Double>> result = new LinkedHashMap<>();
         unwrappedMap.forEach((key, value) -> {
