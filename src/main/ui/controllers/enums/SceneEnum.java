@@ -1,4 +1,4 @@
-package ui.controllers;
+package ui.controllers.enums;
 
 public enum SceneEnum {
     MAIN,

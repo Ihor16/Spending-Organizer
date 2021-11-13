@@ -70,7 +70,7 @@ public class SpendingList implements WritableObject {
         return sortMapByValue(map);
     }
 
-    // EFFECTS: filters records that were added in the given month, and
+    // EFFECTS: filters records that were added in the given month, and does
     //          same as groupByCategory(@NotNull LocalDate from, @NotNull LocalDate to),
     //          if user selects LocalDate.MIN, treat as if they want to group all records
     public Map<String, Double> groupByCategory(@NotNull LocalDate month) {
@@ -81,26 +81,19 @@ public class SpendingList implements WritableObject {
         }
     }
 
-    // EFFECTS: returns a map of records grouped by category, i.e.,
-    //          {category: list of records which have this category};
-    private Map<String, List<Record>> groupByCategory(List<Record> filteredRecords) {
-        return filteredRecords.stream()
-                .collect(Collectors.groupingBy(r -> r.getCategory().getName()));
-    }
-
     // EFFECTS: filters records that occur in [from, to] time range, and
     //          returns a map of these records grouped by category and date added, i.e.,
     //          {Category:
     //              {Date record was added (LocalDate that starts at first day of month):
     //                  sum of amounts of all records that have this category and were added in this month
     //               }}
-    //          returned map is sorted by category (in alphabetical order) and by date (from older to newer)
+    //          returned map is sorted by date (from older to newer)
     public Map<String, Map<LocalDate, Double>> groupByCategoryAndDate(@NotNull LocalDate from, @NotNull LocalDate to) {
         List<Record> filteredRecords = filterRecordsByDate(from, to);
-        Map<String, List<Record>> groupedByCategories = groupByCategory(filteredRecords);
-        Map<String, List<Record>> sortedGroupedByCategories = sortMapByKey(groupedByCategories);
+        Map<String, List<Record>> groupedByCategories = makeMap(filteredRecords);
+        sortByDate(groupedByCategories);
 
-        return groupByDate(sortedGroupedByCategories);
+        return groupByDate(groupedByCategories);
     }
 
     // EFFECTS: filters records that were added in month, and
@@ -114,17 +107,21 @@ public class SpendingList implements WritableObject {
         }
     }
 
+    // MODIFIES: groupedByCategories
+    private void sortByDate(@NotNull Map<String, List<Record>> groupedByCategories) {
+        groupedByCategories.forEach((k, v) -> v.sort(Comparator.comparing(Record::getTimeAdded).reversed()));
+    }
+
     // EFFECTS: returns a new map that transforms unwrappedMap's List<Record> value to Map<LocalDate, Double>
     //          LocalDate - date record was created,
     //          Double - sum of amounts of records which were created in same month and have same category
-    //          this transformed part is sorted by Double (amount)
-    private Map<String, Map<LocalDate, Double>> groupByDate(Map<String, List<Record>> unwrappedMap) {
+    private Map<String, Map<LocalDate, Double>> groupByDate(@NotNull Map<String, List<Record>> unwrappedMap) {
         Map<String, Map<LocalDate, Double>> result = new LinkedHashMap<>();
         unwrappedMap.forEach((key, value) -> {
             Map<LocalDate, Double> subMap = value.stream()
                     .collect(Collectors.groupingBy(r -> r.getTimeAdded().toLocalDate().withDayOfMonth(1),
                             Collectors.summingDouble(Record::getAmount)));
-            result.put(key, sortMapByValue(subMap));
+            result.put(key, subMap);
         });
         return result;
     }
@@ -146,7 +143,7 @@ public class SpendingList implements WritableObject {
 //    }
 
     // EFFECTS: returns a new list of records that are created in time interval between from and to
-    private List<Record> filterRecordsByDate(LocalDate from, LocalDate to) {
+    private List<Record> filterRecordsByDate(@NotNull LocalDate from, @NotNull LocalDate to) {
         return records.stream()
                 .filter(fromToPredicate(from, to))
                 .collect(Collectors.toList());
@@ -158,17 +155,16 @@ public class SpendingList implements WritableObject {
                 && r.getTimeAdded().isBefore(to.atTime(LocalTime.MAX));
     }
 
-    // EFFECTS: returns a new map, which is a sorted by key
-    private <K extends Comparable<? super K>, V> Map<K, V> sortMapByKey(Map<K, V> map) {
-        return map.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-                        (e1, e2) -> e1, LinkedHashMap::new));
+    // EFFECTS: returns a map of records grouped by category, i.e.,
+    //          {category: list of records which have this category};
+    private Map<String, List<Record>> makeMap(@NotNull List<Record> filteredRecords) {
+        return filteredRecords.stream()
+                .collect(Collectors.groupingBy(r -> r.getCategory().getName()));
     }
 
     // EFFECTS: returns a new map, which is a sorted by value
     // Implementation is based on: https://mkyong.com/java/how-to-sort-a-map-in-java/
-    private <K, V extends Comparable<? super V>> Map<K, V> sortMapByValue(Map<K, V> map) {
+    private <K, V extends Comparable<? super V>> Map<K, V> sortMapByValue(@NotNull Map<K, V> map) {
         return map.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));

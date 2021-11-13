@@ -1,4 +1,4 @@
-package ui.controllers;
+package ui.controllers.holders;
 
 import model.SpendingList;
 

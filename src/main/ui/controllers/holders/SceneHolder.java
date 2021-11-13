@@ -1,6 +1,7 @@
-package ui.controllers;
+package ui.controllers.holders;
 
 import javafx.scene.Scene;
+import ui.controllers.enums.SceneEnum;
 
 import java.util.HashMap;
 import java.util.Map;

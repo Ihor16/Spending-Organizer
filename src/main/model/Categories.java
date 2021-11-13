@@ -19,10 +19,6 @@ public class Categories implements WritableArray {
     private Category defaultCategory;
     private final ObservableList<Category> categories;
 
-    // TODO: solve a bug with default category:
-    //       when you change name of default category, save file, and load it,
-    //       you have this default category and the old one.
-    //       Should be only old one
     public Categories() {
         this.categories = FXCollections.observableArrayList();
         try {

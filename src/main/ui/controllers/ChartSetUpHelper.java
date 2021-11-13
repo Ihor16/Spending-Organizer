@@ -2,8 +2,6 @@ package ui.controllers;
 
 
 import javafx.collections.FXCollections;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.StringConverter;
@@ -20,20 +18,20 @@ public class ChartSetUpHelper extends SetUpHelper {
         this.cl = cl;
     }
 
+    // MODIFIES: this
+    // EFFECTS: populates and formats UI for chart scene
     void setUpChartController() {
         populateCategoriesTable();
         populateDateComboBox();
         formatUI();
     }
 
+    // MODIFIES: this
+    // EFFECTS: formats UI for chart scene
     private void formatUI() {
         formatDateComboBox();
-        formatDatePickerText(cl.fromDateField);
-        formatDatePickerText(cl.toDateField);
-        cl.barCategoryAxis = new CategoryAxis();
-        cl.barNumberAxis = new NumberAxis();
-        cl.stackedCategoryAxis = new CategoryAxis();
-        cl.stackedNumberAxis = new NumberAxis();
+        formatDatePickerText(cl.fromDatePicker);
+        formatDatePickerText(cl.toDatePicker);
     }
 
     // MODIFIES: datePicker
@@ -59,7 +57,6 @@ public class ChartSetUpHelper extends SetUpHelper {
             }
         });
     }
-
 
     // MODIFIES: this
     // EFFECTS: formats dates in dateComboBox
@@ -95,10 +92,26 @@ public class ChartSetUpHelper extends SetUpHelper {
     }
 
     // MODIFIES: this
+    // EFFECTS: repopulates dateComboBox
+    void repopulateDateComboBox() {
+        LocalDate localDate = cl.dateComboBox.getSelectionModel().getSelectedItem();
+        cl.dateComboBox.getItems().add(1, cl.spendingList.getDates().get(0));
+        cl.dateComboBox.getSelectionModel().select(localDate);
+        cl.dateComboBox.setVisibleRowCount(cl.dateComboBox.getItems().size());
+    }
+
+    // MODIFIES: this
     // EFFECTS: populates dateComboBox and adds a LocalDate.MIN (used to display all months)
-    private void populateDateComboBox() {
+    // Implementation of listener is taken from: https://stackoverflow.com/a/25704438
+    void populateDateComboBox() {
         cl.dateComboBox.getItems().add(LocalDate.MIN);
         cl.dateComboBox.getItems().addAll(FXCollections.observableArrayList(cl.spendingList.getDates()));
         cl.dateComboBox.getSelectionModel().selectFirst();
+        cl.dateComboBox.setVisibleRowCount(cl.dateComboBox.getItems().size());
+        cl.dateComboBox.showingProperty().addListener(((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                cl.plotChart();
+            }
+        }));
     }
 }

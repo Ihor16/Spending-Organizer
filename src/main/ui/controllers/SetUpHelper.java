@@ -16,6 +16,7 @@ import model.SpendingList;
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
 import persistence.JsonReader;
+import ui.controllers.enums.SceneEnum;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -74,15 +75,43 @@ public class SetUpHelper {
     // EFFECTS: adds listeners for categories, spending list, isChanged, and currentFilePath
     //          to perform operations when they're changed
     private void addListeners() {
+        addCategoriesListener();
+        addSpendingListListener();
+        addIsChangedListener();
+        addFilePathListener();
+
+    }
+
+    // MODIFIES: this
+    // EFFECTS: Changes isChanged property when categories are added or removed
+    private void addCategoriesListener() {
         cl.categories.getCategories()
                 .addListener((ListChangeListener<Category>) c -> {
                     repopulateCategoriesComboBox();
                     cl.isChanged.set(true);
                 });
+    }
 
+    // MODIFIES: this
+    // EFFECTS: changes isChanged property when records are added or removed,
+    //          if spendingList doesn't have records, disables possibility of switching to chart menu
+    //          and removes chart scene from sceneHolder
+    private void addSpendingListListener() {
         cl.spendingList.getRecords()
-                .addListener((ListChangeListener<Record>) c -> cl.isChanged.set(true));
+                .addListener((ListChangeListener<Record>) c -> {
+                    cl.isChanged.set(true);
+                    if (cl.spendingList.getRecords().isEmpty()) {
+                        cl.changeViewMenuItem.setDisable(true);
+                        cl.sceneHolder.getSceneMap().remove(SceneEnum.CHART);
+                    } else {
+                        cl.changeViewMenuItem.setDisable(false);
+                    }
+                });
+    }
 
+    // MODIFIES: this
+    // EFFECTS: changes filenameLabel and enables/disables save button to show if changes are saved
+    private void addIsChangedListener() {
         cl.isChanged.addListener(c -> {
             cl.saveMenuItem.setDisable(!(cl.isChanged.get()));
             if (cl.isChanged.get()) {
@@ -93,6 +122,10 @@ public class SetUpHelper {
                 cl.filenameLabel.setText(parseFileName(cl.currentFilePath.get()));
             }
         });
+    }
+
+    // EFFECTS: changes filename label to current file path
+    private void addFilePathListener() {
         cl.currentFilePath.addListener(c -> cl.filenameLabel.setText(parseFileName(cl.currentFilePath.get())));
     }
 

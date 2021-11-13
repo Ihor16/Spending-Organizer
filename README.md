@@ -54,7 +54,9 @@ and add it to the *SpendingList* class (class that stores multiple *Records*).
 17. See file I'm editing
 18. Use shortcuts to edit my spending list quickly
 19. Build a bar chart of my spending records:
-    1. Amount Spent by Category
-    2. Amount Spent by Month
-    3. Amount Spent by Category (stacked)
-    4. Amount Spent by Month (stacked)
+    1. Amount Spent by Category: per month and for custom period
+    2. Amount Spent by Month: per month and for custom period
+    3. Amount Spent by Category (Stacked): per month and for custom period
+    4. Amount Spent by Month (Stacked): per month and for custom period
+20. Enter dates in text format
+21. Keep my settings in each view unchanged when I change views

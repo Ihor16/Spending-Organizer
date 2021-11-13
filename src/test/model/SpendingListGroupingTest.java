@@ -5,10 +5,7 @@ import model.exceptions.NegativeAmountException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Month;
+import java.time.*;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -87,6 +84,35 @@ public class SpendingListGroupingTest {
         Map<String, Double> expectedMap = new LinkedHashMap<>();
         spendingList.getRecords().forEach(r -> expectedMap.put(r.getCategory().getName(), r.getAmount()));
         assertEquals(expectedMap, spendingList.groupByCategory(dateAdded.withDayOfMonth(1)));
+    }
+
+    @Test
+    void testGroupByCategoryWrongDateOrder() {
+        initFullSpendingList();
+        assertEquals(Collections.emptyMap(), spendingList.groupByCategory(laterDateAdded, dateAdded));
+    }
+
+    @Test
+    void testGroupByCategoryDateBound() {
+        spendingList = new SpendingList(categories);
+        try {
+            Record r1 = new Record("Title 1", 200, new Category("Category 1", categories));
+            r1.setTimeAdded(returnDate(2021, Month.APRIL, 1, 0, 0, 1));
+
+            Record r2 = new Record("Title 1", 200, new Category("Category 2", categories));
+            r2.setTimeAdded(returnDate(2021, Month.APRIL, Month.APRIL.length(Year.isLeap(2021)),
+                    23, 59, 59));
+
+            Record r3 = new Record("Title 2", 300, new Category("Category 3", categories));
+            r3.setTimeAdded(returnDate(2021, Month.MAY, 1, 0, 0, 1));
+
+            Arrays.asList(r1, r2).forEach(spendingList::addRecord);
+        } catch (NameException | NegativeAmountException e) {
+            fail("Not the case: " + e.getMessage());
+        }
+        LocalDate month = LocalDate.of(2021, Month.APRIL, 1);
+        int returnedEntriesSize = spendingList.groupByCategory(month).entrySet().size();
+        assertEquals(2, returnedEntriesSize);
     }
 
     @Test
@@ -179,25 +205,45 @@ public class SpendingListGroupingTest {
     }
 
     @Test
-    void testGroupByCategoryWrongDateOrder() {
-        initFullSpendingList();
-        assertEquals(Collections.emptyMap(), spendingList.groupByCategory(laterDateAdded, dateAdded));
-    }
-
-    @Test
-    void testGroupByCategoryAndMonthEmptySpendingList() {
+    void testGroupByCategoryAndDateEmptySpendingList() {
         initEmptySpendingList();
         assertEquals(Collections.emptyMap(), spendingList.groupByCategoryAndDate(dateAdded, dateAdded));
     }
 
     @Test
-    void testGroupByCategoryAndMonthWrongDateOrder() {
+    void testGroupByCategoryAndDateWrongDateOrder() {
         initFullSpendingList();
         assertEquals(Collections.emptyMap(), spendingList.groupByCategoryAndDate(laterDateAdded, dateAdded));
     }
 
     @Test
-    void testGroupByCategoryAndMonthSameCategorySameMonth() {
+    void testGroupByCategoryAndDateOneMonth() {
+        initFullSpendingList();
+        Map<String, Map<LocalDate, Double>> expectedMap = new LinkedHashMap<String, Map<LocalDate, Double>>() {{
+            spendingList.getRecords().forEach(r -> {
+                put(r.getCategory().getName(), new LinkedHashMap<LocalDate, Double>() {{
+                    put(r.getTimeAdded().toLocalDate().withDayOfMonth(1), r.getAmount());
+                }});
+            });
+        }};
+        assertEquals(expectedMap, spendingList.groupByCategoryAndDate(dateAdded.withDayOfMonth(1)));
+    }
+
+    @Test
+    void testGroupByCategoryAndDateMinDate() {
+        initFullSpendingList();
+        Map<String, Map<LocalDate, Double>> expectedMap = new LinkedHashMap<String, Map<LocalDate, Double>>() {{
+            spendingList.getRecords().forEach(r -> {
+                put(r.getCategory().getName(), new LinkedHashMap<LocalDate, Double>() {{
+                    put(r.getTimeAdded().toLocalDate().withDayOfMonth(1), r.getAmount());
+                }});
+            });
+        }};
+        assertEquals(expectedMap, spendingList.groupByCategoryAndDate(LocalDate.MIN));
+    }
+
+    @Test
+    void testGroupByCategoryAndDateSameCategorySameMonth() {
         spendingList = new SpendingList(categories);
 
         try {
@@ -220,7 +266,7 @@ public class SpendingListGroupingTest {
     }
 
     @Test
-    void testGroupByCategoryAndMonthDiffCategorySameMonth() {
+    void testGroupByCategoryAndDateDiffCategorySameMonth() {
         spendingList = new SpendingList(categories);
 
         try {
@@ -249,7 +295,7 @@ public class SpendingListGroupingTest {
     }
 
     @Test
-    void testGroupByCategoryAndMonthSameCategoryDiffMonth() {
+    void testGroupByCategoryAndDateSameCategoryDiffMonth() {
         spendingList = new SpendingList(categories);
 
         try {
@@ -277,7 +323,7 @@ public class SpendingListGroupingTest {
     }
 
     @Test
-    void testGroupByCategoryAndMonthDiffCategoryDiffMonth() {
+    void testGroupByCategoryAndDateDiffCategoryDiffMonth() {
         spendingList = new SpendingList(categories);
 
         try {
@@ -318,6 +364,10 @@ public class SpendingListGroupingTest {
         }};
 
         assertEquals(expectedMap, spendingList.groupByCategoryAndDate(dateAdded, laterDateAdded));
+    }
+
+    private String returnDate(int year, Month month, int day, int hour, int minute, int second) {
+        return LocalDateTime.of(LocalDate.of(year, month, day), LocalTime.of(hour, minute, second)).toString();
     }
 
     private Record getByIndex(int index) {

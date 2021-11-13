@@ -23,6 +23,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1148.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.controllers.ChartController">
    <left>
@@ -80,7 +81,7 @@
                                                 <Insets bottom="5.0" />
                                              </padding>
                                           </Label>
-                                          <ComboBox fx:id="dateComboBox" onAction="#monthSelected" prefWidth="150.0" />
+                                          <ComboBox fx:id="dateComboBox" onAction="#monthSelected" onMouseEntered="#monthComboboxEntered" prefHeight="31.0" prefWidth="172.0" />
                                        </children>
                                        <padding>
                                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -101,35 +102,22 @@
                            <children>
                               <HBox prefHeight="3.0" prefWidth="223.0">
                                  <children>
-                                    <RadioButton mnemonicParsing="false" selected="true" text="Month">
+                                    <Label text="Start and end months (MM/dd/yyyy)">
                                        <HBox.margin>
                                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                        </HBox.margin>
-                                       <toggleGroup>
-                                          <ToggleGroup fx:id="periodGroup" />
-                                       </toggleGroup>
-                                    </RadioButton>
-                                    <RadioButton disable="true" mnemonicParsing="false" text="Week" toggleGroup="$periodGroup">
-                                       <HBox.margin>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </HBox.margin>
-                                    </RadioButton>
-                                    <RadioButton disable="true" mnemonicParsing="false" text="Day" toggleGroup="$periodGroup">
-                                       <HBox.margin>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </HBox.margin>
-                                    </RadioButton>
+                                    </Label>
                                  </children>
                                  <VBox.margin>
                                     <Insets left="10.0" right="10.0" />
                                  </VBox.margin>
                               </HBox>
-                              <DatePicker fx:id="fromDateField" promptText="Start (MM/DD/YYYY)">
+                              <DatePicker fx:id="fromDatePicker" promptText="Start (MMM. dd,  yyyy)">
                                  <VBox.margin>
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                  </VBox.margin>
                               </DatePicker>
-                              <DatePicker fx:id="toDateField" promptText="End (MM/DD/YYYY)">
+                              <DatePicker fx:id="toDatePicker" promptText="End (MMM. dd,  yyyy)">
                                  <VBox.margin>
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="5.0" />
                                  </VBox.margin>
@@ -145,10 +133,13 @@
             </TabPane>
             <HBox prefHeight="0.0" prefWidth="243.0" VBox.vgrow="NEVER">
                <children>
-                  <Button mnemonicParsing="false" onAction="#plotChart" text="Plot chart">
+                  <Button mnemonicParsing="false" onAction="#plotChart" text="Redraw Chart">
                      <HBox.margin>
                         <Insets left="10.0" />
                      </HBox.margin>
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font>
                   </Button>
                   <Button mnemonicParsing="false" onAction="#backToSpendingList" text="Back to records list">
                      <HBox.margin>

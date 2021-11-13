@@ -18,6 +18,9 @@ import model.SpendingList;
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
 import persistence.JsonWriter;
+import ui.controllers.enums.SceneEnum;
+import ui.controllers.holders.SceneHolder;
+import ui.controllers.holders.SpendingListHolder;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -60,6 +63,7 @@ public class Controller implements Initializable {
     @FXML TableColumn<Category, Boolean> isShownColumn;
 
     @FXML MenuItem saveMenuItem;
+    @FXML MenuItem changeViewMenuItem;
     @FXML Label filenameLabel;
 
     Categories categories;
@@ -71,8 +75,8 @@ public class Controller implements Initializable {
     SimpleStringProperty currentFilePath;
 
     private SetUpHelper setUpHelper;
-    private SceneHolder sceneHolder = SceneHolder.getInstance();
-    private SpendingListHolder spendingListHolder = SpendingListHolder.getInstance();
+    SceneHolder sceneHolder = SceneHolder.getInstance();
+    SpendingListHolder spendingListHolder = SpendingListHolder.getInstance();
 
     // MODIFIES: this
     // EFFECTS: initializes application
@@ -98,12 +102,14 @@ public class Controller implements Initializable {
     }
 
     // MODIFIES: this
-    // EFFECTS: opens an empty file
+    // EFFECTS: opens an empty file, and
+    //          disables chart view
     private void newFile() {
         currentFilePath.set(defaultFilePath);
         setUpHelper.setUpUI();
         isChanged.set(false);
         sceneHolder.getSceneMap().remove(SceneEnum.CHART);
+        changeViewMenuItem.setDisable(true);
     }
 
     // MODIFIES: this
@@ -120,7 +126,7 @@ public class Controller implements Initializable {
     }
 
     // MODIFIES: this
-    // EFFECTS: opens chosen file,
+    // EFFECTS: opens chosen file, and disables chart view if opened file has no records
     //          shows error message if used didn't choose a file
     // Implementation is based on: https://youtu.be/hNz8Xf4tMI4?t=345
     private void openChosenFile() {
@@ -133,6 +139,7 @@ public class Controller implements Initializable {
             setUpHelper.setUpUI();
             isChanged.set(false);
             sceneHolder.getSceneMap().remove(SceneEnum.CHART);
+            changeViewMenuItem.setDisable(spendingList.getRecords().isEmpty());
         } else {
             showErrorMessage(fileError);
         }
@@ -204,8 +211,8 @@ public class Controller implements Initializable {
     }
 
     // MODIFIES: this
-    // EFFECTS: adds new record if addGroup has record toggle selected,
-    //          adds new category if addGroup has category toggle selected
+    // EFFECTS: if addGroup has record toggle selected, adds new record
+    //          if addGroup has category toggle selected, adds new category
     @FXML
     void add() {
         Toggle selectedToggle = addGroup.getSelectedToggle();
