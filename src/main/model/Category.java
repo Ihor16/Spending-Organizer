@@ -1,6 +1,5 @@
 package model;
 
-import com.sun.istack.internal.NotNull;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import model.exceptions.NameException;
@@ -16,7 +15,7 @@ public class Category implements WritableObject {
     private final SimpleBooleanProperty isShown;
     private final boolean isDefault;
 
-    public Category(@NotNull String name, @NotNull Categories categories) throws NameException {
+    public Category(String name, Categories categories) throws NameException {
         if (isBlank(name)) {
             throw new NameException("category");
         }
@@ -27,7 +26,7 @@ public class Category implements WritableObject {
     }
 
     // REQUIRED: used only when reading from Json file
-    public Category(@NotNull String name, @NotNull Categories categories, boolean isShown, boolean isDefault)
+    public Category(String name, Categories categories, boolean isShown, boolean isDefault)
             throws NameException {
         if (isBlank(name)) {
             throw new NameException("category");

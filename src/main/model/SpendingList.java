@@ -1,6 +1,5 @@
 package model;
 
-import com.sun.istack.internal.NotNull;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.json.JSONArray;
@@ -24,7 +23,7 @@ public class SpendingList implements WritableObject {
     private final ObservableList<Record> filteredRecords;
     private final Categories categories;
 
-    public SpendingList(@NotNull Categories categories) {
+    public SpendingList(Categories categories) {
         this.categories = categories;
         this.records = FXCollections.observableArrayList();
         this.filteredRecords = FXCollections.observableArrayList();
@@ -33,7 +32,7 @@ public class SpendingList implements WritableObject {
     // MODIFIES: this
     // EFFECTS: adds a new record to the front of the records list
     // INVARIANT: record is valid
-    public void addRecord(@NotNull Record record) {
+    public void addRecord(Record record) {
         records.add(0, record);
     }
 
@@ -41,7 +40,7 @@ public class SpendingList implements WritableObject {
     // TODO: rewrite the filtered list documentation
     // EFFECTS: removes record from records list and returns true if the record is removed
     // INVARIANT: record exists in the list
-    public boolean removeRecord(@NotNull Record record) {
+    public boolean removeRecord(Record record) {
         return records.remove(record);
     }
 
@@ -62,7 +61,7 @@ public class SpendingList implements WritableObject {
     //          returns a map of these records grouped by category, i.e.,
     //          {category: sum of amounts of all records that have this category};
     //          returned map is sorted by values (amounts)
-    public Map<String, Double> groupByCategory(@NotNull LocalDate from, @NotNull LocalDate to) {
+    public Map<String, Double> groupByCategory(LocalDate from, LocalDate to) {
         List<Record> filteredRecords = filterRecordsByDate(from, to);
         Map<String, Double> map = filteredRecords.stream()
                 .collect(Collectors.groupingBy(r -> r.getCategory().getName(),
@@ -71,9 +70,9 @@ public class SpendingList implements WritableObject {
     }
 
     // EFFECTS: filters records that were added in the given month, and does
-    //          same as groupByCategory(@NotNull LocalDate from, @NotNull LocalDate to),
+    //          same as groupByCategory(LocalDate from, LocalDate to),
     //          if user selects LocalDate.MIN, treat as if they want to group all records
-    public Map<String, Double> groupByCategory(@NotNull LocalDate month) {
+    public Map<String, Double> groupByCategory(LocalDate month) {
         if (month.equals(LocalDate.MIN)) {
             return groupByCategory(LocalDate.MIN, LocalDate.MAX);
         } else {
@@ -88,7 +87,7 @@ public class SpendingList implements WritableObject {
     //                  sum of amounts of all records that have this category and were added in this month
     //               }}
     //          returned map is sorted by date (from older to newer)
-    public Map<String, Map<LocalDate, Double>> groupByCategoryAndDate(@NotNull LocalDate from, @NotNull LocalDate to) {
+    public Map<String, Map<LocalDate, Double>> groupByCategoryAndDate(LocalDate from, LocalDate to) {
         List<Record> filteredRecords = filterRecordsByDate(from, to);
         Map<String, List<Record>> groupedByCategories = makeMap(filteredRecords);
         sortByDate(groupedByCategories);
@@ -97,9 +96,9 @@ public class SpendingList implements WritableObject {
     }
 
     // EFFECTS: filters records that were added in month, and
-    //          same as groupByCategoryAndDate(@NotNull LocalDate from, @NotNull LocalDate to)
+    //          same as groupByCategoryAndDate(LocalDate from, LocalDate to)
     //          if user selects LocalDate.MIN, treat as if they want to group all records
-    public Map<String, Map<LocalDate, Double>> groupByCategoryAndDate(@NotNull LocalDate month) {
+    public Map<String, Map<LocalDate, Double>> groupByCategoryAndDate(LocalDate month) {
         if (month.equals(LocalDate.MIN)) {
             return groupByCategoryAndDate(LocalDate.MIN, LocalDate.MAX);
         } else {
@@ -108,14 +107,14 @@ public class SpendingList implements WritableObject {
     }
 
     // MODIFIES: groupedByCategories
-    private void sortByDate(@NotNull Map<String, List<Record>> groupedByCategories) {
+    private void sortByDate(Map<String, List<Record>> groupedByCategories) {
         groupedByCategories.forEach((k, v) -> v.sort(Comparator.comparing(Record::getTimeAdded).reversed()));
     }
 
     // EFFECTS: returns a new map that transforms unwrappedMap's List<Record> value to Map<LocalDate, Double>
     //          LocalDate - date record was created,
     //          Double - sum of amounts of records which were created in same month and have same category
-    private Map<String, Map<LocalDate, Double>> groupByDate(@NotNull Map<String, List<Record>> unwrappedMap) {
+    private Map<String, Map<LocalDate, Double>> groupByDate(Map<String, List<Record>> unwrappedMap) {
         Map<String, Map<LocalDate, Double>> result = new LinkedHashMap<>();
         unwrappedMap.forEach((key, value) -> {
             Map<LocalDate, Double> subMap = value.stream()
@@ -143,28 +142,28 @@ public class SpendingList implements WritableObject {
 //    }
 
     // EFFECTS: returns a new list of records that are created in time interval between from and to
-    private List<Record> filterRecordsByDate(@NotNull LocalDate from, @NotNull LocalDate to) {
+    private List<Record> filterRecordsByDate(LocalDate from, LocalDate to) {
         return records.stream()
                 .filter(fromToPredicate(from, to))
                 .collect(Collectors.toList());
     }
 
     // EFFECTS: returns a predicate for filtering records that occur in [from, to] time interval
-    private Predicate<Record> fromToPredicate(@NotNull LocalDate from, @NotNull LocalDate to) {
+    private Predicate<Record> fromToPredicate(LocalDate from, LocalDate to) {
         return r -> r.getTimeAdded().isAfter(from.atStartOfDay())
                 && r.getTimeAdded().isBefore(to.atTime(LocalTime.MAX));
     }
 
     // EFFECTS: returns a map of records grouped by category, i.e.,
     //          {category: list of records which have this category};
-    private Map<String, List<Record>> makeMap(@NotNull List<Record> filteredRecords) {
+    private Map<String, List<Record>> makeMap(List<Record> filteredRecords) {
         return filteredRecords.stream()
                 .collect(Collectors.groupingBy(r -> r.getCategory().getName()));
     }
 
     // EFFECTS: returns a new map, which is a sorted by value
     // Implementation is based on: https://mkyong.com/java/how-to-sort-a-map-in-java/
-    private <K, V extends Comparable<? super V>> Map<K, V> sortMapByValue(@NotNull Map<K, V> map) {
+    private <K, V extends Comparable<? super V>> Map<K, V> sortMapByValue(Map<K, V> map) {
         return map.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));

@@ -1,6 +1,5 @@
 package model;
 
-import com.sun.istack.internal.NotNull;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -33,7 +32,7 @@ public class Record implements WritableObject {
     //          timeAdded set to now,
     //          throws NameException if title is blank
     //          throws NegativeAmountException if amount < 0
-    public Record(@NotNull String title, double amount, @NotNull Category category) throws NameException,
+    public Record(String title, double amount, Category category) throws NameException,
             NegativeAmountException {
 
         if (isBlank(title)) {
@@ -52,7 +51,7 @@ public class Record implements WritableObject {
     // MODIFIES: this
     // EFFECTS: trims title and assigns it to the record,
     //          throws NameException if provided title is blank
-    public void setTitle(@NotNull String title) throws NameException {
+    public void setTitle(String title) throws NameException {
         if (isBlank(title)) {
             throw new NameException("title");
         }
@@ -69,12 +68,12 @@ public class Record implements WritableObject {
         this.amount.set(amount);
     }
 
-    public void setCategory(@NotNull Category category) {
+    public void setCategory(Category category) {
         this.category.set(category);
     }
 
     // INVARIANT: is used only when reading record from a file
-    public void setTimeAdded(@NotNull String timeStamp) {
+    public void setTimeAdded(String timeStamp) {
         this.timeAdded.set(LocalDateTime.parse(timeStamp));
     }
 
@@ -112,7 +111,7 @@ public class Record implements WritableObject {
 
     // EFFECTS: returns true if provided string is blank,
     //          false otherwise
-    private boolean isBlank(@NotNull String str) {
+    private boolean isBlank(String str) {
         // implementation of removing whitespaces is taken from
         // https://stackoverflow.com/a/5455809
         return str.replaceAll("[\\s]+", "").isEmpty();

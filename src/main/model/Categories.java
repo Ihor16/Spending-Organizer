@@ -1,6 +1,5 @@
 package model;
 
-import com.sun.istack.internal.NotNull;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.exceptions.NameException;
@@ -30,7 +29,7 @@ public class Categories implements WritableArray {
 
     // MODIFIES: this
     // EFFECTS: adds category to the categories if category isn't already there
-    public void add(@NotNull Category category) {
+    public void add(Category category) {
         if (!categories.contains(category)) {
             categories.add(category);
         }
@@ -40,7 +39,7 @@ public class Categories implements WritableArray {
     // EFFECTS: if category is defaultCategory, does nothing
     //          otherwise, sets all spendingList's records with category to defaultCategory,
     //          and removes category from categories
-    public void remove(@NotNull Category category, @NotNull SpendingList spendingList) {
+    public void remove(Category category, SpendingList spendingList) {
         if (!category.equals(defaultCategory)) {
             spendingList.getRecords()
                     .filtered(r -> r.getCategory().equals(category))
@@ -65,7 +64,7 @@ public class Categories implements WritableArray {
 
     // MODIFIES: this
     // EFFECTS: sets categories, and adds a defaultCategory as well
-    public void setCategories(@NotNull List<Category> categories) {
+    public void setCategories(List<Category> categories) {
         this.categories.clear();
         this.categories.add(defaultCategory);
         this.categories.addAll(categories);
