@@ -359,7 +359,9 @@ public class Controller implements Initializable {
     }
 
     // MODIFIES: this
-    // EFFECTS: changes scene to bar chart scene, and puts this scene to sceneHolder
+    // EFFECTS: changes scene to bar chart scene
+    //          if sceneHolder already contains Chart scene, simply sets it,
+    //          otherwise, loads a new FXML file
     // Implementation is based on https://dev.to/devtony101/javafx-3-ways-of-passing-information-between-scenes-1bm8
     @FXML
     public void changeSceneToChart() {
@@ -369,7 +371,7 @@ public class Controller implements Initializable {
             window.setScene(sceneHolder.getSceneMap().get(SceneEnum.CHART));
         } else {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("../resources/chart.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/resources/chart.fxml"));
                 spendingListHolder.setSpendingList(spendingList);
                 Parent chartViewParent = loader.load();
 

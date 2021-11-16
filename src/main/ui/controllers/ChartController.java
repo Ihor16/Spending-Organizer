@@ -227,18 +227,18 @@ public class ChartController implements Initializable {
         if (Objects.isNull(from) || Objects.isNull(to)) {
             chartSetUpHelper.showErrorMessage(emptyDatesError);
         } else {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(chartSetUpHelper.monthFormat);
             setUpDataChart(chart, categoryAxis);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(chartSetUpHelper.monthFormat);
 
             Map<String, Map<LocalDate, Double>> map = spendingList.groupByCategoryAndDate(from, to);
-            List<LocalDate> allData = getDatesFromMap(map);
-            setUpDateChartXAxis(categoryAxis, allData, formatter);
+            List<LocalDate> allDates = getDatesFromMap(map);
+            setUpDateChartXAxis(categoryAxis, allDates, formatter);
 
             List<XYChart.Series<String, Number>> seriesList = new ArrayList<>();
             parseMapForDateChart(formatter, map, seriesList);
 
             chart.getData().addAll(seriesList);
-            setUpDateChartXAxis(categoryAxis, allData, formatter);
+            setUpDateChartXAxis(categoryAxis, allDates, formatter);
         }
     }
 
@@ -282,10 +282,11 @@ public class ChartController implements Initializable {
         }
     }
 
-    // EFFECTS: returns a list of distinct LocalDate extracted from map
+    // EFFECTS: returns a sorted list of distinct LocalDate extracted from map
     private List<LocalDate> getDatesFromMap(Map<String, Map<LocalDate, Double>> map) {
         List<LocalDate> list = new ArrayList<>();
         map.values().forEach(v -> list.addAll(v.keySet()));
+        Collections.sort(list);
         return list.stream().distinct().collect(Collectors.toList());
     }
 

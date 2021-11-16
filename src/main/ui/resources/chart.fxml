@@ -157,7 +157,7 @@
    <center>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <StackedBarChart fx:id="stackedBarChart" animated="false" categoryGap="100.0" prefHeight="600.0" prefWidth="885.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <StackedBarChart fx:id="stackedBarChart" animated="false" prefHeight="600.0" prefWidth="885.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <xAxis>
                   <CategoryAxis fx:id="stackedCategoryAxis" animated="false" side="BOTTOM" />
                </xAxis>
@@ -165,7 +165,7 @@
                   <NumberAxis fx:id="stackedNumberAxis" animated="false" side="LEFT" />
                </yAxis>
             </StackedBarChart>
-            <BarChart fx:id="barChart" animated="false" prefHeight="600.0" prefWidth="885.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <BarChart fx:id="barChart" animated="false" barGap="1.0" prefHeight="600.0" prefWidth="885.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <xAxis>
                 <CategoryAxis fx:id="barCategoryAxis" animated="false" side="BOTTOM" />
               </xAxis>
