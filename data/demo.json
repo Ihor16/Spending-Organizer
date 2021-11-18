@@ -1,9 +1,19 @@
 {
   "records": [
     {
-      "amount": 101,
+      "amount": 50,
+      "timeAdded": "2021-11-07T23:34:18.520",
+      "title": "Phone plan",
+      "category": {
+        "isDefault": false,
+        "name": "Phone plan",
+        "isShown": true
+      }
+    },
+    {
+      "amount": 100,
       "timeAdded": "2021-08-06T15:37:27.411",
-      "title": "Went to save on",
+      "title": "Went to Save On Foods",
       "category": {
         "isDefault": false,
         "name": "Groceries",
@@ -16,14 +26,14 @@
       "title": "Cinema",
       "category": {
         "isDefault": false,
-        "name": "Recreation & Entertainment",
+        "name": "Rest",
         "isShown": true
       }
     },
     {
       "amount": 700,
       "timeAdded": "2021-06-12T03:18:49.411",
-      "title": "Went to Victoria",
+      "title": "Victoria",
       "category": {
         "isDefault": false,
         "name": "Travel",
@@ -36,17 +46,17 @@
       "title": "Theatre",
       "category": {
         "isDefault": false,
-        "name": "Recreation & Entertainment",
+        "name": "Rest",
         "isShown": true
       }
     },
     {
-      "amount": 900,
+      "amount": 950,
       "timeAdded": "2021-05-24T14:59:58.411",
-      "title": "Housing",
+      "title": "Housing fee",
       "category": {
         "isDefault": false,
-        "name": "Housing Fee",
+        "name": "Housing",
         "isShown": true
       }
     },
@@ -63,7 +73,7 @@
     {
       "amount": 500,
       "timeAdded": "2021-05-08T20:40:35.411",
-      "title": "Visited Montreal",
+      "title": "Montreal",
       "category": {
         "isDefault": false,
         "name": "Travel",
@@ -73,20 +83,20 @@
     {
       "amount": 98,
       "timeAdded": "2021-03-27T22:41:16.411",
-      "title": "Shorts & T-Shirt",
+      "title": "Winter Coat",
       "category": {
         "isDefault": false,
-        "name": "Clothing",
+        "name": "Clothes",
         "isShown": true
       }
     },
     {
-      "amount": 1234,
+      "amount": 950,
       "timeAdded": "2021-03-19T20:34:11.411",
-      "title": "Housing record",
+      "title": "Housing fee",
       "category": {
         "isDefault": false,
-        "name": "Housing Fee",
+        "name": "Housing",
         "isShown": true
       }
     },
@@ -96,7 +106,7 @@
       "title": "Jeans",
       "category": {
         "isDefault": false,
-        "name": "Clothing",
+        "name": "Groceries",
         "isShown": true
       }
     }
@@ -109,62 +119,37 @@
     },
     {
       "isDefault": false,
-      "name": "Travel",
-      "isShown": true
-    },
-    {
-      "isDefault": false,
-      "name": "Food",
-      "isShown": true
-    },
-    {
-      "isDefault": false,
-      "name": "Utilities",
-      "isShown": true
-    },
-    {
-      "isDefault": false,
-      "name": "Insurance",
-      "isShown": true
-    },
-    {
-      "isDefault": false,
-      "name": "Medical & Healthcare",
-      "isShown": true
-    },
-    {
-      "isDefault": false,
-      "name": "Saving, Investing, & Debt Payments",
-      "isShown": true
-    },
-    {
-      "isDefault": false,
-      "name": "Personal Spending",
-      "isShown": true
-    },
-    {
-      "isDefault": false,
-      "name": "Recreation & Entertainment",
-      "isShown": true
-    },
-    {
-      "isDefault": false,
-      "name": "Miscellaneous",
-      "isShown": true
-    },
-    {
-      "isDefault": false,
       "name": "Groceries",
       "isShown": true
     },
     {
       "isDefault": false,
-      "name": "Clothing",
+      "name": "School supplies",
       "isShown": true
     },
     {
       "isDefault": false,
-      "name": "Housing Fee",
+      "name": "Housing",
+      "isShown": true
+    },
+    {
+      "isDefault": false,
+      "name": "Clothes",
+      "isShown": true
+    },
+    {
+      "isDefault": false,
+      "name": "Phone plan",
+      "isShown": true
+    },
+    {
+      "isDefault": false,
+      "name": "Travel",
+      "isShown": true
+    },
+    {
+      "isDefault": false,
+      "name": "Rest",
       "isShown": true
     }
   ]

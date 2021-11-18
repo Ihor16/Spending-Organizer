@@ -4,6 +4,6 @@ package model.exceptions;
 public class NegativeAmountException extends RecordFieldException {
 
     public NegativeAmountException() {
-        super("Amount must be > 0");
+        super("Amount must be >= 0");
     }
 }

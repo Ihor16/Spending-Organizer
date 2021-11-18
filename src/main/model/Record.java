@@ -1,46 +1,51 @@
 package model;
 
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
 import org.json.JSONObject;
-import persistence.Writable;
+import persistence.WritableObject;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 import java.util.StringJoiner;
 
 // Represents a financial record where user stores their spending
-public class Record implements Writable {
-    private String title;
-    private double amount;
-    private String category;
-    private LocalDateTime timeAdded;
+public class Record implements WritableObject {
 
-    // EFFECTS: creates a new record with incremented id, and timeAdded set to now
+    private final SimpleStringProperty title;
+    private final SimpleDoubleProperty amount;
+    private final SimpleObjectProperty<Category> category;
+    private final SimpleObjectProperty<LocalDateTime> timeAdded;
+
+    // REQUIRED: used only while reading from Json file and testing
+    // EFFECTS: creates a new record with timeAdded set to now
     public Record() {
-        this.timeAdded = LocalDateTime.now();
+        this.timeAdded = new SimpleObjectProperty<>(LocalDateTime.now());
+        this.title = new SimpleStringProperty("");
+        this.amount = new SimpleDoubleProperty(0);
+        this.category = new SimpleObjectProperty<>(null);
     }
 
-    // EFFECTS: creates a new record with amount, trimmed title, and trimmed category,
+    // EFFECTS: creates a new record with trimmed title, amount, category,
     //          timeAdded set to now,
-    //          throws NameException if title or category is blank
-    //          throws NegativeAmountException if amount <= 0
-    public Record(String title, double amount, String category) throws NameException,
+    //          throws NameException if title is blank
+    //          throws NegativeAmountException if amount < 0
+    public Record(String title, double amount, Category category) throws NameException,
             NegativeAmountException {
+
         if (isBlank(title)) {
             throw new NameException("title");
         }
-        if (amount <= 0) {
+        if (amount < 0) {
             throw new NegativeAmountException();
         }
-        if (isBlank(category)) {
-            throw new NameException("category");
-        }
 
-        this.title = title.trim();
-        this.amount = amount;
-        this.category = category;
-        this.timeAdded = LocalDateTime.now();
+        this.title = new SimpleStringProperty(title.trim());
+        this.amount = new SimpleDoubleProperty(amount);
+        this.category = new SimpleObjectProperty<>(category);
+        this.timeAdded = new SimpleObjectProperty<>(LocalDateTime.now());
     }
 
     // MODIFIES: this
@@ -50,50 +55,57 @@ public class Record implements Writable {
         if (isBlank(title)) {
             throw new NameException("title");
         }
-        this.title = title.trim();
-    }
-
-    // MODIFIES: this
-    // EFFECTS: trims category and assigns it to the record, adds category to existingCategories,
-    //          throws NameException if provided category is blank
-    public void setCategory(String category, Set<String> existingCategories) throws NameException {
-        if (isBlank(category)) {
-            throw new NameException("category");
-        }
-        this.category = category.trim();
-        existingCategories.add(this.category);
+        this.title.set(title.trim());
     }
 
     // MODIFIES: this
     // EFFECTS: sets record amount,
-    //          throws NegativeAmountException if amount is <= 0
+    //          throws NegativeAmountException if amount is < 0
     public void setAmount(double amount) throws NegativeAmountException {
-        if (amount <= 0) {
+        if (amount < 0) {
             throw new NegativeAmountException();
         }
-        this.amount = amount;
+        this.amount.set(amount);
     }
 
-    // REQUIREMENT: is used only when reading record from a file
-    // MODIFIES: this
-    // EFFECTS: sets the time when this was created
+    public void setCategory(Category category) {
+        this.category.set(category);
+    }
+
+    // INVARIANT: is used only when reading record from a file
     public void setTimeAdded(String timeStamp) {
-        this.timeAdded = LocalDateTime.parse(timeStamp);
+        this.timeAdded.set(LocalDateTime.parse(timeStamp));
     }
 
     public String getTitle() {
+        return title.get();
+    }
+
+    public SimpleStringProperty titleProperty() {
         return title;
     }
 
     public double getAmount() {
+        return amount.get();
+    }
+
+    public SimpleDoubleProperty amountProperty() {
         return amount;
     }
 
-    public String getCategory() {
+    public Category getCategory() {
+        return category.get();
+    }
+
+    public SimpleObjectProperty<Category> categoryProperty() {
         return category;
     }
 
     public LocalDateTime getTimeAdded() {
+        return timeAdded.get();
+    }
+
+    public SimpleObjectProperty<LocalDateTime> timeAddedProperty() {
         return timeAdded;
     }
 
@@ -101,28 +113,29 @@ public class Record implements Writable {
     //          false otherwise
     private boolean isBlank(String str) {
         // implementation of removing whitespaces is taken from
-        // https://stackoverflow.com/questions/5455794/removing-whitespace-from-strings-in-java
+        // https://stackoverflow.com/a/5455809
         return str.replaceAll("[\\s]+", "").isEmpty();
     }
 
     @Override
-    // EFFECTS: returns a string representation of record
     public String toString() {
         return new StringJoiner(", ", Record.class.getSimpleName() + "[", "]")
-                .add("title='" + title + "'")
-                .add("amount=" + amount)
-                .add("category='" + category + "'")
+                .add("title=" + title.get())
+                .add("amount=" + amount.get())
+                .add("category=" + category.get())
+                .add("timeAdded=" + timeAdded.get())
                 .toString();
     }
 
     @Override
+    // EFFECTS: returns this as JSON Object
     // Implementation is based on the Thingy class from JsonSerializationDemo
     public JSONObject toJsonObject() {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("title", title);
-        jsonObject.put("amount", amount);
-        jsonObject.put("category", category);
-        jsonObject.put("timeAdded", timeAdded);
+        jsonObject.put("title", title.get());
+        jsonObject.put("amount", amount.get());
+        jsonObject.put("category", category.get().toJsonObject());
+        jsonObject.put("timeAdded", timeAdded.get());
         return jsonObject;
     }
 
@@ -137,27 +150,24 @@ public class Record implements Writable {
 
         Record record = (Record) o;
 
-        if (Double.compare(record.amount, amount) != 0) {
+        if (!title.get().equals(record.title.get())) {
             return false;
         }
-        if (!title.equals(record.title)) {
+        if (!amount.getValue().equals(record.amount.getValue())) {
             return false;
         }
-        if (!category.equals(record.category)) {
+        if (!category.get().equals(record.category.get())) {
             return false;
         }
-        return timeAdded.equals(record.timeAdded);
+        return timeAdded.get().equals(record.timeAdded.get());
     }
 
     @Override
     public int hashCode() {
-        int result;
-        long temp;
-        result = title.hashCode();
-        temp = Double.doubleToLongBits(amount);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + category.hashCode();
-        result = 31 * result + timeAdded.hashCode();
+        int result = title.get().hashCode();
+        result = 31 * result + amount.getValue().hashCode();
+        result = 31 * result + category.get().hashCode();
+        result = 31 * result + timeAdded.get().hashCode();
         return result;
     }
 }
