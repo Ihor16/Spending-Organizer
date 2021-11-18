@@ -1,4 +1,4 @@
-package demoHelper;
+package dataGenerator;
 
 import javafx.util.Pair;
 

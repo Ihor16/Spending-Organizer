@@ -10,9 +10,11 @@ import ui.controllers.Controller;
 import java.io.IOException;
 import java.util.Objects;
 
+// Class that creates GUI window and launches the application
 public class Main extends Application {
 
-    // EFFECTS: creates primary stage and gets an instance of Controller
+    // EFFECTS: creates primary stage,
+    //          and gets an instance of Controller to handle closing window event
     // Implementation is based on https://stackoverflow.com/a/13247005
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -33,7 +35,6 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
-//        new SpendingApp();
         launch();
     }
 }

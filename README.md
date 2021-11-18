@@ -58,5 +58,5 @@ and add it to the *SpendingList* class (class that stores multiple *Records*).
     2. Amount Spent by Month: per month and for custom period
     3. Amount Spent by Category (Stacked): per month and for custom period
     4. Amount Spent by Month (Stacked): per month and for custom period
-20. Enter dates in text format
+20. Enter dates in "Month.day, year" and "MM/dd/yyyy" text formats
 21. Keep my settings in each view unchanged when I change views

@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-// Helper class that loads data to the GUI and formats GUI components
+// Helper class that loads data to the GUI and formats GUI components in the main scene
 public class SetUpHelper {
 
     private Controller cl;

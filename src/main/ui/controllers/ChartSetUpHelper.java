@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
+// Helper class that formats GUI components in the chart scene
 public class ChartSetUpHelper extends SetUpHelper {
 
     private final ChartController cl;

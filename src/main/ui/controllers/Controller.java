@@ -29,7 +29,7 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.*;
 
-// Class that handles events
+// Class that handles events in the main window
 public class Controller implements Initializable {
 
     private final String fileError = "Choose a file";
