@@ -288,7 +288,7 @@ public class Controller implements Initializable {
     void changeCategoryInCategories(TableColumn.CellEditEvent<Category, String> editedCell) {
         Category category = categories.getCategoryByName(editedCell.getOldValue());
         try {
-            category.setName(editedCell.getNewValue());
+            category.setName(editedCell.getNewValue(), categories);
             isChanged.set(true);
         } catch (NameException e) {
             showErrorMessage(e.getMessage());

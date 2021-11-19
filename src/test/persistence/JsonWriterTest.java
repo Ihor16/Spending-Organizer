@@ -42,7 +42,13 @@ class JsonWriterTest {
     @Test
     void testWriteEmptyFile() {
         String path = "./data/testing/testWriterEmptyFile.json";
-        Categories categories = new Categories();
+        Categories categories = null;
+        try {
+            categories = new Categories();
+        } catch (NameException e) {
+            fail("Default category is actually acceptable");
+            e.printStackTrace();
+        }
 
         try (JsonWriter writer = new JsonWriter(path)){
             writer.open();
@@ -67,7 +73,13 @@ class JsonWriterTest {
     void testWriteEmptySpendingList() {
         Stream.of(recordGroceries, recordTravel).forEach(spToWrite::removeRecord);
         String path = "./data/testing/testWriteEmptySpendingList.json";
-        Categories categories = new Categories();
+        Categories categories = null;
+        try {
+            categories = new Categories();
+        } catch (NameException e) {
+            fail("Default category is actually acceptable");
+            e.printStackTrace();
+        }
 
         try (JsonWriter writer = new JsonWriter(path)){
             writer.open();
@@ -145,8 +157,8 @@ class JsonWriterTest {
 
     // EFFECTS: inits test entries
     private void initEntries() {
-        categories = new Categories();
         try {
+            categories = new Categories();
             Category categoryTravel = new Category("Travel", categories);
             Category categoryGroceries = new Category("Groceries", categories);
             recordTravel = new Record("Went to Toronto", 401.34, categoryTravel);

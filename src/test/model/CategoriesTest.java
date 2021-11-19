@@ -29,12 +29,16 @@ class CategoriesTest {
         recordTitle = "Went to Victoria";
         recordAmount = 590.83;
         categoryName = "Travel";
-        categories = new Categories();
+        try {
+            categories = new Categories();
+        } catch (NameException e) {
+            e.printStackTrace();
+        }
 
         try {
             recordCategory = new Category(categoryName, categories);
         } catch (NameException e) {
-            fail("Not the case: " + e.getMessage());
+            e.printStackTrace();
         }
 
         try {
@@ -49,7 +53,12 @@ class CategoriesTest {
 
     @Test
     void testConstructor() {
-        assertEquals(1, new Categories().getCategories().size());
+        try {
+            assertEquals(1, new Categories().getCategories().size());
+        } catch (NameException e) {
+            fail("Default category is actually acceptable");
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -162,8 +171,14 @@ class CategoriesTest {
     @Test
     void testEquals() {
         Categories instanceCategory = categories;
-        Categories copyCategories = new Categories();
-        copyCategories.setCategories(Collections.singletonList(recordCategory));
+        Categories copyCategories = null;
+        try {
+            copyCategories = new Categories();
+            copyCategories.setCategories(Collections.singletonList(recordCategory));
+        } catch (NameException e) {
+            fail("Default category is actually acceptable");
+            e.printStackTrace();
+        }
 
         assertEquals(categories, instanceCategory);
         assertEquals(categories, copyCategories);

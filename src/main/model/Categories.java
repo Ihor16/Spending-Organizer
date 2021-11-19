@@ -18,13 +18,9 @@ public class Categories implements WritableArray {
     private Category defaultCategory;
     private final ObservableList<Category> categories;
 
-    public Categories() {
+    public Categories() throws NameException {
         this.categories = FXCollections.observableArrayList();
-        try {
-            defaultCategory = new Category("default", this, true, true);
-        } catch (NameException e) {
-            assert false;
-        }
+        defaultCategory = new Category("default", this, true, true);
     }
 
     // MODIFIES: this

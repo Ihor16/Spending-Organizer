@@ -25,7 +25,7 @@ public class Category implements WritableObject {
         categories.add(this);
     }
 
-    // REQUIRED: used only when reading from Json file
+    // REQUIRED: used only when reading from Json file or initializing a default category
     public Category(String name, Categories categories, boolean isShown, boolean isDefault)
             throws NameException {
         if (isBlank(name)) {
@@ -47,10 +47,13 @@ public class Category implements WritableObject {
 
     // MODIFIES: this
     // EFFECTS: sets name of category,
-    //          throws NameException if provided name is invalid
-    public void setName(String name) throws NameException {
+    //          throws NameException if provided name is invalid,
+    //          throws NameException if category with provided name already exists
+    public void setName(String name, Categories categories) throws NameException {
         if (isBlank(name)) {
             throw new NameException("category");
+        } else if (categories.getCategoriesNames().contains(name)) {
+            throw new NameException();
         }
         this.name.set(name.trim());
     }

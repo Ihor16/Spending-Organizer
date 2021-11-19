@@ -7,8 +7,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
@@ -51,7 +49,7 @@ class CategoryTest {
     @ParameterizedTest
     @ValueSource(strings = {"", "   "})
     void setNameThrowNameException(String name) {
-        assertThrows(NameException.class, () -> category.setName(name));
+        assertThrows(NameException.class, () -> category.setName(name, categories));
         assertFalse(categories.getCategories()
                 .stream()
                 .map(Category::getName)
@@ -60,10 +58,27 @@ class CategoryTest {
     }
 
     @Test
+    void setNameSameCategoryAlreadyExists() {
+        String newName = "New Category";
+        String oldName = category.getName();
+        try {
+            new Category(newName, categories);
+        } catch (NameException e) {
+            fail("Category name is actually acceptable");
+            e.printStackTrace();
+        }
+        assertThrows(NameException.class, () -> category.setName(oldName, categories));
+        assertTrue(categories.getCategoriesNames().contains(oldName));
+        assertEquals(1, categories.getCategoriesNames().stream()
+                .filter(s -> s.equals(newName))
+                .count());
+    }
+
+    @Test
     void setName() {
         String newName = "   " + name + "...";
         try {
-            category.setName(newName);
+            category.setName(newName, categories);
         } catch (NameException e) {
             fail("Category name is actually acceptable");
             e.printStackTrace();

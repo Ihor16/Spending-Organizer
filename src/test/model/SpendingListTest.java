@@ -24,7 +24,11 @@ class SpendingListTest {
 
     @BeforeEach
     void setUp() {
-        categories = new Categories();
+        try {
+            categories = new Categories();
+        } catch (NameException e) {
+            e.printStackTrace();
+        }
         spendingList = new SpendingList(categories);
         initCategories();
         initRecords();
@@ -111,7 +115,13 @@ class SpendingListTest {
 
     @Test
     void testToString() {
-        SpendingList spendingList = new SpendingList(new Categories());
+        SpendingList spendingList = null;
+        try {
+            spendingList = new SpendingList(new Categories());
+        } catch (NameException e) {
+            fail("Default category is actually acceptable");
+            e.printStackTrace();
+        }
         spendingList.addRecord(recordTravel);
         String expected;
         expected = SpendingList.class.getSimpleName() + "[" +

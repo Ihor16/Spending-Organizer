@@ -21,12 +21,21 @@ public class SpendingListGroupingTest {
 
     @BeforeEach
     void setUp() {
-        categories = new Categories();
+        try {
+            categories = new Categories();
+        } catch (NameException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     void testGetMonthsEmptySpendingList() {
-        initEmptySpendingList();
+        try {
+            initEmptySpendingList();
+        } catch (NameException e) {
+            fail("Default category is actually acceptable");
+            e.printStackTrace();
+        }
         assertEquals(Collections.emptyList(), spendingList.getDates());
     }
 
@@ -206,7 +215,12 @@ public class SpendingListGroupingTest {
 
     @Test
     void testGroupByCategoryAndDateEmptySpendingList() {
-        initEmptySpendingList();
+        try {
+            initEmptySpendingList();
+        } catch (NameException e) {
+            fail("Default category is actually acceptable");
+            e.printStackTrace();
+        }
         assertEquals(Collections.emptyMap(), spendingList.groupByCategoryAndDate(dateAdded, dateAdded));
     }
 
@@ -374,7 +388,7 @@ public class SpendingListGroupingTest {
         return spendingList.getRecords().get(index);
     }
 
-    private void initEmptySpendingList() {
+    private void initEmptySpendingList() throws NameException {
         categories = new Categories();
         spendingList = new SpendingList(categories);
     }

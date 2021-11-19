@@ -50,7 +50,6 @@ public class ChartController implements Initializable {
     @FXML RadioButton dateToggle;
     @FXML ToggleGroup chartGroup;
     @FXML CheckBox isStacked;
-    @FXML ToggleGroup periodGroup;
 
     ChartSetUpHelper chartSetUpHelper;
     Categories categories;

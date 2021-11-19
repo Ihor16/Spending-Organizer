@@ -52,7 +52,7 @@ public class SetUpHelper {
             bindDataWithComponents();
             setUpUIComponents();
         } catch (NegativeAmountException | NameException e) {
-            cl.showErrorMessage("Couldn't initialize data");
+            cl.showErrorMessage("Couldn't initialize data: " + e.getMessage());
         }
     }
 
