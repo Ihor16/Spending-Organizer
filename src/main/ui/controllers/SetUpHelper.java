@@ -12,7 +12,6 @@ import javafx.util.converter.DoubleStringConverter;
 import model.Categories;
 import model.Category;
 import model.Record;
-import model.SpendingList;
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
 import persistence.JsonReader;
@@ -52,7 +51,7 @@ public class SetUpHelper {
             bindDataWithComponents();
             setUpUIComponents();
         } catch (NegativeAmountException | NameException e) {
-            cl.showErrorMessage("Couldn't initialize data: " + e.getMessage());
+            showErrorMessage("Couldn't initialize data: " + e.getMessage());
         }
     }
 
@@ -60,8 +59,6 @@ public class SetUpHelper {
     // EFFECTS: reads spending list from cl.currentFilePath
     //          throws Exception if file is corrupted
     private void readSpendingList() throws NegativeAmountException, NameException {
-        cl.categories = new Categories();
-        cl.spendingList = new SpendingList(cl.categories);
         try {
             JsonReader reader = new JsonReader(cl.currentFilePath.get());
             cl.spendingList = reader.read();
@@ -298,7 +295,7 @@ public class SetUpHelper {
                     category = new Category(string, cl.categories);
                     return category;
                 } catch (NameException e) {
-                    cl.showErrorMessage(e.getMessage());
+                    showErrorMessage(e.getMessage());
                 }
                 return null;
             }
@@ -326,5 +323,4 @@ public class SetUpHelper {
         alert.setHeaderText(message);
         alert.showAndWait();
     }
-
 }

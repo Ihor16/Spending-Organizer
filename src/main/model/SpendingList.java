@@ -22,11 +22,13 @@ public class SpendingList implements WritableObject {
     private final ObservableList<Record> records;
     private final ObservableList<Record> filteredRecords;
     private final Categories categories;
+    private final EventLog log = EventLog.getInstance();
 
     public SpendingList(Categories categories) {
         this.categories = categories;
         this.records = FXCollections.observableArrayList();
         this.filteredRecords = FXCollections.observableArrayList();
+        log.logEvent(new Event("New SpendingList created: " + this));
     }
 
     // MODIFIES: this
@@ -34,6 +36,7 @@ public class SpendingList implements WritableObject {
     // INVARIANT: record is valid
     public void addRecord(Record record) {
         records.add(0, record);
+        log.logEvent(new Event("New Record added: " + record));
     }
 
     // MODIFIES: this
@@ -41,7 +44,12 @@ public class SpendingList implements WritableObject {
     // EFFECTS: removes record from records list and returns true if the record is removed
     // INVARIANT: record exists in the list
     public boolean removeRecord(Record record) {
-        return records.remove(record);
+        if (records.remove(record)) {
+            log.logEvent(new Event("Removed this record: " + record));
+            return true;
+        } else {
+            return false;
+        }
     }
 
 
