@@ -20,8 +20,9 @@ public class Record implements WritableObject {
     private final SimpleObjectProperty<LocalDateTime> timeAdded;
     private final EventLog log = EventLog.getInstance();
 
-    // REQUIRED: used only while reading from Json file and testing
+    // REQUIRED: used only while reading from Json file and testing,
     // EFFECTS: creates a new record with timeAdded set to now
+    // INVARIANT: all the fields are set immediately after using this constructor
     public Record() {
         this.timeAdded = new SimpleObjectProperty<>(LocalDateTime.now());
         this.title = new SimpleStringProperty("");

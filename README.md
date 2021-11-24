@@ -121,3 +121,26 @@ NameException thrown because new Category's name is blank
 Mon Nov 22 19:08:13 PST 2021
 Category's name changed to Supermarket groceries
 ````
+---
+### Phase 4: Task 3
+In my design all the classes revolve around SpendingList class, 
+which holds a list of Records and a list of available Categories.
+Therefore, it's very convenient to write to JSON just one class and save the whole application automatically. 
+
+Also, it was very nice to use interfaces WritableObject and WritableArray since classes that implement them can
+clearly show how their fields are going to be presented in the JSON file. 
+
+Additionally, I utilized a Singleton pattern for holding SpendingList and Scene references.
+Using this pattern allowed me to prevent data loss while switching between scenes, 
+which made my application more convenient.
+
+If I had more time, I'd like to
+* implement an Observer pattern: make SpendingList an Observer and Categories — Subject.
+  This would make it more convenient to edit SpendingList when a Category is removed
+* make a helper class for SpendingList because SpendingList has a verbose implementation of grouping
+  required only for drawing charts. And I think it would make SpendingList more readable if this behaviour
+  is abstracter to another class
+* rethink the relationships between controller classes.
+  Since both of them handle multiple similar components,
+  I think it would be better to create some abstract class that would implement common behaviour and then make
+  Controller and ChartController subclasses of that abstract class.

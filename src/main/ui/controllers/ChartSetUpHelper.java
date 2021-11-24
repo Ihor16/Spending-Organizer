@@ -88,8 +88,8 @@ public class ChartSetUpHelper extends SetUpHelper {
         cl.categoriesColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         cl.isShownColumn.setCellValueFactory(new PropertyValueFactory<>("isShown"));
         super.formatIsShownColumn(cl.isShownColumn);
-        cl.categoriesTable.setItems(cl.categories.getCategories());
-        super.colorDefaultCategoryInCategoriesTable(cl.categoriesTable, cl.categories);
+        cl.categoriesTable.setItems(cl.spendingList.getCategories().getCategories());
+        super.colorDefaultCategoryInCategoriesTable(cl.categoriesTable, cl.spendingList.getCategories());
     }
 
     // MODIFIES: this

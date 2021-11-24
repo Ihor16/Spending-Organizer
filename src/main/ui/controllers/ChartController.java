@@ -52,7 +52,6 @@ public class ChartController implements Initializable {
     @FXML CheckBox isStacked;
 
     ChartSetUpHelper chartSetUpHelper;
-    Categories categories;
     SpendingList spendingList;
     final SceneHolder sceneHolder = SceneHolder.getInstance();
     final SpendingListHolder spendingListHolder = SpendingListHolder.getInstance();
@@ -60,7 +59,6 @@ public class ChartController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         spendingList = spendingListHolder.getSpendingList();
-        categories = spendingList.getCategories();
 
         chartSetUpHelper = new ChartSetUpHelper(this);
         chartSetUpHelper.setUpChartController();

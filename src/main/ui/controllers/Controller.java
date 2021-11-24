@@ -63,7 +63,6 @@ public class Controller implements Initializable {
     @FXML MenuItem changeViewMenuItem;
     @FXML Label filenameLabel;
 
-    Categories categories;
     SpendingList spendingList;
 
     // True if data has been changed (if it's been changed, save pop-up menu is displayed)
@@ -72,8 +71,8 @@ public class Controller implements Initializable {
     SimpleStringProperty currentFilePath;
 
     private SetUpHelper setUpHelper;
-    SceneHolder sceneHolder = SceneHolder.getInstance();
-    SpendingListHolder spendingListHolder = SpendingListHolder.getInstance();
+    final SceneHolder sceneHolder = SceneHolder.getInstance();
+    final SpendingListHolder spendingListHolder = SpendingListHolder.getInstance();
 
     // MODIFIES: this
     // EFFECTS: initializes application
@@ -233,7 +232,7 @@ public class Controller implements Initializable {
             selectedRecords.forEach(spendingList::removeRecord);
         } else if (selectedToggle.equals(categoryToggleRemove)) {
             List<Category> selectedCategories = new ArrayList<>(categoriesTable.getSelectionModel().getSelectedItems());
-            selectedCategories.forEach(c -> categories.remove(c, spendingList));
+            selectedCategories.forEach(c -> spendingList.getCategories().remove(c, spendingList));
             recordTable.refresh();
         }
     }
@@ -285,9 +284,9 @@ public class Controller implements Initializable {
     // EFFECTS: changes name of selected category in the categories table
     @FXML
     void changeCategoryInCategories(TableColumn.CellEditEvent<Category, String> editedCell) {
-        Category category = categories.getCategoryByName(editedCell.getOldValue());
+        Category category = spendingList.getCategories().getCategoryByName(editedCell.getOldValue());
         try {
-            category.setName(editedCell.getNewValue(), categories);
+            category.setName(editedCell.getNewValue(), spendingList.getCategories());
             isChanged.set(true);
         } catch (NameException e) {
             setUpHelper.showErrorMessage(e.getMessage());
@@ -390,7 +389,7 @@ public class Controller implements Initializable {
     private void addNewCategory() {
         try {
             String name = titleFieldAdd.getText();
-            new Category(name, categories);
+            new Category(name, spendingList.getCategories());
         } catch (NameException e) {
             setUpHelper.showErrorMessage(e.getMessage());
         }
@@ -404,7 +403,7 @@ public class Controller implements Initializable {
             String title = titleFieldAdd.getText();
             double amount = Double.parseDouble(amountFieldAdd.getText());
             String categoryName = categoriesBoxAdd.getValue();
-            Record record = new Record(title, amount, categories.getCategoryByName(categoryName));
+            Record record = new Record(title, amount, spendingList.getCategories().getCategoryByName(categoryName));
             spendingList.addRecord(record);
         } catch (NameException | NegativeAmountException | NumberFormatException e) {
             setUpHelper.showErrorMessage(e.getMessage());
