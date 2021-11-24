@@ -18,9 +18,11 @@ public class Record implements WritableObject {
     private final SimpleDoubleProperty amount;
     private final SimpleObjectProperty<Category> category;
     private final SimpleObjectProperty<LocalDateTime> timeAdded;
+    private final EventLog log = EventLog.getInstance();
 
-    // REQUIRED: used only while reading from Json file and testing
+    // REQUIRED: used only while reading from Json file and testing,
     // EFFECTS: creates a new record with timeAdded set to now
+    // INVARIANT: all the fields are set immediately after using this constructor
     public Record() {
         this.timeAdded = new SimpleObjectProperty<>(LocalDateTime.now());
         this.title = new SimpleStringProperty("");
@@ -34,14 +36,12 @@ public class Record implements WritableObject {
     //          throws NegativeAmountException if amount < 0
     public Record(String title, double amount, Category category) throws NameException,
             NegativeAmountException {
-
         if (isBlank(title)) {
             throw new NameException("title");
         }
         if (amount < 0) {
             throw new NegativeAmountException();
         }
-
         this.title = new SimpleStringProperty(title.trim());
         this.amount = new SimpleDoubleProperty(amount);
         this.category = new SimpleObjectProperty<>(category);
@@ -53,9 +53,11 @@ public class Record implements WritableObject {
     //          throws NameException if provided title is blank
     public void setTitle(String title) throws NameException {
         if (isBlank(title)) {
+            log.logEvent(new Event("NameException thrown because new Record's name is blank"));
             throw new NameException("title");
         }
         this.title.set(title.trim());
+        log.logEvent(new Event("Record's title set to: " + getTitle()));
     }
 
     // MODIFIES: this
@@ -63,18 +65,22 @@ public class Record implements WritableObject {
     //          throws NegativeAmountException if amount is < 0
     public void setAmount(double amount) throws NegativeAmountException {
         if (amount < 0) {
+            log.logEvent(new Event("NegativeAmountException thrown because new Record's amount is < 0"));
             throw new NegativeAmountException();
         }
         this.amount.set(amount);
+        log.logEvent(new Event("Record's amount set to: " + getAmount()));
     }
 
     public void setCategory(Category category) {
         this.category.set(category);
+        log.logEvent(new Event("Record's category set to: " + getCategory()));
     }
 
     // INVARIANT: is used only when reading record from a file
     public void setTimeAdded(String timeStamp) {
         this.timeAdded.set(LocalDateTime.parse(timeStamp));
+        log.logEvent(new Event("Record's timeAdded set to: " + getTimeAdded()));
     }
 
     public String getTitle() {

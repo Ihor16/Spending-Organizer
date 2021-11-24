@@ -12,7 +12,6 @@ import javafx.util.converter.DoubleStringConverter;
 import model.Categories;
 import model.Category;
 import model.Record;
-import model.SpendingList;
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
 import persistence.JsonReader;
@@ -52,7 +51,7 @@ public class SetUpHelper {
             bindDataWithComponents();
             setUpUIComponents();
         } catch (NegativeAmountException | NameException e) {
-            cl.showErrorMessage("Couldn't initialize data: " + e.getMessage());
+            showErrorMessage("Couldn't initialize data: " + e.getMessage());
         }
     }
 
@@ -60,12 +59,9 @@ public class SetUpHelper {
     // EFFECTS: reads spending list from cl.currentFilePath
     //          throws Exception if file is corrupted
     private void readSpendingList() throws NegativeAmountException, NameException {
-        cl.categories = new Categories();
-        cl.spendingList = new SpendingList(cl.categories);
         try {
             JsonReader reader = new JsonReader(cl.currentFilePath.get());
             cl.spendingList = reader.read();
-            cl.categories = cl.spendingList.getCategories();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -85,7 +81,7 @@ public class SetUpHelper {
     // MODIFIES: this
     // EFFECTS: Changes isChanged property when categories are added or removed
     private void addCategoriesListener() {
-        cl.categories.getCategories()
+        cl.spendingList.getCategories().getCategories()
                 .addListener((ListChangeListener<Category>) c -> {
                     repopulateCategoriesComboBox();
                     cl.isChanged.set(true);
@@ -143,7 +139,7 @@ public class SetUpHelper {
     void repopulateCategoriesComboBox() {
         cl.categoriesBoxAdd.getItems().clear();
         cl.categoriesBoxAdd
-                .setItems(FXCollections.observableArrayList(cl.categories.getCategoriesNames()));
+                .setItems(FXCollections.observableArrayList(cl.spendingList.getCategories().getCategoriesNames()));
         cl.categoriesBoxAdd.getSelectionModel().selectFirst();
     }
 
@@ -167,7 +163,7 @@ public class SetUpHelper {
         cl.categoriesColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         cl.isShownColumn.setCellValueFactory(new PropertyValueFactory<>("isShown"));
         formatIsShownColumn(cl.isShownColumn);
-        cl.categoriesTable.setItems(cl.categories.getCategories());
+        cl.categoriesTable.setItems(cl.spendingList.getCategories().getCategories());
     }
 
     // MODIFIES: cl
@@ -236,7 +232,7 @@ public class SetUpHelper {
             protected void updateItem(Record record, boolean empty) {
                 super.updateItem(record, empty);
                 if (Objects.nonNull(record)
-                        && record.getCategory().equals(cl.categories.getDefaultCategory())) {
+                        && record.getCategory().equals(cl.spendingList.getCategories().getDefaultCategory())) {
                     setStyle(defaultCellStyle);
                 } else {
                     setStyle("");
@@ -254,7 +250,8 @@ public class SetUpHelper {
             @Override
             protected void updateItem(Category category, boolean empty) {
                 super.updateItem(category, empty);
-                if (Objects.nonNull(category) && category.equals(cl.categories.getDefaultCategory())) {
+                if (Objects.nonNull(category)
+                        && category.equals(cl.spendingList.getCategories().getDefaultCategory())) {
                     setStyle(defaultCellStyle);
                 } else {
                     setStyle("");
@@ -295,14 +292,14 @@ public class SetUpHelper {
             public Category fromString(String string) {
                 Category category;
                 try {
-                    category = new Category(string, cl.categories);
+                    category = new Category(string, cl.spendingList.getCategories());
                     return category;
                 } catch (NameException e) {
-                    cl.showErrorMessage(e.getMessage());
+                    showErrorMessage(e.getMessage());
                 }
                 return null;
             }
-        }, cl.categories.getCategories()));
+        }, cl.spendingList.getCategories().getCategories()));
 
         cl.categoriesColumn.setCellFactory(TextFieldTableCell.forTableColumn());
     }
@@ -326,5 +323,4 @@ public class SetUpHelper {
         alert.setHeaderText(message);
         alert.showAndWait();
     }
-
 }

@@ -17,10 +17,12 @@ public class Categories implements WritableArray {
 
     private Category defaultCategory;
     private final ObservableList<Category> categories;
+    private final EventLog log = EventLog.getInstance();
 
     public Categories() throws NameException {
         this.categories = FXCollections.observableArrayList();
         defaultCategory = new Category("default", this, true, true);
+        log.logEvent(new Event("New categories list created: " + this));
     }
 
     // MODIFIES: this
@@ -28,6 +30,7 @@ public class Categories implements WritableArray {
     public void add(Category category) {
         if (!categories.contains(category)) {
             categories.add(category);
+            log.logEvent(new Event("New Category added: " + category.getName()));
         }
     }
 
@@ -41,6 +44,7 @@ public class Categories implements WritableArray {
                     .filtered(r -> r.getCategory().equals(category))
                     .forEach(r -> r.setCategory(defaultCategory));
             categories.remove(category);
+            log.logEvent(new Event("Removed this category: " + category.getName()));
         }
     }
 
@@ -64,10 +68,12 @@ public class Categories implements WritableArray {
         this.categories.clear();
         this.categories.add(defaultCategory);
         this.categories.addAll(categories);
+        log.logEvent(new Event("Category list was updated to: " + this.categories));
     }
 
     public void setDefaultCategory(Category defaultCategory) {
         this.defaultCategory = defaultCategory;
+        log.logEvent(new Event("Default category was set to " + defaultCategory.getName()));
     }
 
     public ObservableList<Category> getCategories() {

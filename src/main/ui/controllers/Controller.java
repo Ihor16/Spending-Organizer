@@ -11,10 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import model.Categories;
-import model.Category;
-import model.Record;
-import model.SpendingList;
+import model.*;
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
 import persistence.JsonWriter;
@@ -66,7 +63,6 @@ public class Controller implements Initializable {
     @FXML MenuItem changeViewMenuItem;
     @FXML Label filenameLabel;
 
-    Categories categories;
     SpendingList spendingList;
 
     // True if data has been changed (if it's been changed, save pop-up menu is displayed)
@@ -75,8 +71,8 @@ public class Controller implements Initializable {
     SimpleStringProperty currentFilePath;
 
     private SetUpHelper setUpHelper;
-    SceneHolder sceneHolder = SceneHolder.getInstance();
-    SpendingListHolder spendingListHolder = SpendingListHolder.getInstance();
+    final SceneHolder sceneHolder = SceneHolder.getInstance();
+    final SpendingListHolder spendingListHolder = SpendingListHolder.getInstance();
 
     // MODIFIES: this
     // EFFECTS: initializes application
@@ -84,7 +80,7 @@ public class Controller implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         setUpHelper = new SetUpHelper(this);
         isChanged = new SimpleBooleanProperty(false);
-        currentFilePath = new SimpleStringProperty("./data/spendingList.json");
+        currentFilePath = new SimpleStringProperty("./data/emptyFile.json");
         setUpHelper.setUpUI();
     }
 
@@ -141,7 +137,7 @@ public class Controller implements Initializable {
             sceneHolder.getSceneMap().remove(SceneEnum.CHART);
             changeViewMenuItem.setDisable(spendingList.getRecords().isEmpty());
         } else {
-            showErrorMessage(fileError);
+            setUpHelper.showErrorMessage(fileError);
         }
     }
 
@@ -162,7 +158,7 @@ public class Controller implements Initializable {
                 writer.write(spendingList);
                 isChanged.set(false);
             } catch (FileNotFoundException e) {
-                showErrorMessage(e.getMessage());
+                setUpHelper.showErrorMessage(e.getMessage());
             }
         }
     }
@@ -190,11 +186,11 @@ public class Controller implements Initializable {
                 writer.write(spendingList);
                 isChanged.set(false);
             } catch (FileNotFoundException e) {
-                showErrorMessage(e.getMessage());
+                setUpHelper.showErrorMessage(e.getMessage());
                 selectedFileDuringSaveAs = null;
             }
         } else {
-            showErrorMessage(fileError);
+            setUpHelper.showErrorMessage(fileError);
         }
     }
 
@@ -204,9 +200,11 @@ public class Controller implements Initializable {
         if (isChanged.get()) {
             if (showSavePopup()) {
                 Platform.exit();
+                EventLog.getInstance().forEach(System.out::println);
             }
         } else {
             Platform.exit();
+            EventLog.getInstance().forEach(System.out::println);
         }
     }
 
@@ -234,7 +232,7 @@ public class Controller implements Initializable {
             selectedRecords.forEach(spendingList::removeRecord);
         } else if (selectedToggle.equals(categoryToggleRemove)) {
             List<Category> selectedCategories = new ArrayList<>(categoriesTable.getSelectionModel().getSelectedItems());
-            selectedCategories.forEach(c -> categories.remove(c, spendingList));
+            selectedCategories.forEach(c -> spendingList.getCategories().remove(c, spendingList));
             recordTable.refresh();
         }
     }
@@ -248,7 +246,7 @@ public class Controller implements Initializable {
             record.setTitle(editedCell.getNewValue());
             isChanged.set(true);
         } catch (NameException e) {
-            showErrorMessage(e.getMessage());
+            setUpHelper.showErrorMessage(e.getMessage());
         } finally {
             recordTable.refresh();
             recordTable.requestFocus();
@@ -264,7 +262,7 @@ public class Controller implements Initializable {
             record.setAmount(editedCell.getNewValue());
             isChanged.set(true);
         } catch (NegativeAmountException | NumberFormatException e) {
-            showErrorMessage(e.getMessage());
+            setUpHelper.showErrorMessage(e.getMessage());
         } finally {
             recordTable.refresh();
             recordTable.requestFocus();
@@ -286,12 +284,12 @@ public class Controller implements Initializable {
     // EFFECTS: changes name of selected category in the categories table
     @FXML
     void changeCategoryInCategories(TableColumn.CellEditEvent<Category, String> editedCell) {
-        Category category = categories.getCategoryByName(editedCell.getOldValue());
+        Category category = spendingList.getCategories().getCategoryByName(editedCell.getOldValue());
         try {
-            category.setName(editedCell.getNewValue(), categories);
+            category.setName(editedCell.getNewValue(), spendingList.getCategories());
             isChanged.set(true);
         } catch (NameException e) {
-            showErrorMessage(e.getMessage());
+            setUpHelper.showErrorMessage(e.getMessage());
         } finally {
             categoriesTable.refresh();
             recordTable.refresh();
@@ -379,7 +377,7 @@ public class Controller implements Initializable {
                 window.show();
 
             } catch (IOException e) {
-                showErrorMessage("Couldn't load the chart view");
+                setUpHelper.showErrorMessage("Couldn't load the chart view");
                 e.printStackTrace();
             }
         }
@@ -391,9 +389,9 @@ public class Controller implements Initializable {
     private void addNewCategory() {
         try {
             String name = titleFieldAdd.getText();
-            new Category(name, categories);
+            new Category(name, spendingList.getCategories());
         } catch (NameException e) {
-            showErrorMessage(e.getMessage());
+            setUpHelper.showErrorMessage(e.getMessage());
         }
     }
 
@@ -405,10 +403,10 @@ public class Controller implements Initializable {
             String title = titleFieldAdd.getText();
             double amount = Double.parseDouble(amountFieldAdd.getText());
             String categoryName = categoriesBoxAdd.getValue();
-            Record record = new Record(title, amount, categories.getCategoryByName(categoryName));
+            Record record = new Record(title, amount, spendingList.getCategories().getCategoryByName(categoryName));
             spendingList.addRecord(record);
         } catch (NameException | NegativeAmountException | NumberFormatException e) {
-            showErrorMessage(e.getMessage());
+            setUpHelper.showErrorMessage(e.getMessage());
         }
     }
 
@@ -453,14 +451,4 @@ public class Controller implements Initializable {
             return chosenButton.equals(dontSave);
         }
     }
-
-    // EFFECTS: shows a pop-up error window with a given message
-    // Implementation is based on https://stackoverflow.com/a/39151264
-    void showErrorMessage(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setHeaderText("Input not valid");
-        alert.setHeaderText(message);
-        alert.showAndWait();
-    }
-
 }

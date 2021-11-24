@@ -1,14 +1,10 @@
 package persistence;
 
-import model.Category;
-import model.Record;
 import model.SpendingList;
 import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.util.Comparator;
-import java.util.List;
 
 // Represents writer that creates a JSON file from provided SpendingList
 // Implementation of the class is based on the JsonWriter class from JsonSerializationDemo

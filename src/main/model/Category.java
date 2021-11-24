@@ -14,6 +14,7 @@ public class Category implements WritableObject {
     private final SimpleStringProperty name;
     private final SimpleBooleanProperty isShown;
     private final boolean isDefault;
+    private final EventLog log = EventLog.getInstance();
 
     public Category(String name, Categories categories) throws NameException {
         if (isBlank(name)) {
@@ -51,11 +52,14 @@ public class Category implements WritableObject {
     //          throws NameException if category with provided name already exists
     public void setName(String name, Categories categories) throws NameException {
         if (isBlank(name)) {
+            log.logEvent(new Event("NameException thrown because new Category's name is blank"));
             throw new NameException("category");
         } else if (categories.getCategoriesNames().contains(name)) {
+            log.logEvent(new Event("NameException thrown because user tried to add same category"));
             throw new NameException();
         }
         this.name.set(name.trim());
+        log.logEvent(new Event("Category's name changed to " + getName()));
     }
 
     public boolean isShown() {
@@ -68,6 +72,7 @@ public class Category implements WritableObject {
 
     public void setIsShown(boolean isShown) {
         this.isShown.set(isShown);
+        log.logEvent(new Event("Category's " + getName() + " isShown is set to " + isShown()));
     }
 
     public boolean isDefault() {
