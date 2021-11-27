@@ -54,7 +54,7 @@ public class Category implements WritableObject {
         if (isBlank(name)) {
             log.logEvent(new Event("NameException thrown because new Category's name is blank"));
             throw new NameException("category");
-        } else if (categories.getCategoriesNames().contains(name)) {
+        } else if (categories.getCategoriesNames().contains(name.trim())) {
             log.logEvent(new Event("NameException thrown because user tried to add same category"));
             throw new NameException();
         }

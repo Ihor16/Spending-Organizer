@@ -63,7 +63,7 @@ public class SetUpHelper {
             JsonReader reader = new JsonReader(cl.currentFilePath.get());
             cl.spendingList = reader.read();
         } catch (Exception e) {
-            e.printStackTrace();
+            showErrorMessage("Selected file is corrupted");
         }
     }
 
