@@ -32,7 +32,7 @@
             <TableView fx:id="categoriesTable" editable="true" prefHeight="319.0" prefWidth="263.0" VBox.vgrow="ALWAYS">
                <columns>
                   <TableColumn fx:id="categoriesColumn" maxWidth="700.0" prefWidth="230.0" sortType="DESCENDING" text="Categories" />
-                  <TableColumn fx:id="isShownColumn" maxWidth="500.0" prefWidth="72.0" text="Show" visible="false" />
+                  <TableColumn fx:id="isShownColumn" maxWidth="500.0" prefWidth="72.0" text="Show" />
                </columns>
             </TableView>
             <HBox prefHeight="34.0" prefWidth="263.0" VBox.vgrow="NEVER">

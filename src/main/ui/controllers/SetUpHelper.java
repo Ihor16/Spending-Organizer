@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -28,6 +29,7 @@ public class SetUpHelper {
 
     private Controller cl;
     private final String defaultCellStyle = "-fx-background-color: skyblue";
+    private final String hiddenCellStyle = "-fx-background-color: lightgreen";
     protected final String dateTimeFormat = "MMM. dd, yyyy - HH:mm";
     protected final String monthFormat = "MMMM yyyy";
     protected final String prettyDateFormat = "MMM. dd, yyyy";
@@ -75,7 +77,6 @@ public class SetUpHelper {
         addSpendingListListener();
         addIsChangedListener();
         addFilePathListener();
-
     }
 
     // MODIFIES: this
@@ -152,7 +153,6 @@ public class SetUpHelper {
         cl.categoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
         cl.dateColumn.setCellValueFactory(new PropertyValueFactory<>("timeAdded"));
         formatDateColumn(cl.dateColumn);
-
         cl.recordTable.setItems(cl.spendingList.getRecords());
     }
 
@@ -162,7 +162,7 @@ public class SetUpHelper {
     private void populateCategoriesTable() {
         cl.categoriesColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         cl.isShownColumn.setCellValueFactory(new PropertyValueFactory<>("isShown"));
-        formatIsShownColumn(cl.isShownColumn);
+        cl.isShownColumn.setCellFactory(callback -> new CheckBoxTableCell<>());
         cl.categoriesTable.setItems(cl.spendingList.getCategories().getCategories());
     }
 
@@ -182,25 +182,6 @@ public class SetUpHelper {
             }
         });
     }
-
-    // MODIFIES: cl
-    // EFFECTS: formats isShown cells
-    // Based on https://stackoverflow.com/a/50224259
-    protected void formatIsShownColumn(TableColumn<Category, Boolean> isShownColumn) {
-        isShownColumn.setCellFactory(tableColumn -> new TableCell<Category, Boolean>() {
-            @Override
-            protected void updateItem(Boolean item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setText("");
-                } else {
-                    CheckBox checkBox = new CheckBox("");
-                    checkBox.setSelected(item);
-                }
-            }
-        });
-    }
-
 
     // MODIFIES: cl
     // EFFECTS: specifies GUI parameters
@@ -226,6 +207,7 @@ public class SetUpHelper {
 
     // MODIFIES: cl
     // EFFECTS: colors records in records table that have default category
+    // TODO: remove hiddenCellStyle handling
     private void colorRecordsWithDefaultCategory() {
         cl.recordTable.setRowFactory(callable -> new TableRow<Record>() {
             @Override
@@ -234,6 +216,8 @@ public class SetUpHelper {
                 if (Objects.nonNull(record)
                         && record.getCategory().equals(cl.spendingList.getCategories().getDefaultCategory())) {
                     setStyle(defaultCellStyle);
+                } else if (Objects.nonNull(record) && !record.getCategory().isShown()) {
+                    setStyle(hiddenCellStyle);
                 } else {
                     setStyle("");
                 }

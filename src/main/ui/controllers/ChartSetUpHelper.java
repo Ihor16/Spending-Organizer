@@ -3,6 +3,7 @@ package ui.controllers;
 
 import javafx.collections.FXCollections;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.StringConverter;
 
@@ -87,7 +88,7 @@ public class ChartSetUpHelper extends SetUpHelper {
     private void populateCategoriesTable() {
         cl.categoriesColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         cl.isShownColumn.setCellValueFactory(new PropertyValueFactory<>("isShown"));
-        super.formatIsShownColumn(cl.isShownColumn);
+        cl.isShownColumn.setCellFactory(callable -> new CheckBoxTableCell<>());
         cl.categoriesTable.setItems(cl.spendingList.getCategories().getCategories());
         super.colorDefaultCategoryInCategoriesTable(cl.categoriesTable, cl.spendingList.getCategories());
     }

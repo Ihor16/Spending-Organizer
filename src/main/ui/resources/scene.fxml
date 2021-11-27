@@ -27,7 +27,7 @@
             <TableView fx:id="categoriesTable" editable="true" prefHeight="357.0" prefWidth="383.0" VBox.vgrow="ALWAYS">
               <columns>
                 <TableColumn fx:id="categoriesColumn" maxWidth="500.0" onEditCommit="#changeCategoryInCategories" prefWidth="190.0" sortType="DESCENDING" text="Categories" />
-                  <TableColumn fx:id="isShownColumn" maxWidth="500.0" prefWidth="72.0" text="Show" visible="false" />
+                  <TableColumn fx:id="isShownColumn" maxWidth="500.0" prefWidth="71.0" text="Show" />
               </columns>
             </TableView>
             <TabPane prefHeight="372.0" prefWidth="263.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="NEVER">
@@ -176,6 +176,12 @@
                         <MenuItem mnemonicParsing="false" onAction="#focusOnRecordsOrCategories" text="Focus on records/categories">
                            <accelerator>
                               <KeyCodeCombination alt="ANY" code="F" control="UP" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator>
+                        </MenuItem>
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" onAction="#refreshClicked" text="Refresh">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="R" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator>
                         </MenuItem>
                      </items>

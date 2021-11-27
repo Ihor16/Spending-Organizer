@@ -11,7 +11,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import model.*;
+import model.Category;
+import model.EventLog;
+import model.Record;
+import model.SpendingList;
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
 import persistence.JsonWriter;
@@ -80,8 +83,10 @@ public class Controller implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         setUpHelper = new SetUpHelper(this);
         isChanged = new SimpleBooleanProperty(false);
-        currentFilePath = new SimpleStringProperty("./data/emptyFile.json");
+        currentFilePath = new SimpleStringProperty("./data/demo.json");
         setUpHelper.setUpUI();
+        // TODO: enable at the end
+//        newFile();
     }
 
     // MODIFIES: this
@@ -354,6 +359,13 @@ public class Controller implements Initializable {
             categoryToggleRemove.setSelected(true);
             removeSelected();
         }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: refreshed recordTable
+    @FXML
+    public void refreshClicked() {
+        recordTable.refresh();
     }
 
     // MODIFIES: this
