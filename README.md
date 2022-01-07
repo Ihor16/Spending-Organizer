@@ -8,13 +8,18 @@ It allows users to store and categorize their spending. Users can add spending r
 Additionally, users can sort records by all their attributes and create bar charts to visualize the expenses.
 
 <figure>
-    <img src="./docs/bar-chart.jpg" width="500" height="277.83">
+    <img src="./docs/bar-chart.jpg" width="700" height="388.96">
     <figcaption>Bar chart showing records created in a specific time period</figcaption>
 </figure>
+
+---
+
 <figure>
-    <img src="./docs/stacked-bar-chart.jpg" width="500" height="277.83 ">
+    <img src="./docs/stacked-bar-chart.jpg" width="700" height="388.96">
     <figcaption>Stacked bar chart showing all records</figcaption>
 </figure>
+
+---
 
 ### How to run
 1. `java -version`: has to be Java 8
