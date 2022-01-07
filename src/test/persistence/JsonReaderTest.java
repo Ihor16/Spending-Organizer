@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class JsonReaderTest {
 
     @ParameterizedTest
-    @ValueSource(strings = {"./data/noFile", "./data/myFile.txt", "./data/f123124ile.json"})
+    @ValueSource(strings = {"./data/testing/noFile", "./data/testing/myFile.txt", "./data/testing/f123124ile.json"})
     void testReadInvalidPath(String path) {
         JsonReader reader = new JsonReader(path);
         assertThrows(IOException.class, reader::read);
@@ -21,8 +21,8 @@ class JsonReaderTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
-            "./data/testReadCorruptCategories.json",
-            "./data/testReadCorruptCategoriesInRecords.json"
+            "./data/testing/testReadCorruptCategories.json",
+            "./data/testing/testReadCorruptCategoriesInRecords.json"
     })
     void testReaderCorruptedCategories(String path) {
         JsonReader reader = new JsonReader(path);
@@ -31,14 +31,14 @@ class JsonReaderTest {
 
     @Test
     void testReaderCorruptedAmountInSpendingList() {
-        String path = "./data/testReaderCorruptedAmountInSpendingList.json";
+        String path = "./data/testing/testReaderCorruptedAmountInSpendingList.json";
         JsonReader reader = new JsonReader(path);
         assertThrows(NegativeAmountException.class, reader::read);
     }
 
     @Test
     void testReaderCorruptedTitleInSpendingList() {
-        String path = "./data/testReaderCorruptedTitleInSpendingList.json";
+        String path = "./data/testing/testReaderCorruptedTitleInSpendingList.json";
         JsonReader reader = new JsonReader(path);
         assertThrows(NameException.class, reader::read);
     }

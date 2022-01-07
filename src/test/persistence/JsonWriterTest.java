@@ -1,6 +1,8 @@
 package persistence;
 
-import model.Entry;
+import model.Categories;
+import model.Category;
+import model.Record;
 import model.SpendingList;
 import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
@@ -20,8 +22,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class JsonWriterTest {
 
     private SpendingList spToWrite;
-    private Entry entryTravel;
-    private Entry entryGroceries;
+    private Record recordTravel;
+    private Record recordGroceries;
+    private Categories categories;
 
     @BeforeEach
     void setUp() {
@@ -30,7 +33,7 @@ class JsonWriterTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"./data/n|@$$oFile", "./data/myFi|\0le.txt", "./f\\s123124ile.json"})
+    @ValueSource(strings = {"./data/testing/n|@$$oFile", "./data/testing/myFi|\0le.txt", "./f\\s123124ile.json"})
     void testWriteUnacceptableFileName(String fileName) {
         JsonWriter jsonWriter = new JsonWriter(fileName);
         assertThrows(IOException.class, jsonWriter::open);
@@ -38,11 +41,18 @@ class JsonWriterTest {
 
     @Test
     void testWriteEmptyFile() {
-        String path = "./data/testWriterEmptyFile.json";
+        String path = "./data/testing/testWriterEmptyFile.json";
+        Categories categories = null;
+        try {
+            categories = new Categories();
+        } catch (NameException e) {
+            fail("Default category is actually acceptable");
+            e.printStackTrace();
+        }
 
         try (JsonWriter writer = new JsonWriter(path)){
             writer.open();
-            writer.write(new SpendingList());
+            writer.write(new SpendingList(categories));
         } catch (FileNotFoundException e) {
             fail("File actually exists");
             e.printStackTrace();
@@ -51,17 +61,25 @@ class JsonWriterTest {
         try {
             JsonReader reader = new JsonReader(path);
             SpendingList fromFile = reader.read();
-            assertEquals(new SpendingList(), fromFile);
+            assertEquals(new SpendingList(categories), fromFile);
         } catch (IOException | NegativeAmountException | NameException e) {
             fail("File exists and is not corrupted");
             e.printStackTrace();
         }
+        assertEquals(1, categories.getCategories().size());
     }
 
     @Test
     void testWriteEmptySpendingList() {
-        Stream.of(entryGroceries, entryTravel).forEach(spToWrite::removeEntry);
-        String path = "./data/testWriteEmptySpendingList.json";
+        Stream.of(recordGroceries, recordTravel).forEach(spToWrite::removeRecord);
+        String path = "./data/testing/testWriteEmptySpendingList.json";
+        Categories categories = null;
+        try {
+            categories = new Categories();
+        } catch (NameException e) {
+            fail("Default category is actually acceptable");
+            e.printStackTrace();
+        }
 
         try (JsonWriter writer = new JsonWriter(path)){
             writer.open();
@@ -79,36 +97,12 @@ class JsonWriterTest {
             fail("File exists and is not corrupted");
             e.printStackTrace();
         }
-    }
-
-    @Test
-    void testWriteEmptyCategories() {
-        Stream.of(entryGroceries, entryTravel)
-                .map(Entry::getCategory)
-                .forEach(spToWrite::removeCategory);
-
-        String path = "./data/testWriteEmptyCategory.json";
-        try (JsonWriter writer = new JsonWriter(path)){
-            writer.open();
-            writer.write(spToWrite);
-        } catch (FileNotFoundException e) {
-            fail("File actually exists");
-            e.printStackTrace();
-        }
-
-        try {
-            JsonReader reader = new JsonReader(path);
-            SpendingList fromFile = reader.read();
-            assertEquals(spToWrite, fromFile);
-        } catch (IOException | NegativeAmountException | NameException e) {
-            fail("File exists and is not corrupted");
-            e.printStackTrace();
-        }
+        assertEquals(1, categories.getCategories().size());
     }
 
     @Test
     void testWriteRegularFile() {
-        String path = "./data/testWriteRegularFile.json";
+        String path = "./data/testing/testWriteRegularFile.json";
 
         try (JsonWriter writer = new JsonWriter(path)){
             writer.open();
@@ -121,7 +115,40 @@ class JsonWriterTest {
         try {
             JsonReader reader = new JsonReader(path);
             SpendingList fromFile = reader.read();
-            assertEquals(spToWrite, fromFile);
+            assertEquals(spToWrite.getCategories(), fromFile.getCategories());
+            assertEquals(spToWrite.getRecords(), fromFile.getRecords());
+        } catch (IOException | NegativeAmountException | NameException e) {
+            fail("File exists and is not corrupted");
+            e.printStackTrace();
+        }
+        assertEquals(3, categories.getCategories().size());
+    }
+
+    @Test
+    void testWriteRegularFileChangedDefaultCategory() {
+        String path = "./data/testing/testWriteRegularFileChangedDefaultCategory.json";
+        try {
+            new Category("new default", categories, true, true);
+        } catch (NameException e) {
+            fail("Not the case: " + e.getMessage());
+        }
+
+        try (JsonWriter writer = new JsonWriter(path)){
+            writer.open();
+            writer.write(spToWrite);
+        } catch (FileNotFoundException e) {
+            fail("File actually exists");
+            e.printStackTrace();
+        }
+
+        try {
+            JsonReader reader = new JsonReader(path);
+            SpendingList fromFile = reader.read();
+            assertEquals(spToWrite.getRecords(), fromFile.getRecords());
+            assertNotEquals(spToWrite.getCategories().getDefaultCategory(),
+                    fromFile.getCategories().getDefaultCategory());
+            assertEquals(spToWrite.getCategories().getCategories().size() - 1,
+                    fromFile.getCategories().getCategories().size());
         } catch (IOException | NegativeAmountException | NameException e) {
             fail("File exists and is not corrupted");
             e.printStackTrace();
@@ -131,9 +158,12 @@ class JsonWriterTest {
     // EFFECTS: inits test entries
     private void initEntries() {
         try {
-            entryTravel = new Entry("Went to Toronto", 401.34, "Travel");
+            categories = new Categories();
+            Category categoryTravel = new Category("Travel", categories);
+            Category categoryGroceries = new Category("Groceries", categories);
+            recordTravel = new Record("Went to Toronto", 401.34, categoryTravel);
             Thread.sleep(10);
-            entryGroceries = new Entry("Went to SaveOnFoods", 100.76, "Groceries");
+            recordGroceries = new Record("Went to SaveOnFoods", 100.76, categoryGroceries);
             Thread.sleep(10);
         } catch (NameException | NegativeAmountException | InterruptedException e) {
             e.printStackTrace();
@@ -141,11 +171,11 @@ class JsonWriterTest {
     }
 
     private void initSpendingList() {
-        spToWrite = new SpendingList();
+        spToWrite = new SpendingList(categories);
         try {
-            spToWrite.addEntry(entryTravel);
+            spToWrite.addRecord(recordTravel);
             Thread.sleep(10);
-            spToWrite.addEntry(entryGroceries);
+            spToWrite.addRecord(recordGroceries);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

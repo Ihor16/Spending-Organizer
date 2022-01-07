@@ -1,0 +1,41 @@
+{
+  "records": [
+    {
+      "amount": -1,
+      "timeAdded": "2021-11-04T23:55:58.125",
+      "title": "Went to SaveOnFoods",
+      "category": {
+        "name": "Groceries",
+        "isDefault": false,
+        "isShown": true
+      }
+    },
+    {
+      "amount": 401.34,
+      "timeAdded": "2021-11-04T23:55:58.106",
+      "title": "Went to Toronto",
+      "category": {
+        "name": "Travel",
+        "isDefault": false,
+        "isShown": true
+      }
+    }
+  ],
+  "categories": [
+    {
+      "name": "Travel",
+      "isDefault": false,
+      "isShown": true
+    },
+    {
+      "name": "undefined",
+      "isDefault": false,
+      "isShown": true
+    },
+    {
+      "name": "Groceries",
+      "isDefault": false,
+      "isShown": true
+    }
+  ]
+}

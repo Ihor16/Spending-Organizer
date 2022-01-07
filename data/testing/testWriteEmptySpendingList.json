@@ -1,0 +1,20 @@
+{
+  "records": [],
+  "categories": [
+    {
+      "isDefault": true,
+      "name": "default",
+      "isShown": true
+    },
+    {
+      "isDefault": false,
+      "name": "Travel",
+      "isShown": true
+    },
+    {
+      "isDefault": false,
+      "name": "Groceries",
+      "isShown": true
+    }
+  ]
+}

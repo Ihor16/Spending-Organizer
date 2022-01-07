@@ -1,147 +1,206 @@
 package model;
 
-import model.exceptions.NameException;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import persistence.Writable;
+import persistence.WritableObject;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-// Represents the list of spending entries
-public class SpendingList implements Writable {
+// Class representing list of spending records
+// INVARIANT: Categories is constructed first,
+//            categories of records is a subset of categories in Categories,
+//            filteredRecords is a subset of records
+public class SpendingList implements WritableObject {
 
-    private LinkedList<Entry> spendingList;
-    private SortedSet<String> categories;
+    private final ObservableList<Record> records;
+    private final ObservableList<Record> filteredRecords;
+    private final Categories categories;
+    private final EventLog log = EventLog.getInstance();
 
-    // EFFECTS: creates empty spending list and empty categories set
-    public SpendingList() {
-        spendingList = new LinkedList<>();
-        categories = new TreeSet<>();
+    public SpendingList(Categories categories) {
+        this.categories = categories;
+        this.records = FXCollections.observableArrayList();
+        this.filteredRecords = FXCollections.observableArrayList();
+        log.logEvent(new Event("New SpendingList created: " + this));
     }
 
     // MODIFIES: this
-    // EFFECTS: adds a new entry to the front of the spending list,
-    //          adds this entry's category to the categories set
-    // INVARIANT: entry is valid
-    public void addEntry(Entry entry) {
-        spendingList.addFirst(entry);
-        // since categories is a set, it won't contain duplicates
-        categories.add(entry.getCategory());
+    // EFFECTS: adds a new record to the front of the records list
+    // INVARIANT: record is valid
+    public void addRecord(Record record) {
+        records.add(0, record);
+        log.logEvent(new Event("New Record added: " + record));
     }
 
     // MODIFIES: this
-    // EFFECTS: trims category and adds it to the set,
-    //          throws NameException if category is blank
-    public void addCategory(String category) throws NameException {
-        if (isBlank(category)) {
-            throw new NameException("category");
+    // TODO: rewrite the filtered list documentation
+    // EFFECTS: removes record from records list and returns true if the record is removed
+    // INVARIANT: record exists in the list
+    public boolean removeRecord(Record record) {
+        if (records.remove(record)) {
+            log.logEvent(new Event("Removed this record: " + record));
+            return true;
+        } else {
+            return false;
         }
-        categories.add(category.trim());
     }
 
-    // REQUIRES: entry exists in the list
-    // MODIFIES: this
-    // EFFECTS: removes entry from spending list and returns true if the entry is removed
-    public boolean removeEntry(Entry entry) {
-        return spendingList.remove(entry);
+
+    // EFFECTS: returns list of dates of this.records,
+    //          list is sorted by date (from more recent to less recent)
+    public List<LocalDate> getDates() {
+        return records.stream()
+                .map(Record::getTimeAdded)
+                .map(LocalDateTime::toLocalDate)
+                .map(t -> t.withDayOfMonth(1))
+                .distinct()
+                .sorted(Comparator.reverseOrder())
+                .collect(Collectors.toList());
     }
 
-    // REQUIRES: category exists in the list
-    // MODIFIES: this
-    // EFFECTS: removes category from the set and returns true if the category is removed
-    public boolean removeCategory(String category) {
-        return categories.remove(category);
+    // EFFECTS: filters records that occur in [from, to] time range, and
+    //          returns a map of these records grouped by category, i.e.,
+    //          {category: sum of amounts of all records that have this category};
+    //          returned map is sorted by values (amounts)
+    public Map<String, Double> groupByCategory(LocalDate from, LocalDate to) {
+        List<Record> filteredRecords = filterRecordsByDate(from, to);
+        Map<String, Double> map = filteredRecords.stream()
+                .collect(Collectors.groupingBy(r -> r.getCategory().getName(),
+                        Collectors.summingDouble(Record::getAmount)));
+        return sortMapByValue(map);
     }
 
-    // EFFECTS: returns entry from the spending list at the given index,
-    //          throws IndexOutOfBoundsException if index is out of the range
-    public Entry getEntry(int index) throws IndexOutOfBoundsException {
-        return spendingList.get(index);
+    // EFFECTS: filters records that were added in the given month, and does
+    //          same as groupByCategory(LocalDate from, LocalDate to),
+    //          if user selects LocalDate.MIN, treat as if they want to group all records
+    public Map<String, Double> groupByCategory(LocalDate month) {
+        if (month.equals(LocalDate.MIN)) {
+            return groupByCategory(LocalDate.MIN, LocalDate.MAX);
+        } else {
+            return groupByCategory(month.withDayOfMonth(1), month.withDayOfMonth(month.lengthOfMonth()));
+        }
     }
 
-    public Set<String> getCategories() {
+    // EFFECTS: filters records that occur in [from, to] time range, and
+    //          returns a map of these records grouped by category and date added, i.e.,
+    //          {Category:
+    //              {Date record was added (LocalDate that starts at first day of month):
+    //                  sum of amounts of all records that have this category and were added in this month
+    //               }}
+    //          returned map is sorted by date (from older to newer)
+    public Map<String, Map<LocalDate, Double>> groupByCategoryAndDate(LocalDate from, LocalDate to) {
+        List<Record> filteredRecords = filterRecordsByDate(from, to);
+        Map<String, List<Record>> groupedByCategories = makeMap(filteredRecords);
+        sortByDate(groupedByCategories);
+
+        return groupByDate(groupedByCategories);
+    }
+
+    // EFFECTS: filters records that were added in month, and
+    //          same as groupByCategoryAndDate(LocalDate from, LocalDate to)
+    //          if user selects LocalDate.MIN, treat as if they want to group all records
+    public Map<String, Map<LocalDate, Double>> groupByCategoryAndDate(LocalDate month) {
+        if (month.equals(LocalDate.MIN)) {
+            return groupByCategoryAndDate(LocalDate.MIN, LocalDate.MAX);
+        } else {
+            return groupByCategoryAndDate(month.withDayOfMonth(1), month.withDayOfMonth(month.lengthOfMonth()));
+        }
+    }
+
+    // MODIFIES: groupedByCategories
+    private void sortByDate(Map<String, List<Record>> groupedByCategories) {
+        groupedByCategories.forEach((k, v) -> v.sort(Comparator.comparing(Record::getTimeAdded).reversed()));
+    }
+
+    // EFFECTS: returns a new map that transforms unwrappedMap's List<Record> value to Map<LocalDate, Double>
+    //          LocalDate - date record was created,
+    //          Double - sum of amounts of records which were created in same month and have same category
+    private Map<String, Map<LocalDate, Double>> groupByDate(Map<String, List<Record>> unwrappedMap) {
+        Map<String, Map<LocalDate, Double>> result = new LinkedHashMap<>();
+        unwrappedMap.forEach((key, value) -> {
+            Map<LocalDate, Double> subMap = value.stream()
+                    .collect(Collectors.groupingBy(r -> r.getTimeAdded().toLocalDate().withDayOfMonth(1),
+                            Collectors.summingDouble(Record::getAmount)));
+            result.put(key, subMap);
+        });
+        return result;
+    }
+
+    public ObservableList<Record> getRecords() {
+        return records;
+    }
+
+    public Categories getCategories() {
         return categories;
     }
 
-    public List<Entry> getSpendingList() {
-        return spendingList;
+//    // TODO: implement filtering by isSelected in Record
+//    public ObservableList<Record> getFilteredRecords() {
+////        filteredRecords.clear();
+////        filteredRecords.addAll(records);
+////        records.filtered(r -> r.getCategory().equals("Groceries")).forEach(filteredRecords::add);
+//        return filteredRecords;
+//    }
+
+    // EFFECTS: returns a new list of records that are created in time interval between from and to
+    private List<Record> filterRecordsByDate(LocalDate from, LocalDate to) {
+        return records.stream()
+                .filter(fromToPredicate(from, to))
+                .collect(Collectors.toList());
     }
 
-    // EFFECTS: returns the size of spending list
-    public int sizeOfList() {
-        return spendingList.size();
+    // EFFECTS: returns a predicate for filtering records that occur in [from, to] time interval
+    private Predicate<Record> fromToPredicate(LocalDate from, LocalDate to) {
+        return r -> r.getTimeAdded().isAfter(from.atStartOfDay())
+                && r.getTimeAdded().isBefore(to.atTime(LocalTime.MAX));
     }
 
-    // EFFECTS: returns the size of categories set
-    public int sizeOfSet() {
-        return categories.size();
+    // EFFECTS: returns a map of records grouped by category, i.e.,
+    //          {category: list of records which have this category};
+    private Map<String, List<Record>> makeMap(List<Record> filteredRecords) {
+        return filteredRecords.stream()
+                .collect(Collectors.groupingBy(r -> r.getCategory().getName()));
     }
 
-    // EFFECTS: returns true if the spending list is empty,
-    //          false otherwise
-    public boolean isEmptyList() {
-        return spendingList.isEmpty();
-    }
-
-    // MODIFIES: this
-    // EFFECTS: sorts spending list by amount spent in descending order (from most expensive to least expensive)
-    public void sortByAmountSpent() {
-        sort(Comparator.comparing(Entry::getAmount).reversed());
-    }
-
-    // MODIFIES: this
-    // EFFECTS: sorts spending list by date added (from newer to older)
-    public void sortByDate() {
-        sort(Comparator.comparing(Entry::getTimeAdded).reversed());
-    }
-
-    // MODIFIES: this
-    // EFFECTS: sorts spending list by category in alphabetical order
-    public void sortByCategory() {
-        sort(Comparator.comparing(Entry::getCategory));
-    }
-
-    // MODIFIES: this
-    // EFFECTS: sorts spending list according to comparator
-    private void sort(Comparator<Entry> comparator) {
-        spendingList = spendingList.stream()
-                .sorted(comparator)
-                .collect(Collectors.toCollection(LinkedList::new));
+    // EFFECTS: returns a new map, which is a sorted by value
+    // Implementation is based on: https://mkyong.com/java/how-to-sort-a-map-in-java/
+    private <K, V extends Comparable<? super V>> Map<K, V> sortMapByValue(Map<K, V> map) {
+        return map.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
     }
 
     @Override
+    // EFFECTS: returns this as Json Object
     public JSONObject toJsonObject() {
         JSONObject json = new JSONObject();
-        json.put("categories", categoriesToJsonArray());
-        json.put("records", entriesToJsonArray());
+        json.put("records", recordsToJsonArray());
+        json.put("categories", categories.toJsonArray());
         return json;
     }
 
-    // EFFECTS: returns entries from this list as Json Array
-    private JSONArray entriesToJsonArray() {
+    // EFFECTS: returns records from this list as Json Array
+    private JSONArray recordsToJsonArray() {
         JSONArray jsonArray = new JSONArray();
-        for (Entry entry : spendingList) {
-            jsonArray.put(entry.toJsonObject());
+        for (Record record : records) {
+            jsonArray.put(record.toJsonObject());
         }
         return jsonArray;
     }
 
-    // EFFECTS: returns categories as Json Array
-    private JSONArray categoriesToJsonArray() {
-        JSONArray jsonArray = new JSONArray();
-        for (String c : categories) {
-            jsonArray.put(c);
-        }
-        return jsonArray;
-    }
-
-    // EFFECTS: returns true if provided string is blank,
-    //          false otherwise
-    private boolean isBlank(String str) {
-        // implementation of removing whitespaces is taken from
-        // https://stackoverflow.com/questions/5455794/removing-whitespace-from-strings-in-java
-        return str.replaceAll("[\\s]+", "").isEmpty();
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", SpendingList.class.getSimpleName() + "[", "]")
+                .add("records=" + records)
+                .add("categories=" + categories.toString())
+                .toString();
     }
 
     @Override
@@ -152,19 +211,19 @@ public class SpendingList implements Writable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
+
         SpendingList that = (SpendingList) o;
-        return Objects.equals(spendingList, that.spendingList);
+
+        if (!records.equals(that.records)) {
+            return false;
+        }
+        return categories.getCategories().equals(that.categories.getCategories());
     }
 
     @Override
     public int hashCode() {
-        return spendingList != null ? spendingList.hashCode() : 0;
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", SpendingList.class.getSimpleName() + "[", "]")
-                .add("spendingList=" + spendingList)
-                .toString();
+        int result = records.hashCode();
+        result = 31 * result + categories.hashCode();
+        return result;
     }
 }

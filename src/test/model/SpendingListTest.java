@@ -4,209 +4,155 @@ import model.exceptions.NameException;
 import model.exceptions.NegativeAmountException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class SpendingListTest {
 
-    private final String GROCERIES_CATEGORY = "Groceries";
-    private final String TRAVEL_CATEGORY = "Travel";
+    private Category groceriesCategory;
+    private Category travelCategory;
+    private Category notAddedCategory;
+    private Categories categories;
+
     private SpendingList spendingList;
-    private Entry entryTravel;
-    private Entry entryGroceries;
-    private Entry notAddedEntry;
+
+    private Record recordTravel;
+    private Record recordGroceries;
+    private Record notAddedRecord;
 
     @BeforeEach
     void setUp() {
-        spendingList = new SpendingList();
-        initEntries();
-        spendingList.addEntry(entryTravel);
-        spendingList.addEntry(entryGroceries);
+        try {
+            categories = new Categories();
+        } catch (NameException e) {
+            e.printStackTrace();
+        }
+        spendingList = new SpendingList(categories);
+        initCategories();
+        initRecords();
+        spendingList.addRecord(recordTravel);
+        spendingList.addRecord(recordGroceries);
     }
 
     @Test
     void testConstructor() {
-        assertTrue(new SpendingList().isEmptyList());
-        assertTrue(new SpendingList().getCategories().isEmpty());
+        assertTrue(new SpendingList(categories).getRecords().isEmpty());
     }
 
     @Test
-    void testAddEntrySameCategory() {
-        int previousListSize = spendingList.sizeOfList();
-        try {
-            notAddedEntry.setCategory(TRAVEL_CATEGORY);
-        } catch (NameException e) {
-            fail("Category name is actually fine");
-        }
-        spendingList.addEntry(notAddedEntry);
+    void testAddRecord() {
+        int oldSize = spendingList.getRecords().size();
+        Categories oldCategories = categories;
 
-        assertEquals(previousListSize + 1, spendingList.sizeOfList());
-        assertEquals(notAddedEntry, spendingList.getSpendingList().get(0));
-        assertTrue(spendingList.getCategories().contains(TRAVEL_CATEGORY));
-        assertEquals(previousListSize, spendingList.sizeOfSet());
+        notAddedRecord.setCategory(travelCategory);
+        spendingList.addRecord(notAddedRecord);
+
+        assertEquals(oldSize + 1, spendingList.getRecords().size());
+        assertEquals(notAddedRecord, spendingList.getRecords().get(0));
+        assertTrue(categories.getCategories().contains(notAddedCategory));
+        // Since we add existing category, set of categories doesn't change
+        assertEquals(oldCategories, categories);
     }
 
     @Test
-    void testAddEntryNewCategory() {
-        int previousListSize = spendingList.sizeOfList();
-        spendingList.addEntry(notAddedEntry);
+    void testRemoveRecord() {
+        int oldSize = spendingList.getRecords().size();
+        Categories oldCategories = categories;
 
-        assertEquals(previousListSize + 1, spendingList.sizeOfList());
-        assertEquals(notAddedEntry, spendingList.getSpendingList().get(0));
-        assertTrue(spendingList.getCategories().contains(notAddedEntry.getCategory()));
-        assertEquals(previousListSize + 1, spendingList.sizeOfSet());
+        assertTrue(spendingList.removeRecord(recordGroceries));
+        assertEquals(oldSize - 1, spendingList.getRecords().size());
+        // Since we remove a record, set of categories doesn't change
+        assertEquals(oldCategories, categories);
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"New Category", "        New Category       "})
-    void testAddCategoryNewCategory(String category) {
-        int previousSetSize = spendingList.sizeOfSet();
+    @Test
+    void testEqualsReference() {
+        SpendingList list = spendingList;
+        assertEquals(spendingList, list);
+    }
+
+    @Test
+    void testEqualsNullOrDiffObject() {
+        assertNotEquals(spendingList, null);
+        assertNotEquals(spendingList, new ArrayList<String>());
+    }
+
+    @Test
+    void testEqualsDiffRecords() {
+        SpendingList list = new SpendingList(categories);
         try {
-            spendingList.addCategory(category);
+            Record record = new Record(recordTravel.getTitle() + "...", recordTravel.getAmount(),
+                    recordTravel.getCategory());
+
+            list.getRecords().addAll(spendingList.getRecords());
+            list.addRecord(record);
         } catch (NameException e) {
-            fail("Category is actually acceptable");
+            fail("Title is actually valid");
             e.printStackTrace();
-        }
-        assertEquals(previousSetSize + 1, spendingList.sizeOfSet());
-        assertTrue(spendingList.getCategories().contains(category.trim()));
-    }
-
-    @Test
-    void testAddCategorySameCategory() {
-        int previousSetSize = spendingList.sizeOfSet();
-        try {
-            spendingList.addCategory(GROCERIES_CATEGORY);
-            spendingList.addCategory(GROCERIES_CATEGORY + "      ");
-        } catch (NameException e) {
-            fail("Category is actually acceptable");
-            e.printStackTrace();
-        }
-        assertEquals(previousSetSize, spendingList.sizeOfSet());
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"", "        "})
-    void testAddCategoryThrowNameException(String category) {
-        assertThrows(NameException.class, () -> spendingList.addCategory(category));
-    }
-
-    @Test
-    void testRemoveEntry() {
-        int previousSetSize = spendingList.sizeOfSet();
-        assertTrue(spendingList.removeEntry(entryGroceries));
-        assertEquals(1, spendingList.sizeOfList());
-        assertEquals(previousSetSize, spendingList.sizeOfSet());
-    }
-
-    @Test
-    void testRemoveCategory() {
-        assertTrue(spendingList.removeCategory(entryGroceries.getCategory()));
-        assertFalse(spendingList.getCategories().contains(entryGroceries.getCategory()));
-    }
-
-    @Test
-    void testGetEntry() {
-        assertEquals(spendingList.getSpendingList().get(0), spendingList.getEntry(0));
-    }
-
-    @Test
-    void testSortEmptyList() {
-        SpendingList newList = new SpendingList();
-        newList.sortByDate();
-        assertTrue(newList.isEmptyList());
-
-        newList.sortByCategory();
-        assertTrue(newList.isEmptyList());
-
-        newList.sortByAmountSpent();
-        assertTrue(newList.isEmptyList());
-    }
-
-    @Test
-    void testSortByDate() {
-        List<Entry> expectedList = spendingList.getSpendingList();
-        spendingList.sortByDate();
-        assertEquals(expectedList, spendingList.getSpendingList());
-    }
-
-    @Test
-    void testSortByDateManuallyAddNewEntry() {
-        Entry manualEntry = null;
-        try {
-            manualEntry = new Entry();
-            manualEntry.setTitle("Jeans");
-            manualEntry.setAmount(560);
-            manualEntry.setCategory("Clothes");
-            spendingList.addEntry(manualEntry);
         } catch (NegativeAmountException e) {
-            fail("Amount is actually acceptable");
-            e.printStackTrace();
-        } catch (NameException e) {
-            fail("Title and category are actually acceptable");
+            fail("Amount is actually valid");
             e.printStackTrace();
         }
-        List<Entry> expectedList = Arrays.asList(manualEntry, entryGroceries, entryTravel);
-        spendingList.sortByDate();
-        assertEquals(expectedList, spendingList.getSpendingList());
+
+        assertNotEquals(spendingList, list);
     }
 
     @Test
-    void testSortByAmountSpent() {
-        spendingList.addEntry(notAddedEntry);
-        List<Entry> expectedList = Arrays.asList(notAddedEntry, entryTravel, entryGroceries);
-        spendingList.sortByAmountSpent();
-        assertEquals(expectedList, spendingList.getSpendingList());
+    void testEqualsSameList() {
+        SpendingList list = new SpendingList(categories);
+        list.getRecords().addAll(spendingList.getRecords());
+        assertEquals(spendingList, list);
     }
 
     @Test
-    void testSortByAmountSpentSameAmount() {
+    void testHashCode() {
+        SpendingList list = new SpendingList(categories);
+        list.getRecords().addAll(spendingList.getRecords());
+        assertEquals(spendingList.hashCode(), list.hashCode());
+    }
+
+    @Test
+    void testToString() {
+        SpendingList spendingList = null;
         try {
-            notAddedEntry.setAmount(entryGroceries.getAmount());
-            spendingList.addEntry(notAddedEntry);
-        } catch (NegativeAmountException e) {
-            fail("Amount is actually acceptable");
-        }
-        spendingList.sortByAmountSpent();
-        List<Entry> expectedList = Arrays.asList(entryTravel, notAddedEntry, entryGroceries);
-        assertEquals(expectedList, spendingList.getSpendingList());
-    }
-
-    @Test
-    void testSortByCategory() {
-        spendingList.sortByCategory();
-        List<Entry> expectedList = Arrays.asList(entryGroceries, entryTravel);
-        assertEquals(expectedList, spendingList.getSpendingList());
-    }
-
-    @Test
-    void testSortByCategorySameCategory() {
-        try {
-            notAddedEntry.setCategory(TRAVEL_CATEGORY);
-            spendingList.addEntry(notAddedEntry);
+            spendingList = new SpendingList(new Categories());
         } catch (NameException e) {
-            fail("Category name is actually acceptable");
+            fail("Default category is actually acceptable");
+            e.printStackTrace();
         }
-        spendingList.sortByCategory();
-        List<Entry> expectedList = Arrays.asList(entryGroceries, notAddedEntry, entryTravel);
-        assertEquals(expectedList, spendingList.getSpendingList());
+        spendingList.addRecord(recordTravel);
+        String expected;
+        expected = SpendingList.class.getSimpleName() + "[" +
+                "records=[" +
+                "Record[title=" + recordTravel.getTitle() + ", amount=" + recordTravel.getAmount() + ", category=" +
+                "Category[name=" + travelCategory.getName() + "], timeAdded=" + recordTravel.getTimeAdded() + "]], " +
+                "categories=" + Categories.class.getSimpleName() + "[categories=[" +
+                "Category[name=default]]]]";
+        assertEquals(expected, spendingList.toString());
     }
 
-    // EFFECTS: inits test entries
-    private void initEntries() {
+    // EFFECTS: inits test records
+    private void initRecords() {
         try {
-            entryTravel = new Entry("Went to Toronto", 401.34, TRAVEL_CATEGORY);
+            recordTravel = new Record("Went to Toronto", 401.34, travelCategory);
             Thread.sleep(10);
-            entryGroceries = new Entry("Went to SaveOnFoods", 100.76, GROCERIES_CATEGORY);
+            recordGroceries = new Record("Went to SaveOnFoods", 100.76, groceriesCategory);
             Thread.sleep(10);
-            notAddedEntry = new Entry("Other entry",
-                    Math.max(entryTravel.getAmount(), entryGroceries.getAmount()) * 10,
-                    "Ze New Category");
+            notAddedRecord = new Record("Other record", recordTravel.getAmount() * 195, notAddedCategory);
         } catch (NameException | NegativeAmountException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // EFFECTS: inits test categories
+    private void initCategories() {
+        try {
+            groceriesCategory = new Category("Groceries", categories);
+            travelCategory = new Category("Travel", categories);
+            notAddedCategory = new Category("Not added category ...", categories);
+        } catch (NameException e) {
             e.printStackTrace();
         }
     }

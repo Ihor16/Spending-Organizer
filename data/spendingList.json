@@ -1,0 +1,171 @@
+{
+  "records": [
+    {
+      "amount": 101,
+      "timeAdded": "2021-08-06T15:37:27.411",
+      "title": "Went to Save On",
+      "category": {
+        "isDefault": false,
+        "name": "Groceries",
+        "isShown": true
+      }
+    },
+    {
+      "amount": 70,
+      "timeAdded": "2021-08-01T18:12:06.411",
+      "title": "Cinema",
+      "category": {
+        "isDefault": false,
+        "name": "Recreation & Entertainment",
+        "isShown": true
+      }
+    },
+    {
+      "amount": 700,
+      "timeAdded": "2021-06-12T03:18:49.411",
+      "title": "Went to Victoria",
+      "category": {
+        "isDefault": false,
+        "name": "Travel",
+        "isShown": true
+      }
+    },
+    {
+      "amount": 80,
+      "timeAdded": "2021-06-08T03:09:14.411",
+      "title": "Theatre",
+      "category": {
+        "isDefault": false,
+        "name": "Recreation & Entertainment",
+        "isShown": true
+      }
+    },
+    {
+      "amount": 900,
+      "timeAdded": "2021-05-24T14:59:58.411",
+      "title": "Housing",
+      "category": {
+        "isDefault": false,
+        "name": "Housing Fee",
+        "isShown": true
+      }
+    },
+    {
+      "amount": 90,
+      "timeAdded": "2021-05-16T13:28:32.411",
+      "title": "No Frills",
+      "category": {
+        "isDefault": false,
+        "name": "Groceries",
+        "isShown": true
+      }
+    },
+    {
+      "amount": 500,
+      "timeAdded": "2021-05-08T20:40:35.411",
+      "title": "Visited Montreal",
+      "category": {
+        "isDefault": false,
+        "name": "Travel",
+        "isShown": true
+      }
+    },
+    {
+      "amount": 98,
+      "timeAdded": "2021-03-27T22:41:16.411",
+      "title": "Shorts & T-Shirt",
+      "category": {
+        "isDefault": false,
+        "name": "Clothing",
+        "isShown": true
+      }
+    },
+    {
+      "amount": 1234,
+      "timeAdded": "2021-03-19T20:34:11.411",
+      "title": "Housing record",
+      "category": {
+        "isDefault": false,
+        "name": "Housing Fee",
+        "isShown": true
+      }
+    },
+    {
+      "amount": 120,
+      "timeAdded": "2021-03-06T03:53:12.411",
+      "title": "Jeans",
+      "category": {
+        "isDefault": false,
+        "name": "Clothing",
+        "isShown": true
+      }
+    }
+  ],
+  "categories": [
+    {
+      "isDefault": true,
+      "name": "default",
+      "isShown": true
+    },
+    {
+      "isDefault": false,
+      "name": "Travel",
+      "isShown": true
+    },
+    {
+      "isDefault": false,
+      "name": "Food",
+      "isShown": true
+    },
+    {
+      "isDefault": false,
+      "name": "Utilities",
+      "isShown": true
+    },
+    {
+      "isDefault": false,
+      "name": "Insurance",
+      "isShown": true
+    },
+    {
+      "isDefault": false,
+      "name": "Medical & Healthcare",
+      "isShown": true
+    },
+    {
+      "isDefault": false,
+      "name": "Saving, Investing, & Debt Payments",
+      "isShown": true
+    },
+    {
+      "isDefault": false,
+      "name": "Personal Spending",
+      "isShown": true
+    },
+    {
+      "isDefault": false,
+      "name": "Recreation & Entertainment",
+      "isShown": true
+    },
+    {
+      "isDefault": false,
+      "name": "Miscellaneous",
+      "isShown": true
+    },
+    {
+      "isDefault": false,
+      "name": "Groceries",
+      "isShown": true
+    },
+    {
+      "isDefault": false,
+      "name": "Clothing",
+      "isShown": true
+    },
+    {
+      "isDefault": false,
+      "name": "Housing Fee",
+      "isShown": true
+    }
+  ]
+}
