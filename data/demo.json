@@ -2,18 +2,18 @@
   "records": [
     {
       "amount": 50,
-      "timeAdded": "2021-11-07T23:34:18.520",
-      "title": "Phone 2",
+      "timeAdded": "2022-01-07T00:03:51.314",
+      "title": "Phone plan fee",
       "category": {
         "isDefault": false,
-        "name": "Phone plan",
+        "name": "Phone",
         "isShown": true
       }
     },
     {
       "amount": 100,
       "timeAdded": "2021-08-06T15:37:27.411",
-      "title": "Went to Save On Foods",
+      "title": "Save On Foods",
       "category": {
         "isDefault": false,
         "name": "Groceries",
@@ -33,7 +33,7 @@
     {
       "amount": 700,
       "timeAdded": "2021-06-12T03:18:49.411",
-      "title": "Victoria",
+      "title": "Toronto",
       "category": {
         "isDefault": false,
         "name": "Travel",
@@ -139,7 +139,7 @@
     },
     {
       "isDefault": false,
-      "name": "Phone plan",
+      "name": "Phone",
       "isShown": true
     },
     {
