@@ -182,7 +182,7 @@
                   </Menu>
                   <Menu mnemonicParsing="false" text="View">
                     <items>
-                      <MenuItem fx:id="changeViewMenuItem" mnemonicParsing="false" onAction="#changeSceneToChart" text="Bar chart">
+                      <MenuItem fx:id="changeViewMenuItem" disable="true" mnemonicParsing="false" onAction="#changeSceneToChart" text="Bar chart">
                            <accelerator>
                               <KeyCodeCombination alt="UP" code="B" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator></MenuItem>
