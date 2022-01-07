@@ -78,9 +78,9 @@ public class Controller implements Initializable {
     // EFFECTS: initializes application
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        currentFilePath = new SimpleStringProperty("./data/emptyFile.json");
         setUpHelper = new SetUpHelper(this);
         isChanged = new SimpleBooleanProperty(false);
-        currentFilePath = new SimpleStringProperty("./data/emptyFile.json");
         setUpHelper.setUpUI();
     }
 
