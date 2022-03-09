@@ -1,30 +1,33 @@
 # Spending Organizer
+An application that allows to organize spending
 
 <img src="./docs/main-view.jpg" width="700" height="388.96">
 
-### What does the application do?
-It allows users to store and categorize their spending. Users can add spending records to a list and refer to it later to check how much they spend every month. Spending record consists of "Title", "Amount Spent", and "Category of spending" (e.g. "Went to NoFrills" | 70 CAD | Groceries).
-
-Additionally, users can sort records by all their attributes and create bar charts to visualize the expenses.
+## What you can do
+* Modify the spending list by adding and removing spending categories and records
+* Edit the existing spending records
+* Sort the records by any column 
+* Visualize your spending list by categories or by a period of time
+* Save your spending list to a file and load from it to continue adding new records
 
 <figure>
     <img src="./docs/bar-chart.jpg" width="700" height="388.96">
-    <figcaption>Bar chart showing records created in a specific time period</figcaption>
+    <figcaption>Visualizing records by a specific time period</figcaption>
 </figure>
 
 ---
-
 <figure>
     <img src="./docs/stacked-bar-chart.jpg" width="700" height="388.96">
-    <figcaption>Stacked bar chart showing all records</figcaption>
+    <figcaption>Stacked bar chart of all records</figcaption>
 </figure>
 
 ---
+## How to run
+You need to have Java 17 and Maven installed
+* `git clone https://github.com/Ihor16/Spending-Tracker.git`
+* `mvn install`
+* `java -jar ./target/spending-organizer-1.0-SNAPSHOT.jar`
 
-### How to run
-1. `java -version`: has to be Java 8
-2. `git clone https://github.com/Ihor16/Spending-Tracker.git`
-3. `java -jar ./artifacts/Project_Starter_jar/Project-Starter.jar`
-
-### Project Stages
+---
+## Project development stages
 Read more [here](./docs/project-stages.md)

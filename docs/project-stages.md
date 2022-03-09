@@ -1,9 +1,8 @@
-## Project Stages
-Below you can find a list of features that were implemented during each stage of the project development so far
+# Project Stages
+Below you can find a list of features that I implemented during each stage of the project development so far
 
-### Stage 1: Console implementation with basic functionality
+## Stage 1: Console implementation with basic functionality
 User can:
-
 1. Add new spending records
 2. Remove an existing record
 3. View all records added
@@ -17,13 +16,13 @@ User can:
     3. Category
 ---
 
-### Stage 2: Data Persistence
+## Stage 2: Data Persistence
 User can:
 1. Save financial list to a file (before exiting, the program asks them if they want to save or not)
 2. Open saved financial list and continue working on it
 ---
 
-### Stage 3: GUI and Charts
+## Stage 3: GUI and Charts
 User can:
 
 1. Use all previous functionality but now in a nice GUI
@@ -44,8 +43,8 @@ User can:
 14. Keep settings in each view unchanged when they change views
 
 ---
-### Phase 4: Logging
-1. Added simple logging
+## Phase 4: Logging
+1. Added simple logging based on the provided UBC CPSC 210 logging implementation
 
 Console output example after using the app
 ````
@@ -67,42 +66,4 @@ Mon Nov 22 19:05:40 PST 2021
 Record's category set to: Category[name=Travel]
 Mon Nov 22 19:05:50 PST 2021
 New Record added: Record[title=Went to Toronto, amount=700.0, category=Category[name=Travel], timeAdded=2021-11-22T19:05:50.590]
-Mon Nov 22 19:05:55 PST 2021
-NameException thrown because new Record's name is blank
-Mon Nov 22 19:06:04 PST 2021
-Record's title set to: SaveOn
-Mon Nov 22 19:06:11 PST 2021
-NegativeAmountException thrown because new Record's amount is < 0
-Mon Nov 22 19:06:17 PST 2021
-Record's amount set to: 84.14
-Mon Nov 22 19:06:32 PST 2021
-New Category added: Cloting
-Mon Nov 22 19:06:37 PST 2021
-Category's name changed to Clothing
-Mon Nov 22 19:06:50 PST 2021
-New Record added: Record[title=T-Shirt, amount=30.0, category=Category[name=Clothing], timeAdded=2021-11-22T19:06:50.673]
-Mon Nov 22 19:06:54 PST 2021
-Record's category set to: Category[name=default]
-Mon Nov 22 19:06:57 PST 2021
-Record's category set to: Category[name=Clothing]
-Mon Nov 22 19:07:03 PST 2021
-New Record added: Record[title=Shorts, amount=80.0, category=Category[name=Clothing], timeAdded=2021-11-22T19:07:03.843]
-Mon Nov 22 19:07:14 PST 2021
-New Record added: Record[title=Jacket, amount=100.0, category=Category[name=Clothing], timeAdded=2021-11-22T19:07:14.260]
-Mon Nov 22 19:07:16 PST 2021
-Removed this record: Record[title=Shorts, amount=80.0, category=Category[name=Clothing], timeAdded=2021-11-22T19:07:03.843]
-Mon Nov 22 19:07:20 PST 2021
-Record's category set to: Category[name=default]
-Mon Nov 22 19:07:20 PST 2021
-Record's category set to: Category[name=default]
-Mon Nov 22 19:07:20 PST 2021
-Removed this category: Clothing
-Mon Nov 22 19:07:27 PST 2021
-Removed this record: Record[title=Jacket, amount=100.0, category=Category[name=default], timeAdded=2021-11-22T19:07:14.260]
-Mon Nov 22 19:07:27 PST 2021
-Removed this record: Record[title=T-Shirt, amount=30.0, category=Category[name=default], timeAdded=2021-11-22T19:06:50.673]
-Mon Nov 22 19:07:48 PST 2021
-NameException thrown because new Category's name is blank
-Mon Nov 22 19:08:13 PST 2021
-Category's name changed to Supermarket groceries
 ````
