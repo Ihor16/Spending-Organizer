@@ -17,7 +17,7 @@ public class Category implements WritableObject {
     private final EventLog log = EventLog.getInstance();
 
     public Category(String name, Categories categories) throws NameException {
-        if (isBlank(name)) {
+        if (name.isBlank()) {
             throw new NameException("category");
         }
         this.name = new SimpleStringProperty(name.trim());
@@ -29,7 +29,7 @@ public class Category implements WritableObject {
     // REQUIRED: used only when reading from Json file or initializing a default category
     public Category(String name, Categories categories, boolean isShown, boolean isDefault)
             throws NameException {
-        if (isBlank(name)) {
+        if (name.isBlank()) {
             throw new NameException("category");
         }
         this.name = new SimpleStringProperty(name.trim());
@@ -51,14 +51,15 @@ public class Category implements WritableObject {
     //          throws NameException if provided name is invalid,
     //          throws NameException if category with provided name already exists
     public void setName(String name, Categories categories) throws NameException {
-        if (isBlank(name)) {
+        String n = name.trim();
+        if (n.isBlank()) {
             log.logEvent(new Event("NameException thrown because new Category's name is blank"));
             throw new NameException("category");
-        } else if (categories.getCategoriesNames().contains(name.trim())) {
+        } else if (categories.getCategoriesNames().contains(n)) {
             log.logEvent(new Event("NameException thrown because user tried to add same category"));
             throw new NameException();
         }
-        this.name.set(name.trim());
+        this.name.set(n);
         log.logEvent(new Event("Category's name changed to " + getName()));
     }
 
@@ -77,14 +78,6 @@ public class Category implements WritableObject {
 
     public boolean isDefault() {
         return isDefault;
-    }
-
-    // EFFECTS: returns true if provided string is blank,
-    //          false otherwise
-    private boolean isBlank(String str) {
-        // implementation of removing whitespaces is taken from
-        // https://stackoverflow.com/a/5455809
-        return str.replaceAll("[\\s]+", "").isEmpty();
     }
 
     @Override

@@ -3,14 +3,14 @@ package com.ihor.spendingorganizer.model;
 import java.util.Calendar;
 import java.util.Date;
 
-
 /**
  * Represents an alarm system event.
+ * Taken from UBC CPSC 210 Logging Implementation
  */
 public class Event {
     private static final int HASH_CONSTANT = 13;
-    private Date dateLogged;
-    private String description;
+    private final Date dateLogged;
+    private final String description;
 
     /**
      * Creates an event with the given description

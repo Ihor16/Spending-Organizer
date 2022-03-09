@@ -399,7 +399,6 @@ public class SpendingListGroupingTest {
     //          [Record "Title 3", 300, "Category 3"]
     private void initFullSpendingList() {
         spendingList = new SpendingList(categories);
-
         try {
             for (int i = 1; i <= 7; i++) {
                 Record r = new Record("Title " + i, i * 100,

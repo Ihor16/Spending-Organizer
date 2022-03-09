@@ -111,14 +111,14 @@ class CategoriesTest {
     }
 
     @Test
-    void addExistingCategory() {
+    void testAddExistingCategory() {
         int oldSize = categories.getCategories().size();
         categories.add(recordCategory);
         assertEquals(oldSize, categories.getCategories().size());
     }
 
     @Test
-    void addNewCategory() {
+    void testAddNewCategory() {
         int oldSize = categories.getCategories().size();
         try {
             Category newCategory = new Category(categoryName + "...", categories);
@@ -131,14 +131,14 @@ class CategoriesTest {
     }
 
     @Test
-    void removeUndefinedCategory() {
+    void testRemoveUndefinedCategory() {
         int oldSize = categories.getCategories().size();
         categories.remove(categories.getDefaultCategory(), spendingList);
         assertEquals(oldSize, categories.getCategories().size());
     }
 
     @Test
-    void removeExistingCategory() {
+    void testRemoveExistingCategory() {
         categories.remove(recordCategory, spendingList);
 
         assertFalse(spendingList.getCategories().getCategories().contains(recordCategory));

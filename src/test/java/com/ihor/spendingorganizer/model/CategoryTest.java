@@ -8,7 +8,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -52,8 +51,7 @@ class CategoryTest {
         assertThrows(NameException.class, () -> category.setName(name, categories));
         assertFalse(categories.getCategories()
                 .stream()
-                .map(Category::getName)
-                .collect(Collectors.toList())
+                .map(Category::getName).toList()
                 .contains(name));
     }
 
@@ -117,18 +115,5 @@ class CategoryTest {
         }
         assertNotEquals(category, null);
         assertNotEquals(category, new ArrayList<>());
-    }
-
-    @Test
-    void testHashCode() {
-        try {
-            Category instanceCategory = category;
-            Category copyCategory = new Category(category.getName(), categories);
-
-            assertEquals(category.hashCode(), instanceCategory.hashCode());
-            assertEquals(category.hashCode(), copyCategory.hashCode());
-        } catch (NameException e) {
-            e.printStackTrace();
-        }
     }
 }

@@ -20,14 +20,12 @@ import java.util.stream.Collectors;
 public class SpendingList implements WritableObject {
 
     private final ObservableList<Record> records;
-    private final ObservableList<Record> filteredRecords;
     private final Categories categories;
     private final EventLog log = EventLog.getInstance();
 
     public SpendingList(Categories categories) {
         this.categories = categories;
         this.records = FXCollections.observableArrayList();
-        this.filteredRecords = FXCollections.observableArrayList();
         log.logEvent(new Event("New SpendingList created: " + this));
     }
 
@@ -40,18 +38,12 @@ public class SpendingList implements WritableObject {
     }
 
     // MODIFIES: this
-    // TODO: rewrite the filtered list documentation
     // EFFECTS: removes record from records list and returns true if the record is removed
     // INVARIANT: record exists in the list
-    public boolean removeRecord(Record record) {
-        if (records.remove(record)) {
-            log.logEvent(new Event("Removed this record: " + record));
-            return true;
-        } else {
-            return false;
-        }
+    public void removeRecord(Record record) {
+        records.remove(record);
+        log.logEvent(new Event("Removed this record: " + record));
     }
-
 
     // EFFECTS: returns list of dates of this.records,
     //          list is sorted by date (from more recent to less recent)
@@ -140,14 +132,6 @@ public class SpendingList implements WritableObject {
     public Categories getCategories() {
         return categories;
     }
-
-//    // TODO: implement filtering by isSelected in Record
-//    public ObservableList<Record> getFilteredRecords() {
-////        filteredRecords.clear();
-////        filteredRecords.addAll(records);
-////        records.filtered(r -> r.getCategory().equals("Groceries")).forEach(filteredRecords::add);
-//        return filteredRecords;
-//    }
 
     // EFFECTS: returns a new list of records that are created in time interval between from and to
     private List<Record> filterRecordsByDate(LocalDate from, LocalDate to) {

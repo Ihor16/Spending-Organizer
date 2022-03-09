@@ -36,13 +36,14 @@ public class Record implements WritableObject {
     //          throws NegativeAmountException if amount < 0
     public Record(String title, double amount, Category category) throws NameException,
             NegativeAmountException {
-        if (isBlank(title)) {
+        String t = title.trim();
+        if (t.isBlank()) {
             throw new NameException("title");
         }
         if (amount < 0) {
             throw new NegativeAmountException();
         }
-        this.title = new SimpleStringProperty(title.trim());
+        this.title = new SimpleStringProperty(t);
         this.amount = new SimpleDoubleProperty(amount);
         this.category = new SimpleObjectProperty<>(category);
         this.timeAdded = new SimpleObjectProperty<>(LocalDateTime.now());
@@ -52,11 +53,12 @@ public class Record implements WritableObject {
     // EFFECTS: trims title and assigns it to the record,
     //          throws NameException if provided title is blank
     public void setTitle(String title) throws NameException {
-        if (isBlank(title)) {
+        String t = title.trim();
+        if (t.isBlank()) {
             log.logEvent(new Event("NameException thrown because new Record's name is blank"));
             throw new NameException("title");
         }
-        this.title.set(title.trim());
+        this.title.set(t);
         log.logEvent(new Event("Record's title set to: " + getTitle()));
     }
 
@@ -113,14 +115,6 @@ public class Record implements WritableObject {
 
     public SimpleObjectProperty<LocalDateTime> timeAddedProperty() {
         return timeAdded;
-    }
-
-    // EFFECTS: returns true if provided string is blank,
-    //          false otherwise
-    private boolean isBlank(String str) {
-        // implementation of removing whitespaces is taken from
-        // https://stackoverflow.com/a/5455809
-        return str.replaceAll("[\\s]+", "").isEmpty();
     }
 
     @Override

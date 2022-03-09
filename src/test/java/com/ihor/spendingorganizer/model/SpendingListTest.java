@@ -61,7 +61,7 @@ class SpendingListTest {
         int oldSize = spendingList.getRecords().size();
         Categories oldCategories = categories;
 
-        assertTrue(spendingList.removeRecord(recordGroceries));
+        spendingList.removeRecord(recordGroceries);
         assertEquals(oldSize - 1, spendingList.getRecords().size());
         // Since we remove a record, set of categories doesn't change
         assertEquals(oldCategories, categories);

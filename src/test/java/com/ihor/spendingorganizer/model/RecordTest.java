@@ -209,20 +209,4 @@ class RecordTest {
             e.printStackTrace();
         }
     }
-
-    @Test
-    void testHashCodeSameFields() {
-        Record record;
-        try {
-            record = new Record(testRecord.getTitle(), testRecord.getAmount(), testRecord.getCategory());
-            record.setTimeAdded(testRecord.getTimeAdded().toString());
-            assertEquals(testRecord.hashCode(), record.hashCode());
-        } catch (NameException e) {
-            fail("Title is actually valid");
-            e.printStackTrace();
-        } catch (NegativeAmountException e) {
-            fail("Amount is actually valid");
-            e.printStackTrace();
-        }
-    }
 }

@@ -1,5 +1,10 @@
 package com.ihor.spendingorganizer.controllers;
 
+import com.ihor.spendingorganizer.controllers.enums.SceneEnum;
+import com.ihor.spendingorganizer.controllers.holders.SceneHolder;
+import com.ihor.spendingorganizer.controllers.holders.SpendingListHolder;
+import com.ihor.spendingorganizer.model.Category;
+import com.ihor.spendingorganizer.model.SpendingList;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -7,11 +12,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import com.ihor.spendingorganizer.model.Category;
-import com.ihor.spendingorganizer.model.SpendingList;
-import com.ihor.spendingorganizer.controllers.enums.SceneEnum;
-import com.ihor.spendingorganizer.controllers.holders.SceneHolder;
-import com.ihor.spendingorganizer.controllers.holders.SpendingListHolder;
 
 import java.net.URL;
 import java.time.LocalDate;

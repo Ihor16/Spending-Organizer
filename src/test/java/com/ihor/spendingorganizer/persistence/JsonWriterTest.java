@@ -33,7 +33,7 @@ class JsonWriterTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"n|@$$oFile", "myFi|\0le.txt", "f\\s123124ile.json"})
+    @ValueSource(strings = {"n|@$$oFile.json", "myFi|\0le.txt", "f\\s123124ile.json"})
     void testWriteUnacceptableFileName(String fileName) {
         JsonWriter jsonWriter = new JsonWriter(fileName);
         assertThrows(IOException.class, jsonWriter::open);
